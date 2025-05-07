@@ -109,6 +109,7 @@ body {
 }
 
 .cursor {
+    display: inline-block;
     animation: blink 1s step-end infinite;
 }
 

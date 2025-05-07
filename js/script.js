@@ -87,12 +87,6 @@ document.addEventListener('DOMContentLoaded', function() {
         createTypingEffect(element, 500 * index);
     });
     
-    // Blinking cursor effect
-    const cursor = document.querySelector('.cursor');
-    setInterval(() => {
-        cursor.style.opacity = cursor.style.opacity === '0' ? '1' : '0';
-    }, 500);
-    
     // Create a terminal command input for the last prompt
     const terminalContent = document.querySelector('.terminal-content');
     
