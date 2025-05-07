@@ -120,21 +120,34 @@ document.addEventListener('DOMContentLoaded', function() {
             response = 'Do you have nothing else to do other than look for things in this site? Your life must be boring.';
         } else if (command === 'ls') {
             response = `<div class="links">
+                <a href="#" class="folder">secret/</a>
+                <a href="#" class="folder">.kube/</a>
                 <a href="https://kreato.dev/Blogs/" target="_blank" class="file">blog.md</a>
                 <a href="https://github.com/kreatoo" target="_blank" class="file">github.txt</a>
             </div>`;
         } else if (command.startsWith('cd ')) {
             const dir = command.substring(3).trim();
-            if (dir === '..' || dir === '/' || dir === '~') {
-                response = 'Already in root directory';
+            if (dir === '~') {
+                response = 'Already in home directory';
             } else if (dir === 'blog' || dir === 'github' || dir === 'projects') {
                 response = `Changed directory to ${dir}`;
             } else if (dir === 'secret') {
                 window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
                 return;
+            } else if (dir === '.kube') {
+                response = `<div class="links">
+                    <a href="#" class="file">config</a>
+                </div>`;
+            } else if (dir === '/') {
+                response = `cd: i ate it`;
+            } else if (dir === '..') {
+                response = `Where is bro going?`;
             } else {
                 response = `cd: no such directory: ${dir}`;
             }
+        } else if (command === 'cat config' && document.querySelector('.terminal-content').textContent.includes('.kube')) {
+            window.location.href = 'https://www.youtube.com/watch?v=9wvEwPLcLcA';
+            return;
         } else {
             response = `Command not found: ${command}`;
         }

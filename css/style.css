@@ -164,6 +164,23 @@ ul {
     content: "📄 ";
 }
 
+.folder {
+    color: var(--link-color);
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 10px;
+    transition: color 0.2s ease;
+}
+
+.folder:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+.folder::before {
+    content: "📁 ";
+}
+
 .theme-toggle {
     position: fixed;
     bottom: 20px;
