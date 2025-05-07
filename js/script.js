@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (command.startsWith('echo ')) {
             response = command.substring(5);
         } else if (command === 'help') {
-            response = 'Available commands: help, about, echo [text], clear, date, ls, cd [dir], yes';
+            response = 'Available commands: help, about, echo [text], clear, date, ls, cd [dir], yes, cat [file]';
         } else if (command === 'about') {
             response = 'Kreato - Tinkerer and Developer';
         } else if (command === 'clear') {
@@ -161,9 +161,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 response = `cd: no such directory: ${dir}`;
             }
             updatePrompts();
-        } else if (command === 'cat config' && currentDir === '.kube') {
-            window.location.href = 'https://www.youtube.com/watch?v=9wvEwPLcLcA';
-            return;
+        } else if (command.startsWith('cat ')) {
+            const file = command.substring(4).trim();
+            if (file === 'config' && currentDir === '.kube') {
+                window.location.href = 'https://www.youtube.com/watch?v=9wvEwPLcLcA';
+                return;
+            } else if (file === 'blog.md') {
+                response = 'Redirecting to blog...';
+                setTimeout(() => {
+                    window.location.href = 'https://kreato.dev/Blogs/';
+                }, 1000);
+            } else if (file === 'github.txt') {
+                response = 'Redirecting to GitHub...';
+                setTimeout(() => {
+                    window.location.href = 'https://github.com/kreatoo';
+                }, 1000);
+            } else {
+                response = `cat: ${file}: No such file or directory`;
+            }
         } else {
             response = `Command not found: ${command}`;
         }
