@@ -86,6 +86,7 @@ pre code {
     right: 20px;
     display: flex;
     gap: 10px;
+    z-index: 100;
 }
 
 .theme-toggle button {
@@ -103,6 +104,26 @@ pre code {
 
 .theme-toggle button:hover {
     background-color: var(--accent-color);
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+    .theme-toggle {
+        bottom: 10px;
+        right: 10px;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .theme-toggle button {
+        padding: 6px 12px;
+        font-size: 0.9em;
+    }
+
+    /* Ensure back button is visible */
+    .back-button {
+        margin-bottom: 60px;
+    }
 }
 
 /* Accessibility mode */
