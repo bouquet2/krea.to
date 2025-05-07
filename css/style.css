@@ -186,21 +186,36 @@ ul {
     position: fixed;
     bottom: 20px;
     right: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.theme-toggle button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 #theme-button {
     font-family: 'Scientifica', monospace;
     background-color: var(--secondary-color);
     color: var(--bg-color);
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.2s ease;
 }
 
 #theme-button:hover {
+    background-color: var(--accent-color);
+}
+
+#accessibility-button {
+    font-family: 'Scientifica', monospace;
+    background-color: var(--secondary-color);
+    color: var(--bg-color);
+}
+
+#accessibility-button:hover {
     background-color: var(--accent-color);
 }
 
@@ -231,4 +246,12 @@ ul {
     h2 {
         font-size: 16px;
     }
+}
+
+/* Accessibility Mode */
+.accessibility-mode {
+    font-family: 'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', sans-serif;
+    font-size: 1.2em;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
 } 

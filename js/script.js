@@ -1,4 +1,28 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Accessibility mode functionality
+    const accessibilityButton = document.getElementById('accessibility-button');
+    const terminal = document.querySelector('.terminal');
+    
+    // Check for saved accessibility preference
+    const savedAccessibility = localStorage.getItem('accessibility');
+    if (savedAccessibility === 'enabled') {
+        terminal.classList.add('accessibility-mode');
+        accessibilityButton.textContent = 'Standard Font';
+    }
+    
+    // Toggle accessibility mode on button click
+    accessibilityButton.addEventListener('click', function() {
+        terminal.classList.toggle('accessibility-mode');
+        
+        if (terminal.classList.contains('accessibility-mode')) {
+            localStorage.setItem('accessibility', 'enabled');
+            accessibilityButton.textContent = 'Standard Font';
+        } else {
+            localStorage.setItem('accessibility', 'disabled');
+            accessibilityButton.textContent = 'Accessibility Mode';
+        }
+    });
+
     // Theme toggle functionality
     const themeButton = document.getElementById('theme-button');
     const body = document.body;
