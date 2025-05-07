@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Track current directory
     let currentDir = '~';
     
+    // Track if terminal is being actively used
+    let isTerminalActive = false;
+    
     // Function to update all prompts with current directory
     function updatePrompts() {
         // Only update the last prompt (current input) and any new prompts
@@ -26,7 +29,11 @@ document.addEventListener('DOMContentLoaded', function() {
         terminalContent.appendChild(newLastSection);
         
         const input = document.getElementById('terminal-input');
-        input.focus();
+        
+        // Only focus if terminal is active
+        if (isTerminalActive) {
+            input.focus();
+        }
         
         input.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
@@ -36,6 +43,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 input.value = '';
             }
+        });
+
+        // Add focus and blur events to track active state
+        input.addEventListener('focus', function() {
+            isTerminalActive = true;
+        });
+
+        input.addEventListener('blur', function() {
+            isTerminalActive = false;
         });
     }
     
@@ -89,6 +105,22 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Create a terminal command input for the last prompt
     const terminalContent = document.querySelector('.terminal-content');
+    
+    // Add click event listener to terminal content
+    terminalContent.addEventListener('click', function() {
+        isTerminalActive = true;
+        const input = document.getElementById('terminal-input');
+        if (input) {
+            input.focus();
+        }
+    });
+    
+    // Add blur event listener to document to track when terminal loses focus
+    document.addEventListener('click', function(e) {
+        if (!terminalContent.contains(e.target)) {
+            isTerminalActive = false;
+        }
+    });
     
     // Create initial input
     createNewInput();
@@ -192,7 +224,9 @@ document.addEventListener('DOMContentLoaded', function() {
         lastSection.remove();
         createNewInput();
         
-        // Scroll to the bottom
-        terminalContent.scrollTop = terminalContent.scrollHeight;
+        // Only scroll to bottom if terminal is being actively used
+        if (isTerminalActive) {
+            terminalContent.scrollTop = terminalContent.scrollHeight;
+        }
     }
 }); 
