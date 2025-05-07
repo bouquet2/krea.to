@@ -239,4 +239,23 @@ img {
     border-bottom: 2px solid var(--accent-color);
     padding-bottom: 8px;
     margin-bottom: 16px;
+}
+
+/* Post link styles */
+.post-link {
+    display: inline-block;
+    color: var(--link-color);
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    background-color: var(--terminal-header);
+}
+
+.post-link:hover {
+    color: var(--bg-color);
+    background-color: var(--accent-color);
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 } 
