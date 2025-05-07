@@ -160,6 +160,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <a href="#" class="folder">.kube/</a>
                     <a href="https://kreato.dev/Blogs/" target="_blank" class="file">blog.md</a>
                     <a href="https://github.com/kreatoo" target="_blank" class="file">github.txt</a>
+                    <a href="https://github.com/kreatoo/bouquet2" target="_blank" class="file">infra.tf</a>
+                    <a href="https://status.krea.to" target="_blank" class="file">status.sh</a>
                 </div>`;
             }
         } else if (command.startsWith('cd ')) {
