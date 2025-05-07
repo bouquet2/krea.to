@@ -8,10 +8,34 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to update all prompts with current directory
     function updatePrompts() {
-        const prompts = document.querySelectorAll('.prompt');
-        prompts.forEach(prompt => {
-            const parts = prompt.innerHTML.split('$');
-            prompt.innerHTML = `kreato@akiri:${currentDir}$ ${parts[1]}`;
+        // Only update the last prompt (current input) and any new prompts
+        const lastPrompt = document.querySelector('.terminal-section:last-child .prompt');
+        if (lastPrompt) {
+            const parts = lastPrompt.innerHTML.split('$');
+            lastPrompt.innerHTML = `kreato@akiri:${currentDir}$ ${parts[1]}`;
+        }
+    }
+    
+    // Function to create a new input field
+    function createNewInput() {
+        const newLastSection = document.createElement('div');
+        newLastSection.className = 'terminal-section';
+        newLastSection.innerHTML = `
+            <div class="prompt">kreato@akiri:${currentDir}$ <input type="text" id="terminal-input" style="background: transparent; border: none; outline: none; color: inherit; font-family: inherit; font-size: inherit; width: 70%;"></div>
+        `;
+        terminalContent.appendChild(newLastSection);
+        
+        const input = document.getElementById('terminal-input');
+        input.focus();
+        
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const command = input.value.trim();
+                if (command) {
+                    handleCommand(command);
+                }
+                input.value = '';
+            }
         });
     }
     
@@ -71,40 +95,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Create a terminal command input for the last prompt
     const terminalContent = document.querySelector('.terminal-content');
-    const lastPrompt = document.querySelector('.terminal-section:last-child .prompt');
     
-    // Allow typing in the last terminal prompt
-    lastPrompt.addEventListener('click', function() {
-        const existingInput = document.getElementById('terminal-input');
-        if (!existingInput) {
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.id = 'terminal-input';
-            input.style.background = 'transparent';
-            input.style.border = 'none';
-            input.style.outline = 'none';
-            input.style.color = 'inherit';
-            input.style.fontFamily = 'inherit';
-            input.style.fontSize = 'inherit';
-            input.style.width = '70%';
-            
-            const cursorSpan = document.querySelector('.cursor');
-            cursorSpan.parentNode.replaceChild(input, cursorSpan);
-            input.focus();
-            
-            // Handle command execution on Enter
-            input.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    const command = input.value.trim();
-                    if (command) {
-                        handleCommand(command);
-                    }
-                    // Reset the prompt
-                    input.value = '';
-                }
-            });
-        }
-    });
+    // Create initial input
+    createNewInput();
     
     // Simple command handler
     function handleCommand(command) {
@@ -131,12 +124,18 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (command === 'yes no') {
             response = 'Do you have nothing else to do other than look for things in this site? Your life must be boring.';
         } else if (command === 'ls') {
-            response = `<div class="links">
-                <a href="#" class="folder">secret/</a>
-                <a href="#" class="folder">.kube/</a>
-                <a href="https://kreato.dev/Blogs/" target="_blank" class="file">blog.md</a>
-                <a href="https://github.com/kreatoo" target="_blank" class="file">github.txt</a>
-            </div>`;
+            if (currentDir === '.kube') {
+                response = `<div class="links">
+                    <a href="#" class="file">config</a>
+                </div>`;
+            } else {
+                response = `<div class="links">
+                    <a href="#" class="folder">secret/</a>
+                    <a href="#" class="folder">.kube/</a>
+                    <a href="https://kreato.dev/Blogs/" target="_blank" class="file">blog.md</a>
+                    <a href="https://github.com/kreatoo" target="_blank" class="file">github.txt</a>
+                </div>`;
+            }
         } else if (command.startsWith('cd ')) {
             const dir = command.substring(3).trim();
             if (dir === '~') {
@@ -195,45 +194,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const lastSection = document.querySelector('.terminal-section:last-child');
         terminalContent.insertBefore(newSection, lastSection);
         
-        // Recreate the input field and cursor
-        const lastPrompt = document.querySelector('.terminal-section:last-child .prompt');
-        const cursorSpan = document.createElement('span');
-        cursorSpan.className = 'cursor';
-        cursorSpan.textContent = '_';
-        lastPrompt.appendChild(cursorSpan);
-        
-        // Make the new prompt clickable
-        lastPrompt.addEventListener('click', function() {
-            const existingInput = document.getElementById('terminal-input');
-            if (!existingInput) {
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.id = 'terminal-input';
-                input.style.background = 'transparent';
-                input.style.border = 'none';
-                input.style.outline = 'none';
-                input.style.color = 'inherit';
-                input.style.fontFamily = 'inherit';
-                input.style.fontSize = 'inherit';
-                input.style.width = '70%';
-                
-                const cursorSpan = document.querySelector('.cursor');
-                cursorSpan.parentNode.replaceChild(input, cursorSpan);
-                input.focus();
-                
-                // Handle command execution on Enter
-                input.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter') {
-                        const command = input.value.trim();
-                        if (command) {
-                            handleCommand(command);
-                        }
-                        // Reset the prompt
-                        input.value = '';
-                    }
-                });
-            }
-        });
+        // Remove the last section and create a new input
+        lastSection.remove();
+        createNewInput();
         
         // Scroll to the bottom
         terminalContent.scrollTop = terminalContent.scrollHeight;
