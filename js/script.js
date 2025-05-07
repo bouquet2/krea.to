@@ -16,16 +16,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Toggle accessibility mode on button click
     accessibilityButton.addEventListener('click', function() {
-        body.classList.toggle('accessibility-mode');
-        if (terminal) terminal.classList.toggle('accessibility-mode');
-        
-        if (body.classList.contains('accessibility-mode')) {
-            localStorage.setItem('accessibility', 'enabled');
-            accessibilityButton.textContent = 'Standard Font';
-        } else {
-            localStorage.setItem('accessibility', 'disabled');
-            accessibilityButton.textContent = 'Accessibility Mode';
-        }
+        // Add a small delay to ensure smooth transition
+        setTimeout(() => {
+            body.classList.toggle('accessibility-mode');
+            if (terminal) terminal.classList.toggle('accessibility-mode');
+            
+            if (body.classList.contains('accessibility-mode')) {
+                localStorage.setItem('accessibility', 'enabled');
+                accessibilityButton.textContent = 'Standard Font';
+            } else {
+                localStorage.setItem('accessibility', 'disabled');
+                accessibilityButton.textContent = 'Accessibility Mode';
+            }
+        }, 50);
     });
 
     // Theme toggle functionality

@@ -94,7 +94,7 @@ pre code {
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
-    transition: background-color 0.3s, color 0.3s;
+    transition: background-color 0.3s, color 0.3s, font-family 0.5s ease, font-size 0.5s ease;
     font-family: 'Pokemon DP Pro', sans-serif;
     background-color: var(--secondary-color);
     color: var(--bg-color);
