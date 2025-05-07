@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>`;
             } else {
                 response = `<div class="links">
-                    <a href="#" class="folder">secret/</a>
+                    <a href="#" class="folder">.secret/</a>
                     <a href="#" class="folder">.kube/</a>
                     <a href="https://kreato.dev/Blogs/" target="_blank" class="file">blog.md</a>
                     <a href="https://github.com/kreatoo" target="_blank" class="file">github.txt</a>
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (dir === 'blog' || dir === 'github' || dir === 'projects') {
                 currentDir = dir;
                 response = `Changed directory to ${dir}`;
-            } else if (dir === 'secret') {
+            } else if (dir === '.secret') {
                 window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
                 return;
             } else if (dir === '.kube') {
