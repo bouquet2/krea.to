@@ -1,6 +1,6 @@
 @font-face {
-    font-family: 'Scientifica';
-    src: url('../fonts/scientifica.ttf') format('truetype');
+    font-family: 'Pokemon DP Pro';
+    src: url('../fonts/pokemon-dp-pro.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -30,12 +30,13 @@ body.light-theme {
 }
 
 body {
-    font-family: 'Scientifica', monospace;
+    font-family: 'Pokemon DP Pro', sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
     line-height: 1.6;
     padding: 20px;
     transition: background-color 0.3s ease, color 0.3s ease;
+    font-size: 1.1em;
 }
 
 .terminal {
@@ -88,7 +89,7 @@ body {
 
 .terminal-content {
     padding: 15px;
-    font-size: 16px;
+    font-size: 1.1em;
     line-height: 1.5;
 }
 
@@ -200,9 +201,10 @@ ul {
 }
 
 #theme-button {
-    font-family: 'Scientifica', monospace;
+    font-family: 'Pokemon DP Pro', sans-serif;
     background-color: var(--secondary-color);
     color: var(--bg-color);
+    font-size: 1em;
 }
 
 #theme-button:hover {
@@ -210,9 +212,10 @@ ul {
 }
 
 #accessibility-button {
-    font-family: 'Scientifica', monospace;
+    font-family: 'Pokemon DP Pro', sans-serif;
     background-color: var(--secondary-color);
     color: var(--bg-color);
+    font-size: 1em;
 }
 
 #accessibility-button:hover {
@@ -251,7 +254,7 @@ ul {
 /* Accessibility Mode */
 .accessibility-mode {
     font-family: 'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', sans-serif;
-    font-size: 1.2em;
+    font-size: 0.8em;
     line-height: 1.6;
     letter-spacing: 0.5px;
 } 
