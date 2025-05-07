@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="{{.CSSPath}}">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{{.BackURL}}" class="back-button">← Back</a>
+        </nav>
+    </header>
+    <main>
+        <h1>{{.Title}}</h1>
+        
+        {{if .HasDirectories}}
+        <section class="directory-list">
+            <h2>Subdirectories</h2>
+            <ul>
+                {{range .Directories}}
+                <li class="directory">
+                    <a href="{{.Link}}">{{.Name}}/</a>
+                </li>
+                {{end}}
+            </ul>
+        </section>
+        {{end}}
+        
+        {{if .Posts}}
+        <section class="blog-list">
+            <h2>Posts</h2>
+            {{range .Posts}}
+            <article class="blog-post">
+                <h3><a href="{{.Link}}">{{.Title}}</a></h3>
+                {{if .Date}}<time datetime="{{.Date}}">{{.Date}}</time>{{end}}
+                {{if .Description}}<p>{{.Description}}</p>{{end}}
+            </article>
+            {{end}}
+        </section>
+        {{end}}
+    </main>
+    <div class="theme-toggle">
+        <button id="theme-button">Dark Mode</button>
+        <button id="accessibility-button">Accessibility Mode</button>
+    </div>
+    <script src="{{.JSPath}}"></script>
+</body>
+</html> 

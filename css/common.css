@@ -1,0 +1,125 @@
+/* Common styles for both main site and blog */
+@font-face {
+    font-family: 'Pokemon DP Pro';
+    src: url('../fonts/pokemon-dp-pro.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --bg-color: #303446;
+    --text-color: #c6d0f5;
+    --accent-color: #f4b8e4;
+    --secondary-color: #ca9ee6;
+    --terminal-header: #292c3c;
+    --link-color: #8caaee;
+}
+
+/* Light theme */
+body.light-theme {
+    --bg-color: #dee2ea;
+    --text-color: #4c4f69;
+    --accent-color: #ea76cb;
+    --secondary-color: #8839ef;
+    --terminal-header: #dce0e8;
+    --link-color: #1e66f5;
+}
+
+/* Light theme for browsers that support prefers-color-scheme */
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg-color: #dee2ea;
+        --text-color: #4c4f69;
+        --accent-color: #ea76cb;
+        --secondary-color: #8839ef;
+        --terminal-header: #dce0e8;
+        --link-color: #1e66f5;
+    }
+}
+
+/* Common heading styles */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--secondary-color);
+    margin-bottom: 0.8em;
+}
+
+/* Common link styles */
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+/* Common code styling */
+code {
+    font-family: 'Pokemon DP Pro', monospace;
+    background-color: var(--terminal-header);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 1.1em;
+}
+
+pre {
+    background-color: var(--terminal-header);
+    padding: 16px;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin: 20px 0;
+}
+
+pre code {
+    font-family: 'Pokemon DP Pro', monospace;
+    background: transparent;
+    padding: 0;
+    font-size: 1.1em;
+}
+
+/* Theme toggle buttons */
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.theme-toggle button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s, color 0.3s;
+    font-family: 'Pokemon DP Pro', sans-serif;
+    background-color: var(--secondary-color);
+    color: var(--bg-color);
+    font-size: 1em;
+}
+
+.theme-toggle button:hover {
+    background-color: var(--accent-color);
+}
+
+/* Accessibility mode */
+.accessibility-mode {
+    font-family: 'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', sans-serif !important;
+    font-size: 1.2em !important;
+    line-height: 1.8 !important;
+    letter-spacing: 0.5px !important;
+}
+
+.accessibility-mode code, 
+.accessibility-mode pre code {
+    font-family: 'Courier New', monospace !important;
+    font-size: 1.1em !important;
+}
+
+.accessibility-mode .theme-toggle button {
+    font-family: 'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', sans-serif !important;
+    font-size: 1em !important;
+} 

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    {{if .Description}}<meta name="description" content="{{.Description}}">{{end}}
+    {{if .Author}}<meta name="author" content="{{.Author}}">{{end}}
+    <link rel="stylesheet" href="{{.CSSPath}}">
+</head>
+<body>
+    <main>
+        <article class="blog-post">
+            <header>
+                <h1>{{.Title}}</h1>
+                {{if .Date}}<time datetime="{{.Date}}">{{.Date}}</time>{{end}}
+                {{if .Author}}<p class="author">By {{.Author}}</p>{{end}}
+            </header>
+            <div class="content">
+                {{.Content}}
+            </div>
+        </article>
+    </main>
+    <footer>
+        <nav>
+            <a href="index.html">← Back to Posts</a>
+        </nav>
+    </footer>
+    <div class="theme-toggle">
+        <button id="theme-button">Dark Mode</button>
+        <button id="accessibility-button">Accessibility Mode</button>
+    </div>
+    <script src="{{.JSPath}}"></script>
+</body>
+</html> 

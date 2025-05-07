@@ -1,27 +1,5 @@
-@font-face {
-    font-family: 'Pokemon DP Pro';
-    src: url('../fonts/pokemon-dp-pro.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-:root {
-    --bg-color: #303446;
-    --text-color: #c6d0f5;
-    --accent-color: #f4b8e4;
-    --secondary-color: #ca9ee6;
-    --terminal-header: #292c3c;
-    --link-color: #8caaee;
-}
-
-body.light-theme {
-    --bg-color: #dee2ea;
-    --text-color: #4c4f69;
-    --accent-color: #ea76cb;
-    --secondary-color: #8839ef;
-    --terminal-header: #dce0e8;
-    --link-color: #1e66f5;
-}
+/* Main site styles */
+@import 'common.css';
 
 * {
     margin: 0;
@@ -120,18 +98,15 @@ body {
     border-left: 2px solid var(--secondary-color);
 }
 
-h1, h2 {
-    color: var(--secondary-color);
-    margin-bottom: 10px;
-}
-
 h1 {
     font-size: 24px;
+    margin-bottom: 10px;
 }
 
 h2 {
     font-size: 18px;
     margin-top: 15px;
+    margin-bottom: 10px;
 }
 
 p {
@@ -149,77 +124,12 @@ ul {
     gap: 15px;
 }
 
-.file {
-    color: var(--link-color);
-    text-decoration: none;
-    display: inline-block;
-    margin-right: 10px;
-    transition: color 0.2s ease;
-}
-
-.file:hover {
-    color: var(--accent-color);
-    text-decoration: underline;
-}
-
 .file::before {
     content: "📄 ";
 }
 
-.folder {
-    color: var(--link-color);
-    text-decoration: none;
-    display: inline-block;
-    margin-right: 10px;
-    transition: color 0.2s ease;
-}
-
-.folder:hover {
-    color: var(--accent-color);
-    text-decoration: underline;
-}
-
 .folder::before {
     content: "📁 ";
-}
-
-.theme-toggle {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    display: flex;
-    gap: 10px;
-}
-
-.theme-toggle button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-#theme-button {
-    font-family: 'Pokemon DP Pro', sans-serif;
-    background-color: var(--secondary-color);
-    color: var(--bg-color);
-    font-size: 1em;
-}
-
-#theme-button:hover {
-    background-color: var(--accent-color);
-}
-
-#accessibility-button {
-    font-family: 'Pokemon DP Pro', sans-serif;
-    background-color: var(--secondary-color);
-    color: var(--bg-color);
-    font-size: 1em;
-}
-
-#accessibility-button:hover {
-    background-color: var(--accent-color);
 }
 
 @keyframes typing {
@@ -249,12 +159,4 @@ ul {
     h2 {
         font-size: 16px;
     }
-}
-
-/* Accessibility Mode */
-.accessibility-mode {
-    font-family: 'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', sans-serif;
-    font-size: 0.8em;
-    line-height: 1.6;
-    letter-spacing: 0.5px;
 } 
