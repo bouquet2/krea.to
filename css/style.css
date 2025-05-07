@@ -1,0 +1,216 @@
+@font-face {
+    font-family: 'Scientifica';
+    src: url('../fonts/scientifica.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root {
+    --bg-color: #303446;
+    --text-color: #c6d0f5;
+    --accent-color: #f4b8e4;
+    --secondary-color: #ca9ee6;
+    --terminal-header: #292c3c;
+    --link-color: #8caaee;
+}
+
+body.light-theme {
+    --bg-color: #dee2ea;
+    --text-color: #4c4f69;
+    --accent-color: #ea76cb;
+    --secondary-color: #8839ef;
+    --terminal-header: #dce0e8;
+    --link-color: #1e66f5;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Scientifica', monospace;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding: 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.terminal {
+    max-width: 800px;
+    margin: 40px auto;
+    background-color: var(--bg-color);
+    border: 1px solid var(--accent-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(91, 96, 120, 0.4);
+    overflow: hidden;
+}
+
+.terminal-header {
+    background-color: var(--terminal-header);
+    padding: 13px 15px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--accent-color);
+    position: relative;
+}
+
+.terminal-button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.close {
+    background-color: #e78284;
+}
+
+.minimize {
+    background-color: #e5c890;
+}
+
+.maximize {
+    background-color: #a6d189;
+}
+
+.terminal-title {
+    margin-left: 10px;
+    font-size: 14px;
+    color: var(--text-color);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+}
+
+.terminal-content {
+    padding: 15px;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.terminal-section {
+    margin-bottom: 20px;
+}
+
+.prompt {
+    color: var(--accent-color);
+    margin-bottom: 5px;
+}
+
+.typing-effect {
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    animation: typing 1.5s steps(30, end);
+}
+
+.cursor {
+    animation: blink 1s step-end infinite;
+}
+
+.output {
+    margin-left: 15px;
+    padding: 5px 0 5px 10px;
+    border-left: 2px solid var(--secondary-color);
+}
+
+h1, h2 {
+    color: var(--secondary-color);
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 24px;
+}
+
+h2 {
+    font-size: 18px;
+    margin-top: 15px;
+}
+
+p {
+    margin-bottom: 10px;
+}
+
+ul {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+
+.links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.file {
+    color: var(--link-color);
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 10px;
+    transition: color 0.2s ease;
+}
+
+.file:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+.file::before {
+    content: "📄 ";
+}
+
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+#theme-button {
+    font-family: 'Scientifica', monospace;
+    background-color: var(--secondary-color);
+    color: var(--bg-color);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+#theme-button:hover {
+    background-color: var(--accent-color);
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+@media (max-width: 600px) {
+    .terminal {
+        margin: 20px auto;
+    }
+    
+    .terminal-content {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    h1 {
+        font-size: 20px;
+    }
+    
+    h2 {
+        font-size: 16px;
+    }
+} 
