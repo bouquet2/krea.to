@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (command.startsWith('echo ')) {
             response = command.substring(5);
         } else if (command === 'help') {
-            response = 'Available commands: help, about, echo [text], clear, date';
+            response = 'Available commands: help, about, echo [text], clear, date, ls, cd [dir], yes';
         } else if (command === 'about') {
             response = 'Kreato - Tinkerer and Developer';
         } else if (command === 'clear') {
@@ -114,6 +114,27 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         } else if (command === 'date') {
             response = new Date().toString();
+        } else if (command === 'yes') {
+            response = 'y';
+        } else if (command === 'yes no') {
+            response = 'Do you have nothing else to do other than look for things in this site? Your life must be boring.';
+        } else if (command === 'ls') {
+            response = `<div class="links">
+                <a href="https://kreato.dev/Blogs/" target="_blank" class="file">blog.md</a>
+                <a href="https://github.com/kreatoo" target="_blank" class="file">github.txt</a>
+            </div>`;
+        } else if (command.startsWith('cd ')) {
+            const dir = command.substring(3).trim();
+            if (dir === '..' || dir === '/' || dir === '~') {
+                response = 'Already in root directory';
+            } else if (dir === 'blog' || dir === 'github' || dir === 'projects') {
+                response = `Changed directory to ${dir}`;
+            } else if (dir === 'secret') {
+                window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+                return;
+            } else {
+                response = `cd: no such directory: ${dir}`;
+            }
         } else {
             response = `Command not found: ${command}`;
         }
