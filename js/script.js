@@ -3,6 +3,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const themeButton = document.getElementById('theme-button');
     const body = document.body;
     
+    // Track current directory
+    let currentDir = '~';
+    
+    // Function to update all prompts with current directory
+    function updatePrompts() {
+        const prompts = document.querySelectorAll('.prompt');
+        prompts.forEach(prompt => {
+            const parts = prompt.innerHTML.split('$');
+            prompt.innerHTML = `kreato@akiri:${currentDir}$ ${parts[1]}`;
+        });
+    }
+    
     // Check for saved theme preference or default to dark
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'light') {
@@ -128,13 +140,16 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (command.startsWith('cd ')) {
             const dir = command.substring(3).trim();
             if (dir === '~') {
-                response = 'Already in home directory';
+                currentDir = '~';
+                response = 'Changed to home directory';
             } else if (dir === 'blog' || dir === 'github' || dir === 'projects') {
+                currentDir = dir;
                 response = `Changed directory to ${dir}`;
             } else if (dir === 'secret') {
                 window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
                 return;
             } else if (dir === '.kube') {
+                currentDir = '.kube';
                 response = `<div class="links">
                     <a href="#" class="file">config</a>
                 </div>`;
@@ -145,7 +160,8 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 response = `cd: no such directory: ${dir}`;
             }
-        } else if (command === 'cat config' && document.querySelector('.terminal-content').textContent.includes('.kube')) {
+            updatePrompts();
+        } else if (command === 'cat config' && currentDir === '.kube') {
             window.location.href = 'https://www.youtube.com/watch?v=9wvEwPLcLcA';
             return;
         } else {
@@ -156,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const newSection = document.createElement('div');
         newSection.className = 'terminal-section';
         newSection.innerHTML = `
-            <div class="prompt">kreato@akiri:~$ <span>${command}</span></div>
+            <div class="prompt">kreato@akiri:${currentDir}$ <span>${command}</span></div>
             <div class="output"><p>${response}</p></div>
         `;
         
