@@ -180,6 +180,46 @@ document.addEventListener('DOMContentLoaded', function() {
         const lastSection = document.querySelector('.terminal-section:last-child');
         terminalContent.insertBefore(newSection, lastSection);
         
+        // Recreate the input field and cursor
+        const lastPrompt = document.querySelector('.terminal-section:last-child .prompt');
+        const cursorSpan = document.createElement('span');
+        cursorSpan.className = 'cursor';
+        cursorSpan.textContent = '_';
+        lastPrompt.appendChild(cursorSpan);
+        
+        // Make the new prompt clickable
+        lastPrompt.addEventListener('click', function() {
+            const existingInput = document.getElementById('terminal-input');
+            if (!existingInput) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.id = 'terminal-input';
+                input.style.background = 'transparent';
+                input.style.border = 'none';
+                input.style.outline = 'none';
+                input.style.color = 'inherit';
+                input.style.fontFamily = 'inherit';
+                input.style.fontSize = 'inherit';
+                input.style.width = '70%';
+                
+                const cursorSpan = document.querySelector('.cursor');
+                cursorSpan.parentNode.replaceChild(input, cursorSpan);
+                input.focus();
+                
+                // Handle command execution on Enter
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        const command = input.value.trim();
+                        if (command) {
+                            handleCommand(command);
+                        }
+                        // Reset the prompt
+                        input.value = '';
+                    }
+                });
+            }
+        });
+        
         // Scroll to the bottom
         terminalContent.scrollTop = terminalContent.scrollHeight;
     }
