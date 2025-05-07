@@ -25,9 +25,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Go
+        uses: actions/setup-go@v4
+
+      - name: Generate blog content
+        run: make blog
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
-
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
