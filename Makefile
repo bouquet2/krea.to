@@ -10,7 +10,7 @@ blog: build-md2html
 	md2html/md2html -input md -output blog -css "css/style-blog.css" -addlist -recursive
 
 # Build md2html binary
-build-md2html:
+build-md2html: tidy-md2html
 	@echo "Building md2html..."
 	cd md2html && go build -o md2html ./cmd/md2html
 
