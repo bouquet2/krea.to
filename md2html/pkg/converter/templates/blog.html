@@ -6,6 +6,15 @@
     <title>{{.Title}}</title>
     {{if .Description}}<meta name="description" content="{{.Description}}">{{end}}
     {{if .Author}}<meta name="author" content="{{.Author}}">{{end}}
+    
+    <!-- Discord Embed Meta Tags -->
+    <meta property="og:title" content="{{.Title}}">
+    {{if .Description}}<meta property="og:description" content="{{.Description}}">{{end}}
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{.URL}}">
+    {{if .Image}}<meta property="og:image" content="{{.Image}}">{{end}}
+    <meta name="theme-color" content="#5865F2">
+    
     <link rel="stylesheet" href="{{.CSSPath}}">
 </head>
 <body>

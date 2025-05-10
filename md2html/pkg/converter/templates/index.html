@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{.Title}}</title>
+    
+    <!-- Discord Embed Meta Tags -->
+    <meta property="og:title" content="{{.Title}}">
+    <meta property="og:description" content="Blog Posts and Articles">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{.URL}}">
+    {{if .Image}}<meta property="og:image" content="{{.Image}}">{{end}}
+    <meta name="theme-color" content="#5865F2">
+    
     <link rel="stylesheet" href="{{.CSSPath}}">
 </head>
 <body>
