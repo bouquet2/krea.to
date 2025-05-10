@@ -1,6 +1,7 @@
 module github.com/kreatoo/md2html
 
-go 1.22
+go 1.23.0
+
 toolchain go1.24.2
 
 require (

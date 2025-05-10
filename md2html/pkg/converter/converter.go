@@ -49,6 +49,7 @@ type PageData struct {
 	Description string
 	Date        string
 	URL         string
+	Image       string
 }
 
 // BlogPost represents a blog post entry for the index page
@@ -74,6 +75,8 @@ type IndexData struct {
 	Directories    []Directory
 	BackURL        string
 	HasDirectories bool
+	URL            string
+	Image          string
 }
 
 // ==========================================================================
@@ -549,6 +552,8 @@ func generateIndex(outputDir string, blogPosts []BlogPost, subdirectories []Dire
 			Directories:    subdirectories,
 			BackURL:        backURL,
 			HasDirectories: len(subdirectories) > 0,
+			URL:            backURL,
+			Image:          "", // Default to empty string for index pages
 		}
 
 		if err := indexTmpl.Execute(file, data); err != nil {
@@ -674,14 +679,23 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 
 	description := metadata["Description"]
 	date := metadata["Date"]
+	image := metadata["Image"]
 
 	// Calculate the URL for the page
-	relPath, err := filepath.Rel(inputRoot, mdFile)
-	if err != nil {
-		return nil, fmt.Errorf("error calculating relative path: %v", err)
+	var url string
+	if config.OutputDir != "" {
+		// If we have an output directory, use that as the base for the URL
+		relPath, err := filepath.Rel(config.OutputDir, outputFile)
+		if err != nil {
+			// If we can't get a relative path, use the filename
+			url = fileNameWithoutExt + ".html"
+		} else {
+			url = strings.ReplaceAll(relPath, string(filepath.Separator), "/")
+		}
+	} else {
+		// If no output directory specified, just use the filename
+		url = fileNameWithoutExt + ".html"
 	}
-	url := strings.TrimSuffix(relPath, filepath.Ext(relPath)) + ".html"
-	url = strings.ReplaceAll(url, string(filepath.Separator), "/")
 
 	data := PageData{
 		Title:       title,
@@ -692,6 +706,7 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 		Description: description,
 		Date:        date,
 		URL:         url,
+		Image:       image,
 	}
 
 	// Execute template
