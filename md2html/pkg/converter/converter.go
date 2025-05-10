@@ -48,6 +48,7 @@ type PageData struct {
 	Author      string
 	Description string
 	Date        string
+	URL         string
 }
 
 // BlogPost represents a blog post entry for the index page
@@ -674,6 +675,14 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 	description := metadata["Description"]
 	date := metadata["Date"]
 
+	// Calculate the URL for the page
+	relPath, err := filepath.Rel(inputRoot, mdFile)
+	if err != nil {
+		return nil, fmt.Errorf("error calculating relative path: %v", err)
+	}
+	url := strings.TrimSuffix(relPath, filepath.Ext(relPath)) + ".html"
+	url = strings.ReplaceAll(url, string(filepath.Separator), "/")
+
 	data := PageData{
 		Title:       title,
 		Content:     sanitizedHTML,
@@ -682,6 +691,7 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 		Author:      author,
 		Description: description,
 		Date:        date,
+		URL:         url,
 	}
 
 	// Execute template
