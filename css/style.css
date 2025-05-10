@@ -149,14 +149,30 @@ ul {
     
     .terminal-content {
         padding: 10px;
-        font-size: 14px;
+        font-size: 16px;
+    }
+    
+    body {
+        font-size: 1.2em;
+    }
+
+    .prompt {
+        font-size: 16px;
     }
     
     h1 {
-        font-size: 20px;
+        font-size: 22px;
     }
     
     h2 {
+        font-size: 18px;
+    }
+
+    p, ul, li {
         font-size: 16px;
+    }
+
+    .output {
+        margin-left: 10px;
     }
 } 
