@@ -18,16 +18,16 @@ document.addEventListener('DOMContentLoaded', function() {
     accessibilityButton.addEventListener('click', function() {
         // Add a small delay to ensure smooth transition
         setTimeout(() => {
-            body.classList.toggle('accessibility-mode');
-            if (terminal) terminal.classList.toggle('accessibility-mode');
-            
-            if (body.classList.contains('accessibility-mode')) {
-                localStorage.setItem('accessibility', 'enabled');
-                accessibilityButton.textContent = 'Standard Font';
-            } else {
-                localStorage.setItem('accessibility', 'disabled');
-                accessibilityButton.textContent = 'Accessibility Mode';
-            }
+        body.classList.toggle('accessibility-mode');
+        if (terminal) terminal.classList.toggle('accessibility-mode');
+        
+        if (body.classList.contains('accessibility-mode')) {
+            localStorage.setItem('accessibility', 'enabled');
+            accessibilityButton.textContent = 'Standard Font';
+        } else {
+            localStorage.setItem('accessibility', 'disabled');
+            accessibilityButton.textContent = 'Accessibility Mode';
+        }
         }, 50);
     });
 

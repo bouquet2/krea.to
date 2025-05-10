@@ -489,10 +489,7 @@ func parseMarkdown(content []byte) template.HTML {
 	policy.AllowAttrs("style").OnElements("pre", "code", "span", "div")
 	sanitizedHTML := policy.SanitizeBytes(htmlContent)
 
-	// Replace spaces with hyphens in the HTML content
-	htmlWithHyphens := bytes.ReplaceAll(sanitizedHTML, []byte(" "), []byte("-"))
-
-	return template.HTML(htmlWithHyphens)
+	return template.HTML(sanitizedHTML)
 }
 
 // ==========================================================================
@@ -650,6 +647,8 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 	// Get filename without extension
 	baseName := filepath.Base(mdFile)
 	fileNameWithoutExt := strings.TrimSuffix(baseName, filepath.Ext(baseName))
+	// Replace spaces with hyphens in the filename
+	fileNameWithoutExt = strings.ReplaceAll(fileNameWithoutExt, " ", "-")
 
 	// Create output file
 	outputFile := filepath.Join(config.OutputDir, fileNameWithoutExt+".html")
@@ -813,6 +812,8 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) e
 
 			// Add to blog posts list
 			fileNameWithoutExt := strings.TrimSuffix(file.Name(), filepath.Ext(file.Name()))
+			// Replace spaces with hyphens in the filename
+			fileNameWithoutExt = strings.ReplaceAll(fileNameWithoutExt, " ", "-")
 			title := metadata["Title"]
 			if title == "" {
 				title = fileNameWithoutExt
