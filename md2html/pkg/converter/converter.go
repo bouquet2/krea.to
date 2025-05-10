@@ -489,7 +489,10 @@ func parseMarkdown(content []byte) template.HTML {
 	policy.AllowAttrs("style").OnElements("pre", "code", "span", "div")
 	sanitizedHTML := policy.SanitizeBytes(htmlContent)
 
-	return template.HTML(sanitizedHTML)
+	// Replace spaces with hyphens in the HTML content
+	htmlWithHyphens := bytes.ReplaceAll(sanitizedHTML, []byte(" "), []byte("-"))
+
+	return template.HTML(htmlWithHyphens)
 }
 
 // ==========================================================================
