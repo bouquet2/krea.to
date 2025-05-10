@@ -647,7 +647,9 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 	// Get filename without extension
 	baseName := filepath.Base(mdFile)
 	fileNameWithoutExt := strings.TrimSuffix(baseName, filepath.Ext(baseName))
-	// Replace spaces with hyphens in the filename
+	// Keep original title with spaces for display, converting hyphens to spaces
+	displayTitle := strings.ReplaceAll(fileNameWithoutExt, "-", " ")
+	// Replace spaces with hyphens only for the filename
 	fileNameWithoutExt = strings.ReplaceAll(fileNameWithoutExt, " ", "-")
 
 	// Create output file
@@ -661,7 +663,7 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 	// Prepare template data
 	title := metadata["Title"]
 	if title == "" {
-		title = fileNameWithoutExt
+		title = displayTitle // Use the original title with spaces
 	}
 
 	author := metadata["Author"]
@@ -812,8 +814,8 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) e
 
 			// Add to blog posts list
 			fileNameWithoutExt := strings.TrimSuffix(file.Name(), filepath.Ext(file.Name()))
-			// Keep original title with spaces for display
-			displayTitle := fileNameWithoutExt
+			// Keep original title with spaces for display, converting hyphens to spaces
+			displayTitle := strings.ReplaceAll(fileNameWithoutExt, "-", " ")
 			// Replace spaces with hyphens only for the filename
 			fileNameWithoutExt = strings.ReplaceAll(fileNameWithoutExt, " ", "-")
 			title := metadata["Title"]
