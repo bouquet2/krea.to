@@ -812,11 +812,13 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) e
 
 			// Add to blog posts list
 			fileNameWithoutExt := strings.TrimSuffix(file.Name(), filepath.Ext(file.Name()))
-			// Replace spaces with hyphens in the filename
+			// Keep original title with spaces for display
+			displayTitle := fileNameWithoutExt
+			// Replace spaces with hyphens only for the filename
 			fileNameWithoutExt = strings.ReplaceAll(fileNameWithoutExt, " ", "-")
 			title := metadata["Title"]
 			if title == "" {
-				title = fileNameWithoutExt
+				title = displayTitle // Use the original title with spaces
 			}
 
 			blogPosts = append(blogPosts, BlogPost{
