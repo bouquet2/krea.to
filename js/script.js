@@ -64,6 +64,50 @@ document.addEventListener('DOMContentLoaded', function() {
         // Track if terminal is being actively used
         let isTerminalActive = false;
         
+        // List of available commands
+        const commands = ['help', 'about', 'echo', 'clear', 'date', 'ls', 'cd', 'yes', 'cat', 'ifconfig', 'upower', 'scheme'];
+        
+        // List of available files/directories
+        const files = ['blog.md', 'github.txt', 'infra.tf', 'status.sh'];
+        const directories = ['.secret', '.kube', 'blog', 'github', 'projects'];
+        const schemes = ['frappe', 'mocha', 'latte', 'macchiato'];
+        
+        // Color configurations for each scheme
+        const schemeConfigs = {
+            'frappe': {
+                '--bg-color': '#303446',
+                '--text-color': '#c6d0f5',
+                '--accent-color': '#f4b8e4',
+                '--secondary-color': '#ca9ee6',
+                '--terminal-header': '#292c3c',
+                '--link-color': '#8caaee'
+            },
+            'mocha': {
+                '--bg-color': '#1e1e2e',
+                '--text-color': '#cdd6f4',
+                '--accent-color': '#f5c2e7',
+                '--secondary-color': '#cba6f7',
+                '--terminal-header': '#181825',
+                '--link-color': '#89b4fa'
+            },
+            'latte': {
+                '--bg-color': '#eff1f5',
+                '--text-color': '#4c4f69',
+                '--accent-color': '#ea76cb',
+                '--secondary-color': '#8839ef',
+                '--terminal-header': '#e6e9ef',
+                '--link-color': '#1e66f5'
+            },
+            'macchiato': {
+                '--bg-color': '#24273a',
+                '--text-color': '#cad3f5',
+                '--accent-color': '#f5bde6',
+                '--secondary-color': '#c6a0f6',
+                '--terminal-header': '#1e2030',
+                '--link-color': '#8aadf4'
+            }
+        };
+        
         // Terminal typing effect
         const typingElements = document.querySelectorAll('.typing-effect');
         
@@ -130,50 +174,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     const currentInput = input.value.trim();
                     const words = currentInput.split(' ');
                     const currentWord = words[words.length - 1];
-                    
-                    // List of available commands
-                    const commands = ['help', 'about', 'echo', 'clear', 'date', 'ls', 'cd', 'yes', 'cat', 'ifconfig', 'upower', 'scheme'];
-                    
-                    // List of available files/directories
-                    const files = ['blog.md', 'github.txt', 'infra.tf', 'status.sh'];
-                    const directories = ['.secret', '.kube', 'blog', 'github', 'projects'];
-                    const schemes = ['frappe', 'mocha', 'latte', 'macchiato'];
-                    
-                    // Color configurations for each scheme
-                    const schemeConfigs = {
-                        'frappe': {
-                            '--bg-color': '#303446',
-                            '--text-color': '#c6d0f5',
-                            '--accent-color': '#f4b8e4',
-                            '--secondary-color': '#ca9ee6',
-                            '--terminal-header': '#292c3c',
-                            '--link-color': '#8caaee'
-                        },
-                        'mocha': {
-                            '--bg-color': '#1e1e2e',
-                            '--text-color': '#cdd6f4',
-                            '--accent-color': '#f5c2e7',
-                            '--secondary-color': '#cba6f7',
-                            '--terminal-header': '#181825',
-                            '--link-color': '#89b4fa'
-                        },
-                        'latte': {
-                            '--bg-color': '#eff1f5',
-                            '--text-color': '#4c4f69',
-                            '--accent-color': '#ea76cb',
-                            '--secondary-color': '#8839ef',
-                            '--terminal-header': '#e6e9ef',
-                            '--link-color': '#1e66f5'
-                        },
-                        'macchiato': {
-                            '--bg-color': '#24273a',
-                            '--text-color': '#cad3f5',
-                            '--accent-color': '#f5bde6',
-                            '--secondary-color': '#c6a0f6',
-                            '--terminal-header': '#1e2030',
-                            '--link-color': '#8aadf4'
-                        }
-                    };
                     
                     let completions = [];
                     let showAllOptions = false;
