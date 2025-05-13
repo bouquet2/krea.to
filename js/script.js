@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Accessibility mode functionality
     const accessibilityButton = document.getElementById('accessibility-button');
+    const luckyButton = document.getElementById('lucky-button');
     const body = document.body;
     const terminal = document.querySelector('.terminal');
     
@@ -70,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // List of available files/directories
         const files = ['blog.md', 'github.txt', 'infra.tf', 'status.sh'];
         const directories = ['.secret', '.kube', 'blog', 'github', 'projects'];
-        const schemes = ['mocha', 'frappe', 'latte', 'macchiato', 'gruvbox'];
+        const schemes = ['mocha', 'frappe', 'latte', 'macchiato', 'gruvbox', 'nord', 'tokyonight', 'monokai', 'onedark', 'solarized', 'kanagawa'];
         
         // Color configurations for each scheme
         const schemeConfigs = {
@@ -113,8 +114,76 @@ document.addEventListener('DOMContentLoaded', function() {
                 '--secondary-color': '#fabd2f',
                 '--terminal-header': '#1d2021',
                 '--link-color': '#83a598'
+            },
+            'nord': {
+                '--bg-color': '#2e3440',
+                '--text-color': '#eceff4',
+                '--accent-color': '#88c0d0',
+                '--secondary-color': '#81a1c1',
+                '--terminal-header': '#3b4252',
+                '--link-color': '#5e81ac'
+            },
+            'tokyonight': {
+                '--bg-color': '#1a1b26',
+                '--text-color': '#a9b1d6',
+                '--accent-color': '#bb9af7',
+                '--secondary-color': '#7aa2f7',
+                '--terminal-header': '#24283b',
+                '--link-color': '#7dcfff'
+            },
+            'monokai': {
+                '--bg-color': '#1B1E1C',
+                '--text-color': '#F5F5F5',
+                '--accent-color': '#FF1493',
+                '--secondary-color': '#AF87FF',
+                '--terminal-header': '#333333',
+                '--link-color': '#5FD7FF'
+            },
+            'onedark': {
+                '--bg-color': '#282c34',
+                '--text-color': '#abb2bf',
+                '--accent-color': '#c678dd',
+                '--secondary-color': '#61afef',
+                '--terminal-header': '#21252b',
+                '--link-color': '#e06c75'
+            },
+            'solarized': {
+                '--bg-color': '#002b36',
+                '--text-color': '#93a1a1',
+                '--accent-color': '#d33682',
+                '--secondary-color': '#268bd2',
+                '--terminal-header': '#073642',
+                '--link-color': '#2aa198'
+            },
+            'kanagawa': {
+                '--bg-color': '#1F1F28',
+                '--text-color': '#DCD7BA',
+                '--accent-color': '#957FB8',
+                '--secondary-color': '#7FB4CA',
+                '--terminal-header': '#16161D',
+                '--link-color': '#98BB6C'
             }
         };
+
+        // Lucky button functionality
+        luckyButton.addEventListener('click', function() {
+            // Get current scheme
+            const currentScheme = Object.entries(schemeConfigs).find(([_, config]) => {
+                return config['--bg-color'] === getComputedStyle(document.documentElement).getPropertyValue('--bg-color').trim();
+            })?.[0];
+
+            // Get available schemes excluding current one
+            const availableSchemes = schemes.filter(scheme => scheme !== currentScheme);
+            
+            // Randomly select a new scheme
+            const randomScheme = availableSchemes[Math.floor(Math.random() * availableSchemes.length)];
+            
+            // Apply the new scheme
+            const config = schemeConfigs[randomScheme];
+            for (const [property, value] of Object.entries(config)) {
+                document.documentElement.style.setProperty(property, value);
+            }
+        });
         
         // Terminal typing effect
         const typingElements = document.querySelectorAll('.typing-effect');
