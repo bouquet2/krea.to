@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // List of available files/directories
         const files = ['blog.md', 'github.txt', 'infra.tf', 'status.sh'];
         const directories = ['.secret', '.kube', 'blog', 'github', 'projects'];
-        const schemes = ['frappe', 'mocha', 'latte', 'macchiato'];
+        const schemes = ['mocha', 'frappe', 'latte', 'macchiato'];
         
         // Color configurations for each scheme
         const schemeConfigs = {

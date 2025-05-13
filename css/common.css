@@ -8,12 +8,12 @@
 }
 
 :root {
-    --bg-color: #303446;
-    --text-color: #c6d0f5;
-    --accent-color: #f4b8e4;
-    --secondary-color: #ca9ee6;
-    --terminal-header: #292c3c;
-    --link-color: #8caaee;
+    --bg-color: #1e1e2e;
+    --text-color: #cdd6f4;
+    --accent-color: #f5c2e7;
+    --secondary-color: #cba6f7;
+    --terminal-header: #181825;
+    --link-color: #89b4fa;
 }
 
 /* Light theme */
