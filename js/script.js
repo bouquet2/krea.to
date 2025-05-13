@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // List of available files/directories
         const files = ['blog.md', 'github.txt', 'infra.tf', 'status.sh'];
         const directories = ['.secret', '.kube', 'blog', 'github', 'projects'];
-        const schemes = ['mocha', 'frappe', 'latte', 'macchiato'];
+        const schemes = ['mocha', 'frappe', 'latte', 'macchiato', 'gruvbox'];
         
         // Color configurations for each scheme
         const schemeConfigs = {
@@ -105,6 +105,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 '--secondary-color': '#c6a0f6',
                 '--terminal-header': '#1e2030',
                 '--link-color': '#8aadf4'
+            },
+            'gruvbox': {
+                '--bg-color': '#282828',
+                '--text-color': '#ebdbb2',
+                '--accent-color': '#b8bb26',
+                '--secondary-color': '#fabd2f',
+                '--terminal-header': '#1d2021',
+                '--link-color': '#83a598'
             }
         };
         
