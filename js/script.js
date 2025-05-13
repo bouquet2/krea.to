@@ -124,6 +124,92 @@ document.addEventListener('DOMContentLoaded', function() {
                         handleCommand(command);
                     }
                     input.value = '';
+                } else if (e.key === 'Tab') {
+                    e.preventDefault(); // Prevent default tab behavior
+                    
+                    const currentInput = input.value.trim();
+                    const words = currentInput.split(' ');
+                    const currentWord = words[words.length - 1];
+                    
+                    // List of available commands
+                    const commands = ['help', 'about', 'echo', 'clear', 'date', 'ls', 'cd', 'yes', 'cat', 'ifconfig', 'upower', 'scheme'];
+                    
+                    // List of available files/directories
+                    const files = ['blog.md', 'github.txt', 'infra.tf', 'status.sh'];
+                    const directories = ['.secret', '.kube', 'blog', 'github', 'projects'];
+                    const schemes = ['frappe', 'mocha', 'latte', 'macchiato'];
+                    
+                    // Color configurations for each scheme
+                    const schemeConfigs = {
+                        'frappe': {
+                            '--bg-color': '#303446',
+                            '--text-color': '#c6d0f5',
+                            '--accent-color': '#f4b8e4',
+                            '--secondary-color': '#ca9ee6',
+                            '--terminal-header': '#292c3c',
+                            '--link-color': '#8caaee'
+                        },
+                        'mocha': {
+                            '--bg-color': '#1e1e2e',
+                            '--text-color': '#cdd6f4',
+                            '--accent-color': '#f5c2e7',
+                            '--secondary-color': '#cba6f7',
+                            '--terminal-header': '#181825',
+                            '--link-color': '#89b4fa'
+                        },
+                        'latte': {
+                            '--bg-color': '#eff1f5',
+                            '--text-color': '#4c4f69',
+                            '--accent-color': '#ea76cb',
+                            '--secondary-color': '#8839ef',
+                            '--terminal-header': '#e6e9ef',
+                            '--link-color': '#1e66f5'
+                        },
+                        'macchiato': {
+                            '--bg-color': '#24273a',
+                            '--text-color': '#cad3f5',
+                            '--accent-color': '#f5bde6',
+                            '--secondary-color': '#c6a0f6',
+                            '--terminal-header': '#1e2030',
+                            '--link-color': '#8aadf4'
+                        }
+                    };
+                    
+                    let completions = [];
+                    
+                    // If we're completing the first word (command)
+                    if (words.length === 1) {
+                        completions = commands.filter(cmd => cmd.startsWith(currentWord));
+                    } 
+                    // If we're completing after 'cd', 'cat', or 'scheme'
+                    else if (words.length === 2) {
+                        if (words[0] === 'cd') {
+                            completions = directories.filter(dir => dir.startsWith(currentWord));
+                        } else if (words[0] === 'cat') {
+                            completions = files.filter(file => file.startsWith(currentWord));
+                        } else if (words[0] === 'scheme') {
+                            completions = schemes.filter(scheme => scheme.startsWith(currentWord));
+                        }
+                    }
+                    
+                    // If we have exactly one completion, use it
+                    if (completions.length === 1) {
+                        words[words.length - 1] = completions[0];
+                        input.value = words.join(' ') + (words[0] === 'cd' ? '/' : ' ');
+                    } 
+                    // If we have multiple completions, show them
+                    else if (completions.length > 1) {
+                        const newSection = document.createElement('div');
+                        newSection.className = 'terminal-section';
+                        newSection.innerHTML = `
+                            <div class="prompt">kreato@akiri:${currentDir}$ <span>${currentInput}</span></div>
+                            <div class="output"><p>${completions.join('  ')}</p></div>
+                        `;
+                        
+                        // Insert the completions before the last section
+                        const lastSection = document.querySelector('.terminal-section:last-child');
+                        terminalContent.insertBefore(newSection, lastSection);
+                    }
                 }
             });
 
@@ -163,89 +249,152 @@ document.addEventListener('DOMContentLoaded', function() {
         function handleCommand(command) {
             let response = '';
             
-            // Simple command parsing
+            // Check for command prefixes first
             if (command.startsWith('echo ')) {
                 response = command.substring(5);
-            } else if (command === 'help') {
-                response = 'Available commands: help, about, echo [text], clear, date, ls, cd [dir], yes, cat [file], ifconfig, upower';
-            } else if (command === 'about') {
-                response = 'Kreato - Tinkerer and Developer';
-            } else if (command === 'clear') {
-                // Clear the terminal except for the last prompt
-                const sections = document.querySelectorAll('.terminal-section');
-                for (let i = 0; i < sections.length - 1; i++) {
-                    sections[i].style.display = 'none';
-                }
-                return;
-            } else if (command === 'date') {
-                response = new Date().toString();
-            } else if (command === 'yes') {
-                response = 'y';
-            } else if (command === 'yes no') {
-                response = 'Do you have nothing else to do other than look for things in this site? Your life must be boring.';
-            } else if (command === 'ls') {
-                if (currentDir === '.kube') {
-                    response = `<div class="links">
-                        <a href="#" class="file">config</a>
-                    </div>`;
-                } else {
-                    response = `<div class="links">
-                        <a href="#" class="folder">.secret/</a>
-                        <a href="#" class="folder">.kube/</a>
-                        <a href="blog/index.html" class="file">blog.md</a>
-                        <a href="https://github.com/kreatoo" target="_blank" class="file">github.txt</a>
-                        <a href="https://github.com/kreatoo/bouquet2" target="_blank" class="file">infra.tf</a>
-                        <a href="https://status.krea.to" target="_blank" class="file">status.sh</a>
-                    </div>`;
-                }
             } else if (command.startsWith('cd ')) {
                 const dir = command.substring(3).trim();
-                if (dir === '~') {
-                    currentDir = '~';
-                    response = 'Changed to home directory';
-                } else if (dir === 'blog' || dir === 'github' || dir === 'projects') {
-                    currentDir = dir;
-                    response = `Changed directory to ${dir}`;
-                } else if (dir === '.secret') {
-                    window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
-                    return;
-                } else if (dir === '.kube') {
-                    currentDir = '.kube';
-                    response = `<div class="links">
-                        <a href="#" class="file">config</a>
-                    </div>`;
-                } else if (dir === '/') {
-                    response = `cd: i ate it`;
-                } else if (dir === '..') {
-                    response = `Where is bro going?`;
-                } else {
-                    response = `cd: no such directory: ${dir}`;
+                switch (dir) {
+                    case '~':
+                        currentDir = '~';
+                        response = 'Changed to home directory';
+                        break;
+                    case 'blog':
+                    case 'github':
+                    case 'projects':
+                        currentDir = dir;
+                        response = `Changed directory to ${dir}`;
+                        break;
+                    case '.secret':
+                        window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+                        return;
+                    case '.kube':
+                        currentDir = '.kube';
+                        response = `<div class="links">
+                            <a href="#" class="file">config</a>
+                        </div>`;
+                        break;
+                    case '/':
+                        response = `cd: i ate it`;
+                        break;
+                    case '..':
+                        response = `Where is bro going?`;
+                        break;
+                    default:
+                        response = `cd: no such directory: ${dir}`;
                 }
                 updatePrompts();
             } else if (command.startsWith('cat ')) {
                 const file = command.substring(4).trim();
-                if (file === 'config' && currentDir === '.kube') {
-                    window.location.href = 'https://www.youtube.com/watch?v=9wvEwPLcLcA';
-                    return;
-                } else if (file === 'blog.md') {
-                    response = 'Redirecting to blog...';
-                    setTimeout(() => {
-                        window.location.href = 'blog/index.html';
-                    }, 1000);
-                } else if (file === 'github.txt') {
-                    response = 'Redirecting to GitHub...';
-                    setTimeout(() => {
-                        window.location.href = 'https://github.com/kreatoo';
-                    }, 1000);
-                } else {
-                    response = `cat: ${file}: No such file or directory`;
+                switch (file) {
+                    case 'config':
+                        if (currentDir === '.kube') {
+                            window.location.href = 'https://www.youtube.com/watch?v=9wvEwPLcLcA';
+                            return;
+                        }
+                        response = `cat: ${file}: No such file or directory`;
+                        break;
+                    case 'blog.md':
+                        response = 'Redirecting to blog...';
+                        setTimeout(() => {
+                            window.location.href = 'blog/index.html';
+                        }, 1000);
+                        break;
+                    case 'github.txt':
+                        response = 'Redirecting to GitHub...';
+                        setTimeout(() => {
+                            window.location.href = 'https://github.com/kreatoo';
+                        }, 1000);
+                        break;
+                    case 'infra.tf':
+                        response = 'Redirecting to infrastructure repository...';
+                        setTimeout(() => {
+                            window.location.href = 'https://github.com/kreatoo/bouquet2';
+                        }, 1000);
+                        break;
+                    case 'status.sh':
+                        response = 'Redirecting to status page...';
+                        setTimeout(() => {
+                            window.location.href = 'https://status.krea.to';
+                        }, 1000);
+                        break;
+                    default:
+                        response = `cat: ${file}: No such file or directory`;
                 }
-            } else if (command === 'ifconfig') {
-                response = `<div class="gif-output"><img src="assets/out.gif" alt="Network configuration animation" style="max-width: 100%; height: auto;"></div>`;
-            } else if (command === 'upower') {
-                response = `<div class="gif-output"><img src="assets/discord-this.gif" alt="Discord this animation" style="max-width: 100%; height: auto;"></div>`;
             } else {
-                response = `Command not found: ${command}`;
+                switch (command) {
+                    case 'help':
+                        response = 'Available commands: help, about, echo [text], clear, date, ls, cd [dir], yes, cat [file], ifconfig, upower, scheme [theme]';
+                        break;
+                    case 'about':
+                        response = 'Kreato - Tinkerer and Developer';
+                        break;
+                    case 'clear':
+                        // Clear the terminal except for the last prompt
+                        const sections = document.querySelectorAll('.terminal-section');
+                        for (let i = 0; i < sections.length - 1; i++) {
+                            sections[i].style.display = 'none';
+                        }
+                        return;
+                    case 'date':
+                        response = new Date().toString();
+                        break;
+                    case 'yes':
+                        response = 'y';
+                        break;
+                    case 'yes no':
+                        response = 'Do you have nothing else to do other than look for things in this site? Your life must be boring.';
+                        break;
+                    case 'yes please':
+                        response = '🥺'
+                        break;
+                    case 'ls':
+                        if (currentDir === '.kube') {
+                            response = `<div class="links">
+                                <a href="#" class="file">config</a>
+                            </div>`;
+                        } else {
+                            response = `<div class="links">
+                                <a href="#" class="folder">.secret/</a>
+                                <a href="#" class="folder">.kube/</a>
+                                <a href="blog/index.html" class="file">blog.md</a>
+                                <a href="https://github.com/kreatoo" target="_blank" class="file">github.txt</a>
+                                <a href="https://github.com/kreatoo/bouquet2" target="_blank" class="file">infra.tf</a>
+                                <a href="https://status.krea.to" target="_blank" class="file">status.sh</a>
+                            </div>`;
+                        }
+                        break;
+                    case 'ifconfig':
+                        response = `<div class="gif-output"><img src="assets/out.gif" alt="Network configuration animation" style="max-width: 100%; height: auto;"></div>`;
+                        break;
+                    case 'upower':
+                        response = `<div class="gif-output"><img src="assets/discord-this.gif" alt="Discord this animation" style="max-width: 100%; height: auto;"></div>`;
+                        break;
+                    case 'scheme':
+                        response = `Available schemes: ${schemes.map((s, i) => i === 0 ? `${s} (default)` : s).join(', ')}`;
+                        break;
+                    default:
+                        if (command.startsWith('scheme ')) {
+                            const scheme = command.substring(7).trim();
+                            
+                            // Check if the scheme exists in our schemes array
+                            if (schemes.includes(scheme)) {
+                                // Apply the selected scheme
+                                const config = schemeConfigs[scheme];
+                                for (const [property, value] of Object.entries(config)) {
+                                    document.documentElement.style.setProperty(property, value);
+                                }
+                                
+                                response = scheme === schemes[0] ? 
+                                    `Switched to ${scheme} scheme (default)` : 
+                                    `Switched to ${scheme} scheme`;
+                            } else {
+                                response = `Unknown scheme: ${scheme}. Use 'scheme' to see available schemes.`;
+                            }
+                        } else {
+                            response = `Command not found: ${command}`;
+                        }
+                }
             }
             
             // Create a new section with the response
