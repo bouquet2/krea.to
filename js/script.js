@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (command.startsWith('echo ')) {
                 response = command.substring(5);
             } else if (command === 'help') {
-                response = 'Available commands: help, about, echo [text], clear, date, ls, cd [dir], yes, cat [file], ifconfig';
+                response = 'Available commands: help, about, echo [text], clear, date, ls, cd [dir], yes, cat [file], ifconfig, upower';
             } else if (command === 'about') {
                 response = 'Kreato - Tinkerer and Developer';
             } else if (command === 'clear') {
@@ -242,6 +242,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } else if (command === 'ifconfig') {
                 response = `<div class="gif-output"><img src="assets/out.gif" alt="Network configuration animation" style="max-width: 100%; height: auto;"></div>`;
+            } else if (command === 'upower') {
+                response = `<div class="gif-output"><img src="assets/discord-this.gif" alt="Discord this animation" style="max-width: 100%; height: auto;"></div>`;
             } else {
                 response = `Command not found: ${command}`;
             }
