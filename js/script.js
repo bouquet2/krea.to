@@ -176,6 +176,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     };
                     
                     let completions = [];
+                    let showAllOptions = false;
+                    
+                    // Check if this is a double tab (within 500ms of the last tab)
+                    const now = Date.now();
+                    if (input.lastTabTime && now - input.lastTabTime < 500) {
+                        showAllOptions = true;
+                    }
+                    input.lastTabTime = now;
                     
                     // If we're completing the first word (command)
                     if (words.length === 1) {
@@ -193,17 +201,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     // If we have exactly one completion, use it
-                    if (completions.length === 1) {
+                    if (completions.length === 1 && !showAllOptions) {
                         words[words.length - 1] = completions[0];
                         input.value = words.join(' ') + (words[0] === 'cd' ? '/' : ' ');
                     } 
-                    // If we have multiple completions, show them
-                    else if (completions.length > 1) {
+                    // If we have multiple completions or it's a double tab, show them
+                    else if (completions.length > 1 || showAllOptions) {
+                        // For double tab, show all available options for the command
+                        let optionsToShow = completions;
+                        if (showAllOptions) {
+                            if (words[0] === 'scheme') {
+                                optionsToShow = schemes;
+                            } else if (words[0] === 'cd') {
+                                optionsToShow = directories;
+                            } else if (words[0] === 'cat') {
+                                optionsToShow = files;
+                            } else if (words.length === 1) {
+                                optionsToShow = commands;
+                            }
+                        }
+                        
                         const newSection = document.createElement('div');
                         newSection.className = 'terminal-section';
                         newSection.innerHTML = `
                             <div class="prompt">kreato@akiri:${currentDir}$ <span>${currentInput}</span></div>
-                            <div class="output"><p>${completions.join('  ')}</p></div>
+                            <div class="output"><p>${optionsToShow.join('  ')}</p></div>
                         `;
                         
                         // Insert the completions before the last section
