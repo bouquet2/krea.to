@@ -12,7 +12,7 @@ After a short while, I was annoyed with the issues with NixOS such as not being 
 
 While most of my friends encouraged me to try out Nix again, I was hesitant to try it again because it doesn't fit to my workflow. Well, that changed in 2024.
 
-I have finally replaced my old laptop with a Macbook Pro (Nov 2024). This meant I had to use macOS for a good while until Asahi becomes to the new Macbook's. Until then, I decided to tinker with the whole package management situation in macOS. It was at this time that I discovered nix-darwin. It looked like the perfect amount of Nix that was sufficient in my workflow, so I've decided to try it. I've sticked with it since, and believe it is pretty sufficient for most people.
+I have finally replaced my old laptop with a Macbook Pro (Nov 2024). This meant I had to use macOS for a good while until Asahi comes to the new Macbook's. Until then, I decided to tinker with the whole package management situation in macOS. It was at this time that I discovered nix-darwin. It looked like the perfect amount of Nix that was sufficient in my workflow, so I've decided to try it. I've sticked with it since, and believe it is pretty sufficient for most people.
 
 Now that the history is out of the way, here is how to set this whole thing up.
 
