@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let isTerminalActive = false;
         
         // List of available commands
+        // 'popo' command is intentionally omitted to hide from tab completion/help
         const commands = ['help', 'about', 'echo', 'clear', 'date', 'ls', 'cd', 'yes', 'cat', 'ifconfig', 'upower', 'scheme'];
         
         // List of available files/directories
@@ -422,6 +423,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } else {
                 switch (command) {
+                    case 'popo':
+                        response = '<img src="assets/popo.webp" alt="popo" style="max-width:300px;max-height:300px;">';
+                        break;
                     case 'help':
                         response = 'Available commands: help, about, echo [text], clear, date, ls, cd [dir], yes, cat [file], ifconfig, upower, scheme [theme]';
                         break;
