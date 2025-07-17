@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (imageId) {
                     songHtml += `
                         <div class="song-image">
-                            <img src="https://fm.krea.to/images/default/${imageId}" alt="Album cover" style="max-width: 100px; height: auto; border-radius: 8px;">
+                            <img src="https://fm.krea.to/images/large/${imageId}" alt="Album cover" style="max-width: 100px; height: auto; border-radius: 8px;">
                         </div>
                     `;
                 }
