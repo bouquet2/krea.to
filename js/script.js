@@ -48,11 +48,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 songHtml += '</div>';
                 songContent.innerHTML = songHtml;
             } else {
-                document.getElementById('song-content').innerHTML = '<p>No recent listens found.</p>';
+                // Hide the entire section if no songs found
+                const lastSongSection = document.querySelector('.terminal-section:nth-last-child(2)');
+                if (lastSongSection) {
+                    lastSongSection.style.display = 'none';
+                }
             }
         } catch (error) {
             console.error('Error fetching last song:', error);
-            document.getElementById('song-content').innerHTML = '<p>Error loading last song.</p>';
+            // Hide the entire section if there's an error
+            const lastSongSection = document.querySelector('.terminal-section:nth-last-child(2)');
+            if (lastSongSection) {
+                lastSongSection.style.display = 'none';
+            }
         }
     }
     
