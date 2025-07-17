@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     async function fetchLastSong() {
         try {
             // First, get the last listened song
-            const response = await fetch('https://fm.krea.to/apis/web/v1/listens?period=all_time&limit=1&artist_id=undefined&album_id=undefined&track_id=undefined&page=undefined');
+            const response = await fetch('https://crossorigin.me/https://fm.krea.to/apis/web/v1/listens?period=all_time&limit=1&artist_id=undefined&album_id=undefined&track_id=undefined&page=undefined');
             const data = await response.json();
             
             if (data.items && data.items.length > 0) {
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const trackId = lastSong.track.id;
                 
                 // Get detailed track information
-                const trackResponse = await fetch(`https://fm.krea.to/apis/web/v1/track?id=${trackId}`);
+                const trackResponse = await fetch(`https://crossorigin.me/https://fm.krea.to/apis/web/v1/track?id=${trackId}`);
                 const trackData = await trackResponse.json();
                 
                 const songContent = document.getElementById('song-content');
