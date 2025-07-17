@@ -3,16 +3,20 @@ document.addEventListener('DOMContentLoaded', function() {
     async function fetchLastSong() {
         try {
             // First, get the last listened song
-            const response = await fetch('https://crossorigin.me/https://fm.krea.to/apis/web/v1/listens?period=all_time&limit=1&artist_id=undefined&album_id=undefined&track_id=undefined&page=undefined');
-            const data = await response.json();
+            const apiUrl = 'https://fm.krea.to/apis/web/v1/listens?period=all_time&limit=1&artist_id=undefined&album_id=undefined&track_id=undefined&page=undefined';
+            const response = await fetch(`https://whateverorigin.org/get?url=${encodeURIComponent(apiUrl)}`);
+            const proxyData = await response.json();
+            const data = JSON.parse(proxyData.contents);
             
             if (data.items && data.items.length > 0) {
                 const lastSong = data.items[0];
                 const trackId = lastSong.track.id;
                 
                 // Get detailed track information
-                const trackResponse = await fetch(`https://crossorigin.me/https://fm.krea.to/apis/web/v1/track?id=${trackId}`);
-                const trackData = await trackResponse.json();
+                const trackUrl = `https://fm.krea.to/apis/web/v1/track?id=${trackId}`;
+                const trackResponse = await fetch(`https://whateverorigin.org/get?url=${encodeURIComponent(trackUrl)}`);
+                const trackProxyData = await trackResponse.json();
+                const trackData = JSON.parse(trackProxyData.contents);
                 
                 const songContent = document.getElementById('song-content');
                 const artistName = lastSong.track.artists && lastSong.track.artists.length > 0 
