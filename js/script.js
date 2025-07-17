@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 let songHtml = `
                     <div class="song-info">
                         <div class="song-details">
-                            <h3>${lastSong.track.title}</h3>
+                            <h3><a href="https://fm.krea.to/track/${trackId}" target="_blank" style="color: inherit; text-decoration: none;">${lastSong.track.title}</a></h3>
                             <p>by ${artistName}</p>
                             <p>Listened: ${timeListened}s / ${duration}s</p>
                             <p>Last played: ${new Date(lastSong.time).toLocaleString()}</p>
