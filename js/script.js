@@ -1,4 +1,60 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Fetch and display last listened song
+    async function fetchLastSong() {
+        try {
+            // First, get the last listened song
+            const response = await fetch('https://fm.krea.to/apis/web/v1/listens?period=all_time&limit=1&artist_id=undefined&album_id=undefined&track_id=undefined&page=undefined');
+            const data = await response.json();
+            
+            if (data.items && data.items.length > 0) {
+                const lastSong = data.items[0];
+                const trackId = lastSong.track.id;
+                
+                // Get detailed track information
+                const trackResponse = await fetch(`https://fm.krea.to/apis/web/v1/track?id=${trackId}`);
+                const trackData = await trackResponse.json();
+                
+                const songContent = document.getElementById('song-content');
+                const artistName = lastSong.track.artists && lastSong.track.artists.length > 0 
+                    ? lastSong.track.artists[0].name 
+                    : 'Unknown Artist';
+                
+                const timeListened = trackData.time_listened || 0;
+                const duration = trackData.duration || 0;
+                const imageId = trackData.image;
+                
+                let songHtml = `
+                    <div class="song-info">
+                        <div class="song-details">
+                            <h3>${lastSong.track.title}</h3>
+                            <p>by ${artistName}</p>
+                            <p>Listened: ${timeListened}s / ${duration}s</p>
+                            <p>Last played: ${new Date(lastSong.time).toLocaleString()}</p>
+                        </div>
+                `;
+                
+                if (imageId) {
+                    songHtml += `
+                        <div class="song-image">
+                            <img src="https://fm.krea.to/images/small/${imageId}" alt="Album cover" style="max-width: 100px; height: auto; border-radius: 8px;">
+                        </div>
+                    `;
+                }
+                
+                songHtml += '</div>';
+                songContent.innerHTML = songHtml;
+            } else {
+                document.getElementById('song-content').innerHTML = '<p>No recent listens found.</p>';
+            }
+        } catch (error) {
+            console.error('Error fetching last song:', error);
+            document.getElementById('song-content').innerHTML = '<p>Error loading last song.</p>';
+        }
+    }
+    
+    // Fetch the last song when page loads
+    fetchLastSong();
+
     // Accessibility mode functionality
     const accessibilityButton = document.getElementById('accessibility-button');
     const luckyButton = document.getElementById('lucky-button');
