@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 songContent.innerHTML = songHtml;
             } else {
                 // Hide the entire section if no songs found
-                const lastSongSection = document.querySelector('.terminal-section:nth-last-child(2)');
+                const lastSongSection = document.getElementById('last-song-section');
                 if (lastSongSection) {
                     lastSongSection.style.display = 'none';
                 }
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Error fetching last song:', error);
             // Hide the entire section if there's an error
-            const lastSongSection = document.querySelector('.terminal-section:nth-last-child(2)');
+            const lastSongSection = document.getElementById('last-song-section');
             if (lastSongSection) {
                 lastSongSection.style.display = 'none';
             }
