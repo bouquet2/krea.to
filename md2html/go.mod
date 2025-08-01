@@ -6,7 +6,7 @@ toolchain go1.24.5
 
 require (
 	github.com/alecthomas/chroma/v2 v2.19.0
-	github.com/gomarkdown/markdown v0.0.0-20250311123330-531bef5e742b
+	github.com/gomarkdown/markdown v0.0.0-20250731182530-5d03d1963446
 	github.com/microcosm-cc/bluemonday v1.0.27
 )
 
