@@ -2,7 +2,7 @@ module github.com/kreatoo/md2html
 
 go 1.23.0
 
-toolchain go1.24.5
+toolchain go1.24.6
 
 require (
 	github.com/alecthomas/chroma/v2 v2.20.0
