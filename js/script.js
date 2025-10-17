@@ -2,61 +2,301 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Accessibility mode functionality
     const accessibilityButton = document.getElementById('accessibility-button');
+    const backgroundButton = document.getElementById('background-button');
+    const transparencyButton = document.getElementById('transparency-button');
     const luckyButton = document.getElementById('lucky-button');
+    const themeSelect = document.getElementById('theme-select');
+    const fontSizeRange = document.getElementById('font-size-range');
+    const fontSizeValue = document.getElementById('font-size-value');
     const body = document.body;
     const terminal = document.querySelector('.terminal');
+    
+    // Color scheme configurations
+    const schemeConfigs = {
+        'frappe': {
+            '--bg-color': '#303446',
+            '--text-color': '#c6d0f5',
+            '--accent-color': '#f4b8e4',
+            '--secondary-color': '#ca9ee6',
+            '--terminal-header': '#292c3c',
+            '--link-color': '#8caaee'
+        },
+        'mocha': {
+            '--bg-color': '#1e1e2e',
+            '--text-color': '#cdd6f4',
+            '--accent-color': '#f5c2e7',
+            '--secondary-color': '#cba6f7',
+            '--terminal-header': '#181825',
+            '--link-color': '#89b4fa'
+        },
+        'latte': {
+            '--bg-color': '#eff1f5',
+            '--text-color': '#4c4f69',
+            '--accent-color': '#ea76cb',
+            '--secondary-color': '#8839ef',
+            '--terminal-header': '#e6e9ef',
+            '--link-color': '#1e66f5'
+        },
+        'macchiato': {
+            '--bg-color': '#24273a',
+            '--text-color': '#cad3f5',
+            '--accent-color': '#f5bde6',
+            '--secondary-color': '#c6a0f6',
+            '--terminal-header': '#1e2030',
+            '--link-color': '#8aadf4'
+        },
+        'gruvbox': {
+            '--bg-color': '#282828',
+            '--text-color': '#ebdbb2',
+            '--accent-color': '#b8bb26',
+            '--secondary-color': '#fabd2f',
+            '--terminal-header': '#1d2021',
+            '--link-color': '#83a598'
+        },
+        'nord': {
+            '--bg-color': '#2e3440',
+            '--text-color': '#eceff4',
+            '--accent-color': '#88c0d0',
+            '--secondary-color': '#81a1c1',
+            '--terminal-header': '#3b4252',
+            '--link-color': '#5e81ac'
+        },
+        'tokyonight': {
+            '--bg-color': '#1a1b26',
+            '--text-color': '#a9b1d6',
+            '--accent-color': '#bb9af7',
+            '--secondary-color': '#7aa2f7',
+            '--terminal-header': '#24283b',
+            '--link-color': '#7dcfff'
+        },
+        'monokai': {
+            '--bg-color': '#1B1E1C',
+            '--text-color': '#F5F5F5',
+            '--accent-color': '#FF1493',
+            '--secondary-color': '#AF87FF',
+            '--terminal-header': '#333333',
+            '--link-color': '#5FD7FF'
+        },
+        'onedark': {
+            '--bg-color': '#282c34',
+            '--text-color': '#abb2bf',
+            '--accent-color': '#c678dd',
+            '--secondary-color': '#61afef',
+            '--terminal-header': '#21252b',
+            '--link-color': '#e06c75'
+        },
+        'solarized': {
+            '--bg-color': '#002b36',
+            '--text-color': '#93a1a1',
+            '--accent-color': '#d33682',
+            '--secondary-color': '#268bd2',
+            '--terminal-header': '#073642',
+            '--link-color': '#2aa198'
+        },
+        'kanagawa': {
+            '--bg-color': '#1F1F28',
+            '--text-color': '#DCD7BA',
+            '--accent-color': '#957FB8',
+            '--secondary-color': '#7FB4CA',
+            '--terminal-header': '#16161D',
+            '--link-color': '#98BB6C'
+        }
+    };
+
+    const updateAccessibilityButtonState = () => {
+        if (!accessibilityButton) return;
+        const isEnabled = body.classList.contains('accessibility-mode');
+        const label = isEnabled ? 'Disable accessibility mode' : 'Enable accessibility mode';
+        accessibilityButton.setAttribute('aria-pressed', isEnabled ? 'true' : 'false');
+        accessibilityButton.setAttribute('aria-label', label);
+        accessibilityButton.setAttribute('title', label);
+    };
     
     // Check for saved accessibility preference
     const savedAccessibility = localStorage.getItem('accessibility');
     if (savedAccessibility === 'enabled') {
         body.classList.add('accessibility-mode');
         if (terminal) terminal.classList.add('accessibility-mode');
-        accessibilityButton.textContent = 'Standard Font';
+    }
+
+    updateAccessibilityButtonState();
+    
+    // Check for saved background preference
+    const savedBackground = localStorage.getItem('background');
+    if (savedBackground === 'disabled') {
+        body.classList.add('no-background');
+        backgroundButton.textContent = 'Show Background';
     } else {
-        accessibilityButton.textContent = 'Accessibility Mode';
+        backgroundButton.textContent = 'Hide Background';
+    }
+    
+    // Check for saved transparency preference
+    const savedTransparency = localStorage.getItem('transparency');
+    if (savedTransparency === 'disabled') {
+        if (terminal) terminal.classList.add('no-transparency');
+        transparencyButton.textContent = 'Enable Transparency';
+    } else {
+        transparencyButton.textContent = 'Disable Transparency';
     }
     
     // Toggle accessibility mode on button click
-    accessibilityButton.addEventListener('click', function() {
-        // Add a small delay to ensure smooth transition
+    if (accessibilityButton) {
+        accessibilityButton.addEventListener('click', function() {
+            // Add a small delay to ensure smooth transition
+            setTimeout(() => {
+                body.classList.toggle('accessibility-mode');
+                if (terminal) terminal.classList.toggle('accessibility-mode');
+
+                if (body.classList.contains('accessibility-mode')) {
+                    localStorage.setItem('accessibility', 'enabled');
+                } else {
+                    localStorage.setItem('accessibility', 'disabled');
+                }
+
+                updateAccessibilityButtonState();
+            }, 50);
+        });
+    }
+    
+    // Toggle background on button click
+    backgroundButton.addEventListener('click', function() {
+        // Add a small delay for better visual feedback
         setTimeout(() => {
-        body.classList.toggle('accessibility-mode');
-        if (terminal) terminal.classList.toggle('accessibility-mode');
-        
-        if (body.classList.contains('accessibility-mode')) {
-            localStorage.setItem('accessibility', 'enabled');
-            accessibilityButton.textContent = 'Standard Font';
-        } else {
-            localStorage.setItem('accessibility', 'disabled');
-            accessibilityButton.textContent = 'Accessibility Mode';
-        }
+            body.classList.toggle('no-background');
+            
+            if (body.classList.contains('no-background')) {
+                localStorage.setItem('background', 'disabled');
+                backgroundButton.textContent = 'Show Background';
+            } else {
+                localStorage.setItem('background', 'enabled');
+                backgroundButton.textContent = 'Hide Background';
+            }
         }, 50);
     });
+    
+    // Toggle transparency on button click
+    transparencyButton.addEventListener('click', function() {
+        if (terminal) {
+            terminal.classList.toggle('no-transparency');
+            
+            if (terminal.classList.contains('no-transparency')) {
+                localStorage.setItem('transparency', 'disabled');
+                transparencyButton.textContent = 'Enable Transparency';
+            } else {
+                localStorage.setItem('transparency', 'enabled');
+                transparencyButton.textContent = 'Disable Transparency';
+            }
+        }
+    });
+
+    // Font size control
+    const savedFontSize = localStorage.getItem('fontSize') || '1.1';
+    if (fontSizeRange) {
+        fontSizeRange.value = savedFontSize;
+        if (fontSizeValue) fontSizeValue.textContent = `${savedFontSize}em`;
+        body.style.fontSize = `${savedFontSize}em`;
+        
+        fontSizeRange.addEventListener('input', function() {
+            const size = this.value;
+            body.style.fontSize = `${size}em`;
+            if (fontSizeValue) fontSizeValue.textContent = `${size}em`;
+            localStorage.setItem('fontSize', size);
+        });
+    }
 
     // Theme toggle functionality
     const themeButton = document.getElementById('theme-button');
+
+    const updateThemeButtonState = () => {
+        if (!themeButton) return;
+        const isLight = body.classList.contains('light-theme');
+        const label = isLight ? 'Switch to dark mode' : 'Switch to light mode';
+        themeButton.setAttribute('aria-pressed', isLight ? 'true' : 'false');
+        themeButton.setAttribute('aria-label', label);
+        themeButton.setAttribute('title', label);
+    };
     
-    // Check for saved theme preference or default to dark
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
+    // Helper function to apply a color scheme
+    const applyScheme = (schemeName) => {
+        const config = schemeConfigs[schemeName];
+        if (config) {
+            for (const [property, value] of Object.entries(config)) {
+                document.documentElement.style.setProperty(property, value);
+            }
+            body.setAttribute('data-theme', schemeName);
+            localStorage.setItem('colorScheme', schemeName);
+            
+            // Update background image based on scheme
+            // Catppuccin variants use the same background
+            let backgroundImage = schemeName;
+            if (['mocha', 'frappe', 'macchiato', 'latte'].includes(schemeName)) {
+                backgroundImage = 'catppuccin-dark';
+            }
+            body.style.setProperty('--background-image', `url('../assets/${backgroundImage}.jpg')`);
+        }
+    };
+    
+    // Check for saved color scheme or default to mocha
+    const savedScheme = localStorage.getItem('colorScheme') || 'mocha';
+    if (themeSelect) {
+        themeSelect.value = savedScheme;
+    }
+    
+    // Set initial background image
+    let initialBackground = savedScheme;
+    if (['mocha', 'frappe', 'macchiato', 'latte'].includes(savedScheme)) {
+        initialBackground = 'catppuccin-dark';
+    }
+    body.style.setProperty('--background-image', `url('../assets/${initialBackground}.jpg')`);
+    
+    // Apply saved scheme
+    applyScheme(savedScheme);
+    
+    // Update light-theme class if using latte
+    if (savedScheme === 'latte') {
         body.classList.add('light-theme');
-        themeButton.textContent = 'Dark Mode';
-    } else {
-        themeButton.textContent = 'Light Mode';
+    }
+
+    updateThemeButtonState();
+    
+    // Theme select dropdown handler
+    if (themeSelect) {
+        themeSelect.addEventListener('change', function() {
+            const selectedScheme = this.value;
+            applyScheme(selectedScheme);
+            
+            // Update light-theme class based on scheme
+            if (selectedScheme === 'latte') {
+                body.classList.add('light-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.remove('light-theme');
+                localStorage.setItem('theme', 'dark');
+            }
+            
+            updateThemeButtonState();
+        });
     }
     
     // Toggle theme on button click
-    themeButton.addEventListener('click', function() {
-        body.classList.toggle('light-theme');
-        
-        if (body.classList.contains('light-theme')) {
-            localStorage.setItem('theme', 'light');
-            themeButton.textContent = 'Dark Mode';
-        } else {
-            localStorage.setItem('theme', 'dark');
-            themeButton.textContent = 'Light Mode';
-        }
-    });
+    if (themeButton) {
+        themeButton.addEventListener('click', function() {
+            if (body.classList.contains('light-theme')) {
+                // Switch to dark mode (mocha)
+                body.classList.remove('light-theme');
+                applyScheme('mocha');
+                localStorage.setItem('theme', 'dark');
+                if (themeSelect) themeSelect.value = 'mocha';
+            } else {
+                // Switch to light mode (latte)
+                body.classList.add('light-theme');
+                applyScheme('latte');
+                localStorage.setItem('theme', 'light');
+                if (themeSelect) themeSelect.value = 'latte';
+            }
+            updateThemeButtonState();
+        });
+    }
     
     // Only run terminal-specific code if terminal exists (main site)
     if (terminal) {
@@ -68,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // List of available commands
         // 'popo' command is intentionally omitted to hide from tab completion/help
-        const commands = ['help', 'about', 'echo', 'clear', 'date', 'ls', 'cd', 'yes', 'cat', 'ifconfig', 'upower', 'scheme'];
+        const commands = ['help', 'about', 'echo', 'clear', 'date', 'ls', 'cd', 'yes', 'cat', 'ifconfig', 'upower', 'scheme', 'background', 'transparency'];
         
         // List of available files/directories
         const files = ['blog.md', 'github.txt', 'infra.tf', 'status.sh'];
@@ -76,103 +316,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const schemes = ['mocha', 'frappe', 'latte', 'macchiato', 'gruvbox', 'nord', 'tokyonight', 'monokai', 'onedark', 'solarized', 'kanagawa'];
         
         // Color configurations for each scheme
-        const schemeConfigs = {
-            'frappe': {
-                '--bg-color': '#303446',
-                '--text-color': '#c6d0f5',
-                '--accent-color': '#f4b8e4',
-                '--secondary-color': '#ca9ee6',
-                '--terminal-header': '#292c3c',
-                '--link-color': '#8caaee'
-            },
-            'mocha': {
-                '--bg-color': '#1e1e2e',
-                '--text-color': '#cdd6f4',
-                '--accent-color': '#f5c2e7',
-                '--secondary-color': '#cba6f7',
-                '--terminal-header': '#181825',
-                '--link-color': '#89b4fa'
-            },
-            'latte': {
-                '--bg-color': '#eff1f5',
-                '--text-color': '#4c4f69',
-                '--accent-color': '#ea76cb',
-                '--secondary-color': '#8839ef',
-                '--terminal-header': '#e6e9ef',
-                '--link-color': '#1e66f5'
-            },
-            'macchiato': {
-                '--bg-color': '#24273a',
-                '--text-color': '#cad3f5',
-                '--accent-color': '#f5bde6',
-                '--secondary-color': '#c6a0f6',
-                '--terminal-header': '#1e2030',
-                '--link-color': '#8aadf4'
-            },
-            'gruvbox': {
-                '--bg-color': '#282828',
-                '--text-color': '#ebdbb2',
-                '--accent-color': '#b8bb26',
-                '--secondary-color': '#fabd2f',
-                '--terminal-header': '#1d2021',
-                '--link-color': '#83a598'
-            },
-            'nord': {
-                '--bg-color': '#2e3440',
-                '--text-color': '#eceff4',
-                '--accent-color': '#88c0d0',
-                '--secondary-color': '#81a1c1',
-                '--terminal-header': '#3b4252',
-                '--link-color': '#5e81ac'
-            },
-            'tokyonight': {
-                '--bg-color': '#1a1b26',
-                '--text-color': '#a9b1d6',
-                '--accent-color': '#bb9af7',
-                '--secondary-color': '#7aa2f7',
-                '--terminal-header': '#24283b',
-                '--link-color': '#7dcfff'
-            },
-            'monokai': {
-                '--bg-color': '#1B1E1C',
-                '--text-color': '#F5F5F5',
-                '--accent-color': '#FF1493',
-                '--secondary-color': '#AF87FF',
-                '--terminal-header': '#333333',
-                '--link-color': '#5FD7FF'
-            },
-            'onedark': {
-                '--bg-color': '#282c34',
-                '--text-color': '#abb2bf',
-                '--accent-color': '#c678dd',
-                '--secondary-color': '#61afef',
-                '--terminal-header': '#21252b',
-                '--link-color': '#e06c75'
-            },
-            'solarized': {
-                '--bg-color': '#002b36',
-                '--text-color': '#93a1a1',
-                '--accent-color': '#d33682',
-                '--secondary-color': '#268bd2',
-                '--terminal-header': '#073642',
-                '--link-color': '#2aa198'
-            },
-            'kanagawa': {
-                '--bg-color': '#1F1F28',
-                '--text-color': '#DCD7BA',
-                '--accent-color': '#957FB8',
-                '--secondary-color': '#7FB4CA',
-                '--terminal-header': '#16161D',
-                '--link-color': '#98BB6C'
-            }
-        };
-
         // Lucky button functionality
         luckyButton.addEventListener('click', function() {
-            // Get current scheme
-            const currentScheme = Object.entries(schemeConfigs).find(([_, config]) => {
-                return config['--bg-color'] === getComputedStyle(document.documentElement).getPropertyValue('--bg-color').trim();
-            })?.[0];
+            // Get current scheme from data attribute
+            const currentScheme = body.getAttribute('data-theme') || 'mocha';
 
             // Get available schemes excluding current one
             const availableSchemes = schemes.filter(scheme => scheme !== currentScheme);
@@ -181,10 +328,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const randomScheme = availableSchemes[Math.floor(Math.random() * availableSchemes.length)];
             
             // Apply the new scheme
-            const config = schemeConfigs[randomScheme];
-            for (const [property, value] of Object.entries(config)) {
-                document.documentElement.style.setProperty(property, value);
-            }
+            applyScheme(randomScheme);
+            
+            // Update dropdown and remove light-theme class
+            if (themeSelect) themeSelect.value = randomScheme;
+            body.classList.remove('light-theme');
         });
         
         // Terminal typing effect
@@ -428,7 +576,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         response = '<img src="assets/popo.webp" alt="popo" style="max-width:300px;max-height:300px;">';
                         break;
                     case 'help':
-                        response = 'Available commands: help, about, echo [text], clear, date, ls, cd [dir], yes, cat [file], ifconfig, upower, scheme [theme]';
+                        response = 'Available commands: help, about, echo [text], clear, date, ls, cd [dir], yes, cat [file], ifconfig, upower, scheme [theme], background [on|off], transparency [on|off]';
                         break;
                     case 'about':
                         response = 'Kreato - Tinkerer and Developer';
@@ -477,6 +625,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     case 'scheme':
                         response = `Available schemes: ${schemes.map((s, i) => i === 0 ? `${s} (default)` : s).join(', ')}`;
                         break;
+                    case 'background':
+                        response = 'Usage: background [on|off] - Toggle background image display';
+                        break;
+                    case 'transparency':
+                        response = 'Usage: transparency [on|off] - Toggle terminal transparency';
+                        break;
                     default:
                         if (command.startsWith('scheme ')) {
                             const scheme = command.substring(7).trim();
@@ -484,16 +638,53 @@ document.addEventListener('DOMContentLoaded', function() {
                             // Check if the scheme exists in our schemes array
                             if (schemes.includes(scheme)) {
                                 // Apply the selected scheme
-                                const config = schemeConfigs[scheme];
-                                for (const [property, value] of Object.entries(config)) {
-                                    document.documentElement.style.setProperty(property, value);
-                                }
+                                applyScheme(scheme);
+                                
+                                // Remove light-theme class and update dropdown when switching schemes
+                                body.classList.remove('light-theme');
+                                if (themeSelect) themeSelect.value = scheme;
                                 
                                 response = scheme === schemes[0] ? 
                                     `Switched to ${scheme} scheme (default)` : 
                                     `Switched to ${scheme} scheme`;
                             } else {
                                 response = `Unknown scheme: ${scheme}. Use 'scheme' to see available schemes.`;
+                            }
+                        } else if (command.startsWith('background ')) {
+                            const action = command.substring(11).trim();
+                            
+                            if (action === 'on') {
+                                setTimeout(() => {
+                                    body.classList.remove('no-background');
+                                }, 50);
+                                localStorage.setItem('background', 'enabled');
+                                backgroundButton.textContent = 'Hide Background';
+                                response = 'Background enabled';
+                            } else if (action === 'off') {
+                                setTimeout(() => {
+                                    body.classList.add('no-background');
+                                }, 50);
+                                localStorage.setItem('background', 'disabled');
+                                backgroundButton.textContent = 'Show Background';
+                                response = 'Background disabled';
+                            } else {
+                                response = `Invalid argument: ${action}. Use 'background on' or 'background off'`;
+                            }
+                        } else if (command.startsWith('transparency ')) {
+                            const action = command.substring(13).trim();
+                            
+                            if (action === 'on') {
+                                if (terminal) terminal.classList.remove('no-transparency');
+                                localStorage.setItem('transparency', 'enabled');
+                                transparencyButton.textContent = 'Disable Transparency';
+                                response = 'Transparency enabled';
+                            } else if (action === 'off') {
+                                if (terminal) terminal.classList.add('no-transparency');
+                                localStorage.setItem('transparency', 'disabled');
+                                transparencyButton.textContent = 'Enable Transparency';
+                                response = 'Transparency disabled';
+                            } else {
+                                response = `Invalid argument: ${action}. Use 'transparency on' or 'transparency off'`;
                             }
                         } else {
                             response = `Command not found: ${command}`;

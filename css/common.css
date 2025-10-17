@@ -8,6 +8,7 @@
 }
 
 :root {
+    /* Default dark theme (mocha) */
     --bg-color: #1e1e2e;
     --text-color: #cdd6f4;
     --accent-color: #f5c2e7;
@@ -16,27 +17,28 @@
     --link-color: #89b4fa;
 }
 
-/* Light theme */
+/* Light theme (latte) */
 body.light-theme {
-    --bg-color: #dee2ea;
+    --bg-color: #eff1f5;
     --text-color: #4c4f69;
     --accent-color: #ea76cb;
     --secondary-color: #8839ef;
-    --terminal-header: #dce0e8;
+    --terminal-header: #e6e9ef;
     --link-color: #1e66f5;
 }
 
 /* Light theme for browsers that support prefers-color-scheme */
 @media (prefers-color-scheme: light) {
     :root {
-        --bg-color: #dee2ea;
+        --bg-color: #eff1f5;
         --text-color: #4c4f69;
         --accent-color: #ea76cb;
         --secondary-color: #8839ef;
-        --terminal-header: #dce0e8;
+        --terminal-header: #e6e9ef;
         --link-color: #1e66f5;
     }
 }
+
 
 /* Common heading styles */
 h1, h2, h3, h4, h5, h6 {
@@ -79,44 +81,317 @@ pre code {
     font-size: 1.1em;
 }
 
-/* Theme toggle buttons */
-.theme-toggle {
+/* Hamburger menu */
+
+.quick-actions {
     position: fixed;
     bottom: 20px;
-    right: 20px;
+    right: 90px;
     display: flex;
-    gap: 10px;
+    gap: 12px;
     z-index: 100;
 }
 
-.theme-toggle button {
-    padding: 8px 16px;
+.icon-button {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(24, 24, 37, 0.75);
+    color: var(--secondary-color);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    padding: 0;
+    position: relative;
+}
+
+.icon-button:hover,
+.icon-button:focus-visible {
+    background-color: var(--secondary-color);
+    color: var(--bg-color);
+    transform: translateY(-2px);
+}
+
+.icon-button:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.icon-button .icon {
+    width: 22px;
+    height: 22px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s ease;
+}
+
+.theme-toggle .icon-sun {
+    opacity: 1;
+}
+
+.theme-toggle .icon-moon {
+    opacity: 0;
+}
+
+body.light-theme .theme-toggle .icon-sun {
+    opacity: 0;
+}
+
+body.light-theme .theme-toggle .icon-moon {
+    opacity: 1;
+}
+
+.icon-button svg {
+    stroke: currentColor;
+}
+
+/* Light theme icon buttons */
+body.light-theme .icon-button {
+    background-color: rgba(230, 233, 239, 0.9);
+    color: var(--secondary-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+body.light-theme .icon-button:hover,
+body.light-theme .icon-button:focus-visible {
+    background-color: var(--secondary-color);
+    color: var(--bg-color);
+}
+
+.hamburger-menu {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+.hamburger-icon {
+    width: 50px;
+    height: 50px;
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.hamburger-icon:hover {
+    background-color: var(--accent-color);
+    transform: scale(1.05);
+}
+
+.hamburger-icon span {
+    width: 20px;
+    height: 2px;
+    background-color: var(--bg-color);
+    transition: all 0.3s ease;
+    border-radius: 1px;
+}
+
+.hamburger-menu:hover .hamburger-icon span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger-menu:hover .hamburger-icon span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-menu:hover .hamburger-icon span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+}
+
+.menu-items {
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+    padding: 10px;
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.hamburger-menu:hover .menu-items {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.menu-items button {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    margin: 4px 0;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
-    transition: background-color 0.3s, color 0.3s, font-family 0.5s ease, font-size 0.5s ease;
+    transition: background-color 0.3s, color 0.3s;
     font-family: 'Pokemon DP Pro', sans-serif;
-    background-color: var(--secondary-color);
+    background-color: transparent;
     color: var(--bg-color);
-    font-size: 1em;
+    font-size: 1.1em;
+    text-align: left;
 }
 
-.theme-toggle button:hover {
+.menu-items button:hover {
     background-color: var(--accent-color);
+    color: var(--bg-color);
+}
+
+.menu-section {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 8px;
+}
+
+.menu-label {
+    display: block;
+    font-family: 'Pokemon DP Pro', sans-serif;
+    font-size: 0.9em;
+    color: var(--bg-color);
+    margin-bottom: 6px;
+    padding: 0 16px;
+    opacity: 0.8;
+}
+
+.menu-select {
+    width: 100%;
+    padding: 8px 12px;
+    margin: 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    font-family: 'Pokemon DP Pro', sans-serif;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--bg-color);
+    transition: background-color 0.3s;
+}
+
+.menu-select:hover,
+.menu-select:focus {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    outline: none;
+}
+
+.menu-select option {
+    background-color: var(--secondary-color);
+    color: var(--bg-color);
+}
+
+.range-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.menu-range {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+.menu-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.menu-range::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.menu-range::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.menu-range::-moz-range-thumb:hover {
+    transform: scale(1.2);
+}
+
+.range-value {
+    font-family: 'Pokemon DP Pro', sans-serif;
+    font-size: 0.9em;
+    color: var(--bg-color);
+    min-width: 40px;
+    text-align: right;
 }
 
 /* Mobile adjustments */
 @media (max-width: 600px) {
-    .theme-toggle {
+    .quick-actions {
         bottom: 10px;
-        right: 10px;
-        flex-direction: column;
-        gap: 5px;
+        right: 70px;
+        gap: 10px;
     }
 
-    .theme-toggle button {
-        padding: 6px 12px;
+    .icon-button {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+    }
+
+    .icon-button .icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .hamburger-menu {
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .hamburger-icon {
+        width: 45px;
+        height: 45px;
+    }
+
+    .hamburger-icon span {
+        width: 18px;
+    }
+
+    .menu-items {
+        min-width: 180px;
+        bottom: 55px;
+    }
+
+    .menu-items button {
+        padding: 8px 12px;
         font-size: 0.9em;
     }
 
@@ -140,7 +415,9 @@ pre code {
     font-size: 1.1em !important;
 }
 
-.accessibility-mode .theme-toggle button {
+.accessibility-mode .menu-items button,
+.accessibility-mode .menu-label,
+.accessibility-mode .menu-select,
+.accessibility-mode .range-value {
     font-family: 'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', sans-serif !important;
-    font-size: 1em !important;
 } 

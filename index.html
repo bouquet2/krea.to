@@ -84,10 +84,67 @@
             </div>
         </div>
     </div>
-    <div class="theme-toggle">
-        <button id="theme-button">Toggle Theme</button>
-        <button id="accessibility-button">Accessibility Mode</button>
-        <button id="lucky-button">I'm feeling lucky</button>
+    <div class="quick-actions" aria-label="Quick settings">
+        <button id="theme-button" class="icon-button theme-toggle" type="button" aria-label="Switch to light mode" aria-pressed="false">
+            <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4"></circle>
+                <line x1="12" y1="2" x2="12" y2="5"></line>
+                <line x1="12" y1="19" x2="12" y2="22"></line>
+                <line x1="4.22" y1="4.22" x2="6.34" y2="6.34"></line>
+                <line x1="17.66" y1="17.66" x2="19.78" y2="19.78"></line>
+                <line x1="2" y1="12" x2="5" y2="12"></line>
+                <line x1="19" y1="12" x2="22" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="6.34" y2="17.66"></line>
+                <line x1="17.66" y1="6.34" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 0 1 11.21 3a7 7 0 1 0 8.58 9.79Z"></path>
+            </svg>
+        </button>
+        <button id="accessibility-button" class="icon-button accessibility-toggle" type="button" aria-label="Enable accessibility mode" aria-pressed="false">
+            <svg class="icon icon-accessibility" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="5" r="2"></circle>
+                <path d="M4 9h16"></path>
+                <path d="M12 7v6"></path>
+                <path d="M9 21l3-7 3 7"></path>
+                <path d="M7 12l5-1 5 1"></path>
+            </svg>
+        </button>
+    </div>
+    <div class="hamburger-menu">
+        <div class="hamburger-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="menu-items">
+            <div class="menu-section">
+                <label for="theme-select" class="menu-label">Color Scheme</label>
+                <select id="theme-select" class="menu-select">
+                    <option value="mocha">Mocha (Default)</option>
+                    <option value="frappe">Frappe</option>
+                    <option value="latte">Latte</option>
+                    <option value="macchiato">Macchiato</option>
+                    <option value="gruvbox">Gruvbox</option>
+                    <option value="nord">Nord</option>
+                    <option value="tokyonight">Tokyo Night</option>
+                    <option value="monokai">Monokai</option>
+                    <option value="onedark">One Dark</option>
+                    <option value="solarized">Solarized</option>
+                    <option value="kanagawa">Kanagawa</option>
+                </select>
+            </div>
+            <div class="menu-section">
+                <label for="font-size-range" class="menu-label">Font Size</label>
+                <div class="range-container">
+                    <input type="range" id="font-size-range" class="menu-range" min="0.8" max="1.4" step="0.1" value="1.1">
+                    <span id="font-size-value" class="range-value">1.1em</span>
+                </div>
+            </div>
+            <button id="background-button">Hide Background</button>
+            <button id="transparency-button">Disable Transparency</button>
+            <button id="lucky-button">I'm feeling lucky</button>
+        </div>
     </div>
     <script src="js/script.js"></script>
     <script defer src="https://umami.krea.to/script.js" data-website-id="6354e7d6-d305-4c2b-a103-83639f9f7180"></script>
