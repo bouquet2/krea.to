@@ -122,21 +122,25 @@ document.addEventListener('DOMContentLoaded', function() {
     updateAccessibilityButtonState();
     
     // Check for saved background preference
-    const savedBackground = localStorage.getItem('background');
-    if (savedBackground === 'disabled') {
-        body.classList.add('no-background');
-        backgroundButton.textContent = 'Show Background';
-    } else {
-        backgroundButton.textContent = 'Hide Background';
+    if (backgroundButton) {
+        const savedBackground = localStorage.getItem('background');
+        if (savedBackground === 'disabled') {
+            body.classList.add('no-background');
+            backgroundButton.textContent = 'Show Background';
+        } else {
+            backgroundButton.textContent = 'Hide Background';
+        }
     }
     
     // Check for saved transparency preference
-    const savedTransparency = localStorage.getItem('transparency');
-    if (savedTransparency === 'disabled') {
-        if (terminal) terminal.classList.add('no-transparency');
-        transparencyButton.textContent = 'Enable Transparency';
-    } else {
-        transparencyButton.textContent = 'Disable Transparency';
+    if (transparencyButton) {
+        const savedTransparency = localStorage.getItem('transparency');
+        if (savedTransparency === 'disabled') {
+            if (terminal) terminal.classList.add('no-transparency');
+            transparencyButton.textContent = 'Enable Transparency';
+        } else {
+            transparencyButton.textContent = 'Disable Transparency';
+        }
     }
     
     // Toggle accessibility mode on button click
@@ -159,7 +163,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Toggle background on button click
-    backgroundButton.addEventListener('click', function() {
+    if (backgroundButton) {
+        backgroundButton.addEventListener('click', function() {
         // Add a small delay for better visual feedback
         setTimeout(() => {
             body.classList.toggle('no-background');
@@ -172,10 +177,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 backgroundButton.textContent = 'Hide Background';
             }
         }, 50);
-    });
+        });
+    }
     
     // Toggle transparency on button click
-    transparencyButton.addEventListener('click', function() {
+    if (transparencyButton) {
+        transparencyButton.addEventListener('click', function() {
         if (terminal) {
             terminal.classList.toggle('no-transparency');
             
@@ -187,7 +194,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 transparencyButton.textContent = 'Disable Transparency';
             }
         }
-    });
+        });
+    }
 
     // Font size control
     const savedFontSize = localStorage.getItem('fontSize') || '1.1';
@@ -215,6 +223,12 @@ document.addEventListener('DOMContentLoaded', function() {
         themeButton.setAttribute('aria-label', label);
         themeButton.setAttribute('title', label);
     };
+
+    // Check for saved theme preference first (light/dark)
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        body.classList.add('light-theme');
+    }
     
     // Helper function to apply a color scheme
     const applyScheme = (schemeName) => {
@@ -242,12 +256,14 @@ document.addEventListener('DOMContentLoaded', function() {
         themeSelect.value = savedScheme;
     }
     
-    // Set initial background image
-    let initialBackground = savedScheme;
-    if (['mocha', 'frappe', 'macchiato', 'latte'].includes(savedScheme)) {
-        initialBackground = 'catppuccin-dark';
+    // Set initial background image (only if terminal exists - main site)
+    if (terminal) {
+        let initialBackground = savedScheme;
+        if (['mocha', 'frappe', 'macchiato', 'latte'].includes(savedScheme)) {
+            initialBackground = 'catppuccin-dark';
+        }
+        body.style.setProperty('--background-image', `url('../assets/${initialBackground}.jpg')`);
     }
-    body.style.setProperty('--background-image', `url('../assets/${initialBackground}.jpg')`);
     
     // Apply saved scheme
     applyScheme(savedScheme);
@@ -317,7 +333,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Color configurations for each scheme
         // Lucky button functionality
-        luckyButton.addEventListener('click', function() {
+        if (luckyButton) {
+            luckyButton.addEventListener('click', function() {
             // Get current scheme from data attribute
             const currentScheme = body.getAttribute('data-theme') || 'mocha';
 
@@ -333,7 +350,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update dropdown and remove light-theme class
             if (themeSelect) themeSelect.value = randomScheme;
             body.classList.remove('light-theme');
-        });
+            });
+        }
         
         // Terminal typing effect
         const typingElements = document.querySelectorAll('.typing-effect');

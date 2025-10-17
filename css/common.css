@@ -86,7 +86,7 @@ pre code {
 .quick-actions {
     position: fixed;
     bottom: 20px;
-    right: 90px;
+    right: 80px;
     display: flex;
     gap: 12px;
     z-index: 100;
@@ -356,7 +356,7 @@ body.light-theme .icon-button:focus-visible {
 @media (max-width: 600px) {
     .quick-actions {
         bottom: 10px;
-        right: 70px;
+        right: 65px;
         gap: 10px;
     }
 

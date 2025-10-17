@@ -1,6 +1,17 @@
 /* Theme based on Pokemon DP Pro */
 @import 'common.css';
 
+/* Override quick-actions positioning for blog pages (no hamburger menu) */
+.quick-actions {
+    right: 20px;
+}
+
+@media (max-width: 600px) {
+    .quick-actions {
+        right: 10px;
+    }
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: var(--bg-color);
