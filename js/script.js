@@ -202,11 +202,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (fontSizeRange) {
         fontSizeRange.value = savedFontSize;
         if (fontSizeValue) fontSizeValue.textContent = `${savedFontSize}em`;
-        body.style.fontSize = `${savedFontSize}em`;
+        body.style.setProperty('font-size', `${savedFontSize}em`, 'important');
         
         fontSizeRange.addEventListener('input', function() {
             const size = this.value;
-            body.style.fontSize = `${size}em`;
+            body.style.setProperty('font-size', `${size}em`, 'important');
             if (fontSizeValue) fontSizeValue.textContent = `${size}em`;
             localStorage.setItem('fontSize', size);
         });
