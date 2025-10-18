@@ -55,8 +55,8 @@ body > * {
     max-width: 1400px;
     margin: 20px auto;
     background-color: rgba(30, 30, 46, 0.8);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(var(--terminal-blur));
+    -webkit-backdrop-filter: blur(var(--terminal-blur));
     border: 1px solid rgba(245, 194, 231, 0.3);
     border-radius: 16px;
     box-shadow: 0 4px 15px rgba(91, 96, 120, 0.4);
@@ -229,8 +229,8 @@ body[data-theme="kanagawa"] .terminal.no-transparency {
 
 .terminal-header {
     background-color: rgba(24, 24, 37, 0.9);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(calc(var(--terminal-blur) / 2));
+    -webkit-backdrop-filter: blur(calc(var(--terminal-blur) / 2));
     padding: 13px 15px;
     display: flex;
     align-items: center;

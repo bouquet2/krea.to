@@ -212,6 +212,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Terminal blur intensity control
+    const blurIntensityRange = document.getElementById('blur-intensity-range');
+    const blurIntensityValue = document.getElementById('blur-intensity-value');
+    const savedBlurIntensity = localStorage.getItem('terminalBlurIntensity') || '20';
+    
+    if (blurIntensityRange) {
+        blurIntensityRange.value = savedBlurIntensity;
+        if (blurIntensityValue) blurIntensityValue.textContent = `${savedBlurIntensity}px`;
+        document.documentElement.style.setProperty('--terminal-blur', `${savedBlurIntensity}px`);
+        
+        blurIntensityRange.addEventListener('input', function() {
+            const intensity = this.value;
+            document.documentElement.style.setProperty('--terminal-blur', `${intensity}px`);
+            if (blurIntensityValue) blurIntensityValue.textContent = `${intensity}px`;
+            localStorage.setItem('terminalBlurIntensity', intensity);
+        });
+    }
+
     // Theme toggle functionality
     const themeButton = document.getElementById('theme-button');
 

@@ -15,6 +15,7 @@
     --secondary-color: #cba6f7;
     --terminal-header: #181825;
     --link-color: #89b4fa;
+    --terminal-blur: 20px;
 }
 
 /* Light theme (latte) */
@@ -224,8 +225,6 @@ body.light-theme .icon-button:focus-visible {
     transform: translateY(10px);
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
 }
 
 .hamburger-menu:hover .menu-items {
