@@ -200,17 +200,14 @@ body.light-theme .icon-button:focus-visible {
     border-radius: 1px;
 }
 
-.hamburger-menu:hover .hamburger-icon span:nth-child(1),
 .hamburger-menu.menu-open .hamburger-icon span:nth-child(1) {
     transform: rotate(45deg) translate(5px, 5px);
 }
 
-.hamburger-menu:hover .hamburger-icon span:nth-child(2),
 .hamburger-menu.menu-open .hamburger-icon span:nth-child(2) {
     opacity: 0;
 }
 
-.hamburger-menu:hover .hamburger-icon span:nth-child(3),
 .hamburger-menu.menu-open .hamburger-icon span:nth-child(3) {
     transform: rotate(-45deg) translate(7px, -6px);
 }
@@ -231,7 +228,6 @@ body.light-theme .icon-button:focus-visible {
     pointer-events: none;
 }
 
-.hamburger-menu:hover .menu-items,
 .hamburger-menu.menu-open .menu-items {
     opacity: 1;
     visibility: visible;
