@@ -11,6 +11,32 @@ document.addEventListener('DOMContentLoaded', function() {
     const body = document.body;
     const terminal = document.querySelector('.terminal');
     
+    // Hamburger menu toggle functionality
+    const hamburgerMenu = document.querySelector('.hamburger-menu');
+    const hamburgerIcon = document.querySelector('.hamburger-icon');
+    const menuItems = document.querySelector('.menu-items');
+    
+    if (hamburgerIcon) {
+        hamburgerIcon.addEventListener('click', function(e) {
+            e.stopPropagation();
+            hamburgerMenu.classList.toggle('menu-open');
+        });
+    }
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (hamburgerMenu && !hamburgerMenu.contains(e.target)) {
+            hamburgerMenu.classList.remove('menu-open');
+        }
+    });
+    
+    // Prevent menu from closing when clicking inside menu items
+    if (menuItems) {
+        menuItems.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+    
     // Color scheme configurations
     const schemeConfigs = {
         'frappe': {

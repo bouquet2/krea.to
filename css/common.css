@@ -200,15 +200,18 @@ body.light-theme .icon-button:focus-visible {
     border-radius: 1px;
 }
 
-.hamburger-menu:hover .hamburger-icon span:nth-child(1) {
+.hamburger-menu:hover .hamburger-icon span:nth-child(1),
+.hamburger-menu.menu-open .hamburger-icon span:nth-child(1) {
     transform: rotate(45deg) translate(5px, 5px);
 }
 
-.hamburger-menu:hover .hamburger-icon span:nth-child(2) {
+.hamburger-menu:hover .hamburger-icon span:nth-child(2),
+.hamburger-menu.menu-open .hamburger-icon span:nth-child(2) {
     opacity: 0;
 }
 
-.hamburger-menu:hover .hamburger-icon span:nth-child(3) {
+.hamburger-menu:hover .hamburger-icon span:nth-child(3),
+.hamburger-menu.menu-open .hamburger-icon span:nth-child(3) {
     transform: rotate(-45deg) translate(7px, -6px);
 }
 
@@ -225,12 +228,15 @@ body.light-theme .icon-button:focus-visible {
     transform: translateY(10px);
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
 }
 
-.hamburger-menu:hover .menu-items {
+.hamburger-menu:hover .menu-items,
+.hamburger-menu.menu-open .menu-items {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+    pointer-events: auto;
 }
 
 .menu-items button {
@@ -405,6 +411,7 @@ body.light-theme .icon-button:focus-visible {
     font-family: 'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', sans-serif !important;
     line-height: 1.8 !important;
     letter-spacing: 0.5px !important;
+    transition: font-family 0.3s ease, line-height 0.3s ease, letter-spacing 0.3s ease !important;
 }
 
 .accessibility-mode code, 
