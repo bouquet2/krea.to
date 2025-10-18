@@ -411,34 +411,35 @@ ul {
 }
 
 @media (max-width: 600px) {
+    body {
+        padding: 5px;
+        font-size: 1.1em;
+    }
+
     .terminal {
-        margin: 10px;
+        margin: 5px auto;
         border-radius: 12px;
     }
     
     .terminal-content {
         padding: 10px;
-        font-size: 14px;
-    }
-    
-    body {
-        font-size: 1.0em;
+        font-size: 1em;
     }
 
     .prompt {
-        font-size: 14px;
+        font-size: 1em;
     }
     
     h1 {
-        font-size: 18px;
+        font-size: 1.4em;
     }
     
     h2 {
-        font-size: 16px;
+        font-size: 1.2em;
     }
 
     p, ul, li {
-        font-size: 14px;
+        font-size: 1em;
     }
 
     .output {

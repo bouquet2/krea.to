@@ -403,7 +403,6 @@ body.light-theme .icon-button:focus-visible {
 /* Accessibility mode */
 .accessibility-mode {
     font-family: 'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', sans-serif !important;
-    font-size: 1.2em !important;
     line-height: 1.8 !important;
     letter-spacing: 0.5px !important;
 }
