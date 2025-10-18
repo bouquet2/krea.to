@@ -321,10 +321,8 @@ document.addEventListener('DOMContentLoaded', function() {
             let extension = 'jpg'; // default for most themes
             if (['mocha', 'frappe', 'macchiato', 'latte', 'catppuccin-dark', 'monokai', 'onedark', 'kanagawa'].includes(backgroundImage)) {
                 extension = 'avif';
-            } else if (['solarized', 'gruvbox', 'tokyonight'].includes(backgroundImage)) {
+            } else if (['solarized', 'gruvbox', 'tokyonight', 'nord'].includes(backgroundImage)) {
                 extension = 'png';
-            } else if (backgroundImage === 'nord') {
-                extension = 'webp';
             }
             
             // Only set background if terminal exists (main site only)
