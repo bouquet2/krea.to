@@ -447,7 +447,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Only focus if terminal is active
             if (isTerminalActive) {
-                input.focus();
+                input.focus({ preventScroll: true });
             }
             
             input.addEventListener('keydown', function(e) {
@@ -542,7 +542,7 @@ document.addEventListener('DOMContentLoaded', function() {
             isTerminalActive = true;
             const input = document.getElementById('terminal-input');
             if (input) {
-                input.focus();
+                input.focus({ preventScroll: true });
             }
         });
         
