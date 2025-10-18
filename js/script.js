@@ -316,7 +316,21 @@ document.addEventListener('DOMContentLoaded', function() {
             if (['mocha', 'frappe', 'macchiato', 'latte'].includes(schemeName)) {
                 backgroundImage = 'catppuccin-dark';
             }
-            body.style.setProperty('--background-image', `url('../assets/${backgroundImage}.jpg')`);
+            
+            // Determine file extension based on theme
+            let extension = 'jpg'; // default for most themes
+            if (['mocha', 'frappe', 'macchiato', 'latte', 'catppuccin-dark', 'monokai', 'onedark', 'kanagawa'].includes(backgroundImage)) {
+                extension = 'avif';
+            } else if (['solarized', 'gruvbox', 'tokyonight'].includes(backgroundImage)) {
+                extension = 'png';
+            } else if (backgroundImage === 'nord') {
+                extension = 'webp';
+            }
+            
+            // Only set background if terminal exists (main site only)
+            if (terminal) {
+                document.documentElement.style.setProperty('--background-image', `url('../assets/${backgroundImage}.${extension}')`);
+            }
         }
     };
     
@@ -326,16 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
         themeSelect.value = savedScheme;
     }
     
-    // Set initial background image (only if terminal exists - main site)
-    if (terminal) {
-        let initialBackground = savedScheme;
-        if (['mocha', 'frappe', 'macchiato', 'latte'].includes(savedScheme)) {
-            initialBackground = 'catppuccin-dark';
-        }
-        body.style.setProperty('--background-image', `url('../assets/${initialBackground}.jpg')`);
-    }
-    
-    // Apply saved scheme
+    // Apply saved scheme (which also sets the background image)
     applyScheme(savedScheme);
     
     // Update light-theme class if using latte
