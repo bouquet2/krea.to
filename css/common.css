@@ -7,6 +7,14 @@
     font-display: swap;
 }
 
+@font-face {
+    font-family: 'Scientifica';
+    src: url('../fonts/scientifica.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     /* Default dark theme (mocha) */
     --bg-color: #1e1e2e;

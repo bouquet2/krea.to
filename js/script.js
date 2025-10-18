@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const transparencyButton = document.getElementById('transparency-button');
     const luckyButton = document.getElementById('lucky-button');
     const themeSelect = document.getElementById('theme-select');
+    const fontSelect = document.getElementById('font-select');
     const fontSizeRange = document.getElementById('font-size-range');
     const fontSizeValue = document.getElementById('font-size-value');
     const body = document.body;
@@ -253,6 +254,31 @@ document.addEventListener('DOMContentLoaded', function() {
             document.documentElement.style.setProperty('--terminal-blur', `${intensity}px`);
             if (blurIntensityValue) blurIntensityValue.textContent = `${intensity}px`;
             localStorage.setItem('terminalBlurIntensity', intensity);
+        });
+    }
+
+    // Font selection control
+    const savedFont = localStorage.getItem('fontFamily') || 'scientifica';
+    if (fontSelect) {
+        fontSelect.value = savedFont;
+        
+        // Apply saved font
+        if (savedFont === 'pokemon') {
+            body.style.setProperty('font-family', "'Pokemon DP Pro', sans-serif", 'important');
+        } else {
+            body.style.setProperty('font-family', "'Scientifica', sans-serif", 'important');
+        }
+        
+        fontSelect.addEventListener('change', function() {
+            const selectedFont = this.value;
+            
+            if (selectedFont === 'pokemon') {
+                body.style.setProperty('font-family', "'Pokemon DP Pro', sans-serif", 'important');
+            } else {
+                body.style.setProperty('font-family', "'Scientifica', sans-serif", 'important');
+            }
+            
+            localStorage.setItem('fontFamily', selectedFont);
         });
     }
 

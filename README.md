@@ -76,7 +76,7 @@ The site includes 11 carefully selected color schemes:
 
 ## Font
 
-The site uses the **Pokemon DP Pro** font for that nostalgic feel, with Arial as a fallback.
+The main site uses the **Scientifica** font for a clean, retro terminal aesthetic, while the blog uses **Pokemon DP Pro** for that nostalgic feel, with Arial as a fallback.
 
 ## License
 
