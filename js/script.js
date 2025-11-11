@@ -468,7 +468,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const newLastSection = document.createElement('div');
             newLastSection.className = 'terminal-section';
             newLastSection.innerHTML = `
-                <div class="prompt">kreato@akiri:${currentDir}$ <label for="terminal-input" class="sr-only">Terminal command input</label><input type="text" id="terminal-input" aria-label="Terminal command input" style="background: transparent; border: none; outline: none; color: inherit; font-family: inherit; font-size: inherit; width: 70%;"></div>
+                <div class="prompt"><label for="terminal-input" class="sr-only">Terminal command input</label>kreato@akiri:${currentDir}$ <input type="text" id="terminal-input" aria-label="Terminal command input" style="background: transparent; border: none; outline: none; color: inherit; font-family: inherit; font-size: inherit; width: 70%;"></div>
             `;
             terminalContent.appendChild(newLastSection);
             
