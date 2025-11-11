@@ -1,4 +1,18 @@
 /* Common styles for both main site and blog */
+
+/* Screen reader only class for accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
 @font-face {
     font-family: 'Pokemon DP Pro';
     src: url('../fonts/pokemon-dp-pro.ttf') format('truetype');
