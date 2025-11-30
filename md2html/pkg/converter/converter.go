@@ -623,9 +623,9 @@ func calculateBackURL(depth int) string {
 
 // RSSFeed represents an RSS 2.0 feed structure
 type RSSFeed struct {
-	XMLName xml.Name `xml:"rss"`
-	Version string   `xml:"version,attr"`
-	Channel RSSChannel
+	XMLName xml.Name  `xml:"rss"`
+	Version string    `xml:"version,attr"`
+	Channel RSSChannel `xml:"channel"`
 }
 
 // RSSChannel represents the channel element in RSS
