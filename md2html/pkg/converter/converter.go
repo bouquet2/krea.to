@@ -1046,6 +1046,23 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 			subConfig := config
 			subConfig.OutputDir = subOutputDir
 
+			// Adjust CSS/JS paths for the subdirectory depth
+			subOutComponents := strings.Split(subOutputDir, string(filepath.Separator))
+			if len(subOutComponents) >= 1 && subOutComponents[0] == "blog" {
+				// For blog structure, calculate depth from site root
+				// blog/ = 1 level up, blog/X/ = 2 levels up, blog/X/Y/ = 3 levels up, etc.
+				blogDepth := len(subOutComponents)
+				prefix := ""
+				for i := 0; i < blogDepth; i++ {
+					prefix += "../"
+				}
+				subConfig.CSSPath = prefix + "css/style-blog.css"
+				subConfig.JSPath = prefix + "js/script.js"
+			} else {
+				// For non-blog structure, use standard depth calculation
+				subConfig = adjustPaths(subConfig, depth+1, subOutputDir)
+			}
+
 			// Process the subdirectory recursively and collect its blog posts
 			subPosts, err := processFiles(filePath, inputRoot, subConfig, depth+1)
 			if err != nil {
