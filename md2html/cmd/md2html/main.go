@@ -21,6 +21,8 @@ func main() {
 	createTemplate := flag.Bool("create-template", false, "Create a default template and exit")
 	addList := flag.Bool("addlist", false, "Generate an index.html with a list of all blog posts")
 	recursive := flag.Bool("recursive", false, "Process subdirectories recursively")
+	generateRSS := flag.Bool("rss", false, "Generate RSS feed (feed.xml) for blog posts")
+	siteURL := flag.String("site-url", "", "Site URL for RSS feed (e.g., https://krea.to)")
 	flag.Parse()
 
 	// Create default template if requested
@@ -76,6 +78,8 @@ func main() {
 		DefaultAuthor: *author,
 		GenerateList:  *addList,
 		Recursive:     *recursive,
+		GenerateRSS:   *generateRSS,
+		SiteURL:       *siteURL,
 	}
 
 	// Convert files

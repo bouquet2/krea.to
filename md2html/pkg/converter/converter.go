@@ -3,6 +3,7 @@ package converter
 import (
 	"bytes"
 	"embed"
+	"encoding/xml"
 	"fmt"
 	"html/template"
 	"io"
@@ -37,6 +38,8 @@ type Config struct {
 	DefaultAuthor string
 	GenerateList  bool
 	Recursive     bool
+	GenerateRSS   bool
+	SiteURL       string
 }
 
 // PageData represents the data to be passed to the HTML template
@@ -58,6 +61,8 @@ type BlogPost struct {
 	Link        string
 	Description string
 	Date        string
+	FullURL     string // Full URL for RSS feed
+	Author      string // Author for RSS feed
 }
 
 // Directory represents a subdirectory for the index page
@@ -609,6 +614,142 @@ func calculateBackURL(depth int) string {
 }
 
 // ==========================================================================
+// RSS Feed Generation
+// ==========================================================================
+
+// RSSFeed represents an RSS 2.0 feed structure
+type RSSFeed struct {
+	XMLName xml.Name `xml:"rss"`
+	Version string   `xml:"version,attr"`
+	Channel RSSChannel
+}
+
+// RSSChannel represents the channel element in RSS
+type RSSChannel struct {
+	Title         string    `xml:"title"`
+	Link          string    `xml:"link"`
+	Description   string    `xml:"description"`
+	Language      string    `xml:"language"`
+	LastBuildDate string    `xml:"lastBuildDate"`
+	Items         []RSSItem `xml:"item"`
+}
+
+// RSSItem represents an item in the RSS feed
+type RSSItem struct {
+	Title       string `xml:"title"`
+	Link        string `xml:"link"`
+	Description string `xml:"description"`
+	PubDate     string `xml:"pubDate"`
+	Author      string `xml:"author,omitempty"`
+	GUID        string `xml:"guid"`
+}
+
+// generateRSSFeed creates an RSS 2.0 feed from blog posts
+func generateRSSFeed(blogPosts []BlogPost, config Config, outputDir string) error {
+	if !config.GenerateRSS || len(blogPosts) == 0 {
+		return nil
+	}
+
+	// Sort posts by date (newest first)
+	sortedPosts := make([]BlogPost, len(blogPosts))
+	copy(sortedPosts, blogPosts)
+	sort.Slice(sortedPosts, func(i, j int) bool {
+		dateI, errI := time.Parse("2006-01-02", sortedPosts[i].Date)
+		dateJ, errJ := time.Parse("2006-01-02", sortedPosts[j].Date)
+		if errI != nil || errJ != nil {
+			// If dates can't be parsed, maintain original order
+			return false
+		}
+		return dateI.After(dateJ)
+	})
+
+	// Build RSS items
+	var items []RSSItem
+	for _, post := range sortedPosts {
+		// Parse date for RSS format
+		var pubDate string
+		if post.Date != "" {
+			if t, err := time.Parse("2006-01-02", post.Date); err == nil {
+				pubDate = t.Format(time.RFC1123Z)
+			}
+		} else {
+			pubDate = time.Now().Format(time.RFC1123Z)
+		}
+
+		// Build full URL
+		fullURL := post.FullURL
+		if fullURL == "" {
+			// Fallback to relative link if FullURL not set
+			fullURL = post.Link
+		}
+		
+		// Make it absolute if site URL is provided
+		if config.SiteURL != "" && !strings.HasPrefix(fullURL, "http") {
+			// Ensure site URL doesn't end with / and link doesn't start with /
+			siteURL := strings.TrimSuffix(config.SiteURL, "/")
+			if strings.HasPrefix(fullURL, "/") {
+				fullURL = siteURL + fullURL
+			} else {
+				fullURL = siteURL + "/" + fullURL
+			}
+		}
+
+		// Use FullURL as GUID if available, otherwise use link
+		guid := fullURL
+		if guid == "" {
+			guid = post.Link
+		}
+
+		item := RSSItem{
+			Title:       post.Title,
+			Link:        fullURL,
+			Description: post.Description,
+			PubDate:     pubDate,
+			GUID:        guid,
+		}
+
+		// Add author if available
+		if post.Author != "" {
+			item.Author = post.Author
+		} else if config.DefaultAuthor != "" {
+			item.Author = config.DefaultAuthor
+		}
+
+		items = append(items, item)
+	}
+
+	// Build RSS feed
+	feed := RSSFeed{
+		Version: "2.0",
+		Channel: RSSChannel{
+			Title:         config.SiteTitle,
+			Link:          config.SiteURL,
+			Description:   fmt.Sprintf("Blog posts from %s", config.SiteTitle),
+			Language:      "en-us",
+			LastBuildDate: time.Now().Format(time.RFC1123Z),
+			Items:         items,
+		},
+	}
+
+	// Generate XML
+	xmlData, err := xml.MarshalIndent(feed, "", "  ")
+	if err != nil {
+		return fmt.Errorf("error marshaling RSS feed: %v", err)
+	}
+
+	// Add XML header
+	xmlOutput := []byte(xml.Header + string(xmlData))
+
+	// Write RSS feed file
+	rssFile := filepath.Join(outputDir, "feed.xml")
+	if err := os.WriteFile(rssFile, xmlOutput, 0644); err != nil {
+		return fmt.Errorf("error writing RSS feed file: %v", err)
+	}
+
+	return nil
+}
+
+// ==========================================================================
 // Primary Functions
 // ==========================================================================
 
@@ -748,7 +889,9 @@ func ConvertDirectory(inputDir string, config Config) error {
 
 	// Special handling for blog paths
 	outComponents := strings.Split(config.OutputDir, string(filepath.Separator))
-	if len(outComponents) >= 2 && outComponents[0] == "blog" {
+	isBlogRoot := len(outComponents) == 1 && outComponents[0] == "blog"
+	
+	if len(outComponents) >= 1 && outComponents[0] == "blog" {
 		// Force blog structure to use the correct depth
 		if len(outComponents) == 2 {
 			// First level category (blog/X)
@@ -758,9 +901,56 @@ func ConvertDirectory(inputDir string, config Config) error {
 			currentConfig := config
 			currentConfig.CSSPath = "../../css/style-blog.css"
 			currentConfig.JSPath = "../../js/script.js"
+			// Enable recursive processing for RSS to collect all posts from this category
+			if config.GenerateRSS {
+				currentConfig.Recursive = true
+			}
 
 			// Process files with blog-specific config
-			return processFiles(inputDir, inputRoot, currentConfig, 1) // 1 for blog category depth
+			blogPosts, err := processFiles(inputDir, inputRoot, currentConfig, 1) // 1 for blog category depth
+			if err != nil {
+				return err
+			}
+			
+			// Generate RSS feed for this category if enabled
+			if config.GenerateRSS {
+				// Use category name for the feed title
+				categoryName := outComponents[1]
+				categoryConfig := config
+				categoryConfig.SiteTitle = fmt.Sprintf("%s - %s", config.SiteTitle, categoryName)
+				if err := generateRSSFeed(blogPosts, categoryConfig, config.OutputDir); err != nil {
+					return fmt.Errorf("error generating RSS feed for category %s: %v", categoryName, err)
+				}
+			}
+			
+			return nil
+		} else if isBlogRoot {
+			// Blog root directory
+			fmt.Printf("Blog root detected: %s\n", config.OutputDir)
+
+			// Use explicit depth of 1 level for CSS/JS paths (../)
+			currentConfig := config
+			currentConfig.CSSPath = "../css/style-blog.css"
+			currentConfig.JSPath = "../js/script.js"
+			// Enable recursive processing for RSS to collect all posts from subdirectories
+			if config.GenerateRSS {
+				currentConfig.Recursive = true
+			}
+
+			// Process files with blog-specific config
+			blogPosts, err := processFiles(inputDir, inputRoot, currentConfig, 0)
+			if err != nil {
+				return err
+			}
+			
+			// Generate RSS feed at blog root if enabled
+			if config.GenerateRSS {
+				if err := generateRSSFeed(blogPosts, config, config.OutputDir); err != nil {
+					return fmt.Errorf("error generating RSS feed: %v", err)
+				}
+			}
+			
+			return nil
 		} else {
 			// Nested blog structure (blog/X/Y/...)
 			nestingDepth := len(outComponents) - 1 // Count depth starting from blog
@@ -777,21 +967,43 @@ func ConvertDirectory(inputDir string, config Config) error {
 			currentConfig := config
 			currentConfig.CSSPath = prefix + "css/style-blog.css"
 			currentConfig.JSPath = prefix + "js/script.js"
+			// Enable recursive processing for RSS to collect all posts from this subdirectory
+			if config.GenerateRSS {
+				currentConfig.Recursive = true
+			}
 
-			return processFiles(inputDir, inputRoot, currentConfig, nestingDepth)
+			blogPosts, err := processFiles(inputDir, inputRoot, currentConfig, nestingDepth)
+			if err != nil {
+				return err
+			}
+			
+			// Generate RSS feed for this nested directory if enabled
+			if config.GenerateRSS {
+				// Use directory path for the feed title
+				dirName := outComponents[len(outComponents)-1]
+				categoryConfig := config
+				categoryConfig.SiteTitle = fmt.Sprintf("%s - %s", config.SiteTitle, dirName)
+				if err := generateRSSFeed(blogPosts, categoryConfig, config.OutputDir); err != nil {
+					return fmt.Errorf("error generating RSS feed for directory %s: %v", dirName, err)
+				}
+			}
+			
+			return nil
 		}
 	}
 
 	// For non-blog folders, use standard path adjustment
 	currentConfig := adjustPaths(config, currentDepth, config.OutputDir)
-	return processFiles(inputDir, inputRoot, currentConfig, currentDepth)
+	_, err = processFiles(inputDir, inputRoot, currentConfig, currentDepth)
+	return err
 }
 
 // processFiles processes markdown files in a directory and handles subdirectories
-func processFiles(inputDir string, inputRoot string, config Config, depth int) error {
+// Returns collected blog posts for RSS feed generation
+func processFiles(inputDir string, inputRoot string, config Config, depth int) ([]BlogPost, error) {
 	files, err := os.ReadDir(inputDir)
 	if err != nil {
-		return fmt.Errorf("error reading input directory: %v", err)
+		return nil, fmt.Errorf("error reading input directory: %v", err)
 	}
 
 	var blogPosts []BlogPost
@@ -813,7 +1025,7 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) e
 			// For subdirectories, create corresponding output directory
 			relPath, err := filepath.Rel(inputDir, filePath)
 			if err != nil {
-				return fmt.Errorf("error calculating relative path: %v", err)
+				return nil, fmt.Errorf("error calculating relative path: %v", err)
 			}
 
 			subOutputDir := filepath.Join(config.OutputDir, relPath)
@@ -822,14 +1034,34 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) e
 			subConfig := config
 			subConfig.OutputDir = subOutputDir
 
-			// Process the subdirectory recursively
-			if err := ConvertDirectory(filePath, subConfig); err != nil {
-				return err
+			// Process the subdirectory recursively and collect its blog posts
+			subPosts, err := processFiles(filePath, inputRoot, subConfig, depth+1)
+			if err != nil {
+				return nil, err
 			}
+			
+			// Generate RSS feed for blog category folders if enabled
+			if config.GenerateRSS && len(subPosts) > 0 {
+				// Check if this is a blog category folder (blog/X)
+				outComponents := strings.Split(subOutputDir, string(filepath.Separator))
+				if len(outComponents) >= 2 && outComponents[0] == "blog" && len(outComponents) == 2 {
+					// This is a first-level category folder (blog/X)
+					categoryName := outComponents[1]
+					categoryConfig := config
+					categoryConfig.SiteTitle = fmt.Sprintf("%s - %s", config.SiteTitle, categoryName)
+					if err := generateRSSFeed(subPosts, categoryConfig, subOutputDir); err != nil {
+						// Log error but don't fail the entire process
+						fmt.Fprintf(os.Stderr, "Warning: error generating RSS feed for category %s: %v\n", categoryName, err)
+					}
+				}
+			}
+			
+			// Add subdirectory posts to our collection
+			blogPosts = append(blogPosts, subPosts...)
 		} else if !file.IsDir() && (strings.HasSuffix(file.Name(), ".md") || strings.HasSuffix(file.Name(), ".markdown")) {
 			metadata, err := ConvertFile(filePath, config, inputRoot)
 			if err != nil {
-				return err
+				return nil, err
 			}
 
 			// Skip index.md for the blog post list
@@ -848,11 +1080,53 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) e
 				title = displayTitle // Use the original filename with its hyphens
 			}
 
+			// Build full URL for RSS (relative to site root)
+			// Calculate path relative to blog root directory, then prepend "blog/"
+			outputFile := filepath.Join(config.OutputDir, fileNameWithoutExt+".html")
+			// Find blog root (directory named "blog")
+			blogRoot := config.OutputDir
+			foundBlogRoot := false
+			for {
+				base := filepath.Base(blogRoot)
+				if base == "blog" {
+					foundBlogRoot = true
+					break
+				}
+				parent := filepath.Dir(blogRoot)
+				if parent == blogRoot || parent == "." || parent == "/" {
+					break
+				}
+				blogRoot = parent
+			}
+			
+			var relPath string
+			if foundBlogRoot {
+				// Calculate relative path from blog root
+				relPath, err = filepath.Rel(blogRoot, outputFile)
+				if err != nil {
+					relPath = fileNameWithoutExt + ".html"
+				}
+				// Convert to web path (forward slashes) and prepend "blog/"
+				relPath = strings.ReplaceAll(relPath, string(filepath.Separator), "/")
+				relPath = "blog/" + relPath
+			} else {
+				// Fallback: use output directory structure
+				relPath = strings.ReplaceAll(outputFile, string(filepath.Separator), "/")
+			}
+			
+			// Get author from metadata or use default
+			author := metadata["Author"]
+			if author == "" {
+				author = config.DefaultAuthor
+			}
+
 			blogPosts = append(blogPosts, BlogPost{
 				Title:       title,
 				Link:        fileNameWithoutExt + ".html",
 				Description: metadata["Description"],
 				Date:        metadata["Date"],
+				FullURL:     relPath,
+				Author:      author,
 			})
 		}
 	}
@@ -890,9 +1164,9 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) e
 			config.JSPath,
 			backURL,
 		); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
-	return nil
+	return blogPosts, nil
 }

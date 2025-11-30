@@ -7,7 +7,7 @@ all: blog
 blog: build-md2html
 	@echo "Converting markdown files..."
 	mkdir -p blog
-	md2html/md2html -input md -output blog -css "css/style-blog.css" -addlist -recursive
+	md2html/md2html -input md -output blog -css "css/style-blog.css" -addlist -recursive -rss -site-url 'https://krea.to'
 
 # Build md2html binary
 build-md2html: tidy-md2html
