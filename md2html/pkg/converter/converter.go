@@ -623,9 +623,17 @@ func calculateBackURL(depth int) string {
 
 // RSSFeed represents an RSS 2.0 feed structure
 type RSSFeed struct {
-	XMLName xml.Name  `xml:"rss"`
-	Version string    `xml:"version,attr"`
-	Channel RSSChannel `xml:"channel"`
+	XMLName   xml.Name   `xml:"rss"`
+	Version   string     `xml:"version,attr"`
+	XMLNSAtom string     `xml:"xmlns:atom,attr,omitempty"`
+	Channel   RSSChannel `xml:"channel"`
+}
+
+// AtomLink represents an atom:link element
+type AtomLink struct {
+	Href string `xml:"href,attr"`
+	Rel  string `xml:"rel,attr"`
+	Type string `xml:"type,attr"`
 }
 
 // RSSChannel represents the channel element in RSS
@@ -635,6 +643,7 @@ type RSSChannel struct {
 	Description   string    `xml:"description"`
 	Language      string    `xml:"language"`
 	LastBuildDate string    `xml:"lastBuildDate"`
+	AtomLink      *AtomLink `xml:"atom:link,omitempty"`
 	Items         []RSSItem `xml:"item"`
 }
 
@@ -646,6 +655,36 @@ type RSSItem struct {
 	PubDate     string `xml:"pubDate"`
 	Author      string `xml:"author,omitempty"`
 	GUID        string `xml:"guid"`
+}
+
+// formatAuthorAsEmail formats an author name as an RSS 2.0 compliant email address
+// RSS 2.0 requires author field to be in format "email@example.com (Name)" or "email@example.com"
+func formatAuthorAsEmail(authorName string, siteURL string) string {
+	if authorName == "" {
+		return ""
+	}
+	
+	// Extract domain from site URL
+	domain := "example.com"
+	if siteURL != "" {
+		// Remove protocol
+		url := strings.TrimPrefix(siteURL, "http://")
+		url = strings.TrimPrefix(url, "https://")
+		// Remove path
+		if idx := strings.Index(url, "/"); idx != -1 {
+			url = url[:idx]
+		}
+		if url != "" {
+			domain = url
+		}
+	}
+	
+	// Create email from author name (lowercase, replace spaces with dots)
+	emailName := strings.ToLower(strings.ReplaceAll(authorName, " ", "."))
+	email := fmt.Sprintf("%s@%s", emailName, domain)
+	
+	// Return in RSS 2.0 format: "email@domain.com (Name)"
+	return fmt.Sprintf("%s (%s)", email, authorName)
 }
 
 // generateRSSFeed creates an RSS 2.0 feed from blog posts
@@ -712,25 +751,56 @@ func generateRSSFeed(blogPosts []BlogPost, config Config, outputDir string) erro
 			GUID:        guid,
 		}
 
-		// Add author if available
-		if post.Author != "" {
-			item.Author = post.Author
-		} else if config.DefaultAuthor != "" {
-			item.Author = config.DefaultAuthor
+		// Add author if available (format as email for RSS 2.0 compliance)
+		authorName := post.Author
+		if authorName == "" {
+			authorName = config.DefaultAuthor
+		}
+		if authorName != "" {
+			item.Author = formatAuthorAsEmail(authorName, config.SiteURL)
 		}
 
 		items = append(items, item)
 	}
 
+	// Calculate feed URL for atom:link self reference
+	var atomLink *AtomLink
+	if config.SiteURL != "" {
+		// Determine the relative path of the feed from site root
+		// For blog root: /blog/feed.xml
+		// For blog/category: /blog/category/feed.xml
+		feedURL := config.SiteURL
+		relPath := strings.TrimPrefix(outputDir, "blog")
+		relPath = strings.TrimPrefix(relPath, string(filepath.Separator))
+		if relPath == "" {
+			feedURL = strings.TrimSuffix(feedURL, "/") + "/blog/feed.xml"
+		} else {
+			// Convert path separators to forward slashes
+			relPath = strings.ReplaceAll(relPath, string(filepath.Separator), "/")
+			feedURL = strings.TrimSuffix(feedURL, "/") + "/blog/" + relPath + "/feed.xml"
+		}
+		atomLink = &AtomLink{
+			Href: feedURL,
+			Rel:  "self",
+			Type: "application/rss+xml",
+		}
+	}
+
 	// Build RSS feed
+	xmlnsAtom := ""
+	if atomLink != nil {
+		xmlnsAtom = "http://www.w3.org/2005/Atom"
+	}
 	feed := RSSFeed{
-		Version: "2.0",
+		Version:   "2.0",
+		XMLNSAtom: xmlnsAtom,
 		Channel: RSSChannel{
 			Title:         config.SiteTitle,
 			Link:          config.SiteURL,
 			Description:   fmt.Sprintf("Blog posts from %s", config.SiteTitle),
 			Language:      "en-us",
 			LastBuildDate: time.Now().Format(time.RFC1123Z),
+			AtomLink:      atomLink,
 			Items:         items,
 		},
 	}
