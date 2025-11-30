@@ -1,6 +1,6 @@
 # krea.to
 
-Mu personal website and blog, featuring a terminal-style interface and a custom markdown-to-HTML blog system.
+My personal website and blog, featuring a terminal-style interface and a custom markdown-to-HTML blog system.
 
 🌐 **Live Site**: [krea.to](https://krea.to)
 
