@@ -542,6 +542,10 @@ func generateIndex(outputDir string, blogPosts []BlogPost, subdirectories []Dire
 
 		// Create index.html
 		indexFile := filepath.Join(outputDir, "index.html")
+		// Ensure the output directory exists
+		if err := os.MkdirAll(outputDir, 0755); err != nil {
+			return fmt.Errorf("error creating output directory: %v", err)
+		}
 		file, err := os.Create(indexFile)
 		if err != nil {
 			return fmt.Errorf("error creating index file: %v", err)
@@ -742,6 +746,10 @@ func generateRSSFeed(blogPosts []BlogPost, config Config, outputDir string) erro
 
 	// Write RSS feed file
 	rssFile := filepath.Join(outputDir, "feed.xml")
+	// Ensure the output directory exists
+	if err := os.MkdirAll(outputDir, 0755); err != nil {
+		return fmt.Errorf("error creating output directory: %v", err)
+	}
 	if err := os.WriteFile(rssFile, xmlOutput, 0644); err != nil {
 		return fmt.Errorf("error writing RSS feed file: %v", err)
 	}
@@ -801,6 +809,10 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 
 	// Create output file
 	outputFile := filepath.Join(config.OutputDir, fileNameWithoutExt+".html")
+	// Ensure the output directory exists
+	if err := os.MkdirAll(filepath.Dir(outputFile), 0755); err != nil {
+		return nil, fmt.Errorf("error creating output directory: %v", err)
+	}
 	file, err := os.Create(outputFile)
 	if err != nil {
 		return nil, fmt.Errorf("error creating output file: %v", err)
