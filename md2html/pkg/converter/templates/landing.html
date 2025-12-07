@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Building things for a tinkerer, by a tinkerer. Linux and Windows System Administrator/DevOps Engineer and Free Software advocate.">
-    <title>Kreato's site</title>
+    <meta name="description" content="{{.Description}}">
+    <title>{{.Title}}</title>
     
     <!-- Discord Embed Meta Tags -->
-    <meta property="og:title" content="Kreato">
-    <meta property="og:description" content="Building things for a tinkerer, by a tinkerer. Linux and Windows System Administrator/DevOps Engineer and Free Software advocate.">
+    <meta property="og:title" content="{{.Title}}">
+    <meta property="og:description" content="{{.Description}}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://krea.to">
     <meta name="theme-color" content="#5865F2">
     
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="{{.CSSPath}}">
 </head>
 <body>
     <main>
@@ -25,62 +25,22 @@
             <div class="terminal-title">krea.to (zsh)</div>
         </div>
         <div class="terminal-content">
+            {{range .Sections}}
             <div class="terminal-section">
-                <div class="prompt">kreato@akiri:~$ <span class="typing-effect">cat about.txt</span></div>
+                <div class="prompt">kreato@akiri:~$ <span class="typing-effect">{{.Command}}</span></div>
                 <div class="output">
-                    <h1>Kreato</h1>
-                    <h2>Building things for a tinkerer, by a tinkerer</h2>
-                    <p>I am a novice programmer, Linux and Windows System Administrator/DevOps Engineer and a Free Software advocate.</p>
-                    <p>I build tools/general software aimed at the tinkerer.</p>
-                    <p>I am the founder of Kreato Linux and i also made multiple smaller projects.</p>
-                    <p>My hobbies include music, anime, retro computers, the usual geek stuff.</p>
+                    {{.Content}}
                 </div>
             </div>
-
-            <div class="terminal-section">
-                <div class="prompt">kreato@akiri:~$ <span class="typing-effect">cat skills.txt</span></div>
-                <div class="output">
-                    <h2>Languages I know</h2>
-                    <p>I know Nim, Python, Bash/POSIX sh, Go, HTML5, CSS, sass, some PowerShell and some Svelte.</p>
-                    <p>I use Nim for most tasks, but I mainly use Go at work.</p>
-                </div>
-            </div>
-
-            <div class="terminal-section">
-                <div class="prompt">kreato@akiri:~$ <span class="typing-effect">cat tools.txt</span></div>
-                <div class="output">
-                    <h2>Software I use</h2>
-                    <p>I use macOS on my computer, with these applications:</p>
-                    <ul>
-                        <li>Terminal: iTerm2</li>
-                        <li>Password manager: 1Password</li>
-                        <li>Browser: Vivaldi</li>
-                        <li>Note-taking app: Private Discord server</li>
-                        <li>Chat: Discord, Telegram, Signal</li>
-                        <li>Office: Microsoft Office, Google Docs, Onlyoffice</li>
-                        <li>Editor: (Neo)Vim with a couple of plugins, also use Cursor and VSCode from time to time</li>
-                    </ul>
-                    <p>Software I use changes overtime and this list may not be up-to-date.</p>
-                </div>
-            </div>
-
-            <div class="terminal-section">
-                <div class="prompt">kreato@akiri:~$ <span class="typing-effect">cat contact.txt</span></div>
-                <div class="output">
-                    <h2>Contact</h2>
-                    <p>Contact me on Discord (@kreatoo), or <a href="mailto:hi@krea.to" class="file">on email</a>.</p>
-                </div>
-            </div>
+            {{end}}
 
             <div class="terminal-section">
                 <div class="prompt">kreato@akiri:~$ <span class="typing-effect">ls</span></div>
                 <div class="output">
                     <div class="links">
-                        <a href="blog/index.html" class="file">blog.md</a>
-                        <a href="https://github.com/kreatoo" target="_blank" class="file">github.txt</a>
-                        <a href="https://github.com/kreatoo/bouquet2" target="_blank" class="file">infra.tf</a>
-                        <a href="https://status.krea.to" target="_blank" class="file">status.sh</a>
-                        <!-- a href="https://cloud.krea.to/s/FAfDqkBWhEXSapl" target="_blank" class="file">wallpapers.zip</a -->
+                        {{range .Links}}
+                        <a href="{{.URL}}"{{if .External}} target="_blank"{{end}} class="file">{{.Name}}</a>
+                        {{end}}
                     </div>
                 </div>
             </div>
@@ -163,7 +123,7 @@
             <button id="lucky-button">I'm feeling lucky</button>
         </div>
     </div>
-    <script src="js/script.js"></script>
+    <script src="{{.JSPath}}"></script>
     <script defer src="https://umami.krea.to/script.js" data-website-id="6354e7d6-d305-4c2b-a103-83639f9f7180"></script>
 </body>
-</html> 
+</html>

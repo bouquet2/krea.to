@@ -1,51 +1,49 @@
-.PHONY: all blog clean help build-md2html clean-md2html fmt-md2html tidy-md2html
+.PHONY: all clean help build tidy fmt
 
 # Default target
-all: blog
+all: build
 
-# Blog generation target
-blog: build-md2html
-	@echo "Converting markdown files..."
-	mkdir -p blog
-	md2html/md2html -input md -output blog -css "css/style-blog.css" -addlist -recursive -rss -site-url 'https://krea.to'
-
-# Build md2html binary
-build-md2html: tidy-md2html
+# Build site (landing page + blog posts)
+build: tidy
 	@echo "Building md2html..."
 	cd md2html && go build -o md2html ./cmd/md2html
+	@echo "Generating site..."
+	mkdir -p dist/blog
+	md2html/md2html -input md -output dist -css "css/style-blog.css" -addlist -recursive -rss -site-url 'https://krea.to'
+	@echo "Copying static assets..."
+	cp -r css dist/
+	cp -r js dist/
+	cp -r fonts dist/
+	cp -r assets dist/
+	cp CNAME dist/
+	@echo "Build complete. Output in dist/"
 
-# Clean output files
-clean: clean-md2html
-	@echo "Cleaning output files..."
-	rm -rf blog
-
-# Clean md2html binary
-clean-md2html:
-	@echo "Cleaning md2html..."
+# Clean all generated files
+clean:
+	@echo "Cleaning..."
 	rm -f md2html/md2html
+	rm -rf dist
 
-# Format md2html code
-fmt-md2html:
-	@echo "Formatting md2html code..."
+# Format code
+fmt:
+	@echo "Formatting code..."
 	gofmt -s -w md2html/cmd/md2html md2html/pkg
 	cd md2html && go vet ./...
 
-# Tidy md2html dependencies
-tidy-md2html:
-	@echo "Tidying md2html dependencies..."
+# Tidy dependencies
+tidy:
+	@echo "Tidying dependencies..."
 	cd md2html && go mod tidy
 
 # Help information
 help:
 	@echo "Available targets:"
-	@echo "  all          - Generate all blog pages (default)"
-	@echo "  blog         - Generate blog pages from markdown files"
-	@echo "  clean        - Remove all generated files"
-	@echo "  build-md2html - Build the md2html binary"
-	@echo "  clean-md2html - Clean the md2html binary"
-	@echo "  fmt-md2html  - Format md2html code"
-	@echo "  tidy-md2html - Tidy md2html dependencies"
-	@echo "  help         - Show this help message"
+	@echo "  all (default) - Build site from markdown files"
+	@echo "  build         - Alias for all"
+	@echo "  clean         - Remove generated files and binary"
+	@echo "  fmt           - Format and lint code"
+	@echo "  tidy          - Tidy Go dependencies"
+	@echo "  help          - Show this message"
 	@echo ""
-	@echo "To add new blog posts, create markdown files in the md2html directory"
-	@echo "Generated output will be in the blog directory" 
+	@echo "To add blog posts, create markdown files in md/blog/"
+	@echo "The landing page is defined in md/index.md" 

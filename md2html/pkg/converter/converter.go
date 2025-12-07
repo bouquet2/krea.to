@@ -84,6 +84,29 @@ type IndexData struct {
 	Image          string
 }
 
+// LandingSection represents a terminal section in the landing page
+type LandingSection struct {
+	Command string        // e.g., "cat about.txt"
+	Content template.HTML // Rendered markdown content
+}
+
+// LandingLink represents a link in the landing page "ls" output
+type LandingLink struct {
+	Name     string // Display name, e.g., "blog.md"
+	URL      string // Link URL
+	External bool   // Whether to open in new tab
+}
+
+// LandingData represents data for the landing page template
+type LandingData struct {
+	Title       string
+	Description string
+	CSSPath     string
+	JSPath      string
+	Sections    []LandingSection
+	Links       []LandingLink
+}
+
 // ==========================================================================
 // Path Utilities
 // ==========================================================================
@@ -170,9 +193,6 @@ func processWikiLinks(content []byte, basePath string, inputRoot string, outputR
 
 // calculatePathDepth determines the directory depth based on input and output directories
 func calculatePathDepth(inputDir, inputRoot string) (int, error) {
-	// Debug information
-	fmt.Printf("Calculating path depth - Input dir: %s, Input root: %s\n", inputDir, inputRoot)
-
 	// Get absolute paths to ensure accurate comparison
 	absInputRoot, err := filepath.Abs(inputRoot)
 	if err != nil {
@@ -184,11 +204,8 @@ func calculatePathDepth(inputDir, inputRoot string) (int, error) {
 		return 0, fmt.Errorf("error getting absolute path for current dir: %v", err)
 	}
 
-	fmt.Printf("Absolute paths - Root: %s, Current: %s\n", absInputRoot, absCurrentDir)
-
 	// Compare the paths to determine depth
 	if absInputRoot == absCurrentDir {
-		fmt.Printf("Input directory is the root directory (depth 0)\n")
 		return 0, nil
 	}
 
@@ -196,7 +213,6 @@ func calculatePathDepth(inputDir, inputRoot string) (int, error) {
 	relPath, err := filepath.Rel(absInputRoot, absCurrentDir)
 	if err != nil {
 		// Handle special case: on some platforms, paths may not be directly relatable
-		fmt.Printf("Warning: could not get relative path: %v\n", err)
 
 		// Try using string manipulation as fallback
 		absRootStr := strings.ReplaceAll(absInputRoot, string(filepath.Separator), "/")
@@ -211,7 +227,6 @@ func calculatePathDepth(inputDir, inputRoot string) (int, error) {
 			}
 
 			depth := strings.Count(remaining, "/") + 1
-			fmt.Printf("Fallback depth calculation: %d\n", depth)
 			return depth, nil
 		}
 
@@ -219,7 +234,6 @@ func calculatePathDepth(inputDir, inputRoot string) (int, error) {
 	}
 
 	if relPath == "." {
-		fmt.Printf("Relative path is '.' (depth 0)\n")
 		return 0, nil
 	}
 
@@ -234,7 +248,6 @@ func calculatePathDepth(inputDir, inputRoot string) (int, error) {
 	}
 
 	depth := len(nonEmptyComponents)
-	fmt.Printf("Path components: %v (depth %d)\n", nonEmptyComponents, depth)
 
 	// Additional check for forward slashes on Windows
 	if runtime.GOOS == "windows" && depth == 0 {
@@ -246,7 +259,6 @@ func calculatePathDepth(inputDir, inputRoot string) (int, error) {
 			}
 		}
 		depth = len(nonEmptyComponents)
-		fmt.Printf("Windows path check - components: %v (depth %d)\n", nonEmptyComponents, depth)
 	}
 
 	// Check for special case with blog subdirectories
@@ -265,11 +277,9 @@ func calculatePathDepth(inputDir, inputRoot string) (int, error) {
 				// We're in a blog subfolder
 				if nonEmptySubSegments == 1 {
 					// Direct child of blog folder
-					fmt.Printf("Blog subfolder detected, forcing depth to 1\n")
 					return 1, nil
 				} else {
 					// Nested folder within blog structure
-					fmt.Printf("Nested blog subfolder detected (level %d)\n", nonEmptySubSegments)
 					return nonEmptySubSegments, nil
 				}
 			}
@@ -283,29 +293,33 @@ func calculatePathDepth(inputDir, inputRoot string) (int, error) {
 func adjustPaths(config Config, depth int, outputDir string) Config {
 	adjustedConfig := config
 
-	// Debug information
-	fmt.Printf("Path adjustment - depth: %d, output dir: %s\n", depth, outputDir)
-	fmt.Printf("Original paths - CSS: %s, JS: %s\n", config.CSSPath, config.JSPath)
-
 	// Special case for blog/category structure - explicit detection
+	// Find blog in the output path components (may be prefixed with dist/ or similar)
 	outComponents := strings.Split(outputDir, string(filepath.Separator))
-	if len(outComponents) >= 2 && outComponents[0] == "blog" {
+	blogIndex := -1
+	for i, comp := range outComponents {
+		if comp == "blog" {
+			blogIndex = i
+			break
+		}
+	}
+
+	if blogIndex >= 0 {
+		blogComponents := outComponents[blogIndex:]
 		// For first-level blog categories (blog/X), ALWAYS use ../../ prefix regardless of depth calculation
-		if len(outComponents) == 2 {
+		if len(blogComponents) == 2 {
 			adjustedConfig.CSSPath = "../../css/style-blog.css"
 			adjustedConfig.JSPath = "../../js/script.js"
-			fmt.Printf("Blog/category structure detected, using ../../ prefix\n")
 			return adjustedConfig
-		} else {
+		} else if len(blogComponents) > 2 {
 			// For nested blog structure (blog/X/Y), count the components to determine proper path
-			nestingDepth := len(outComponents) - 1 // blog/Nim/SubDir would be depth 2
+			nestingDepth := len(blogComponents) - 1 // blog/Nim/SubDir would be depth 2
 			prefix := ""
 			for i := 0; i < nestingDepth; i++ {
 				prefix += "../"
 			}
 			adjustedConfig.CSSPath = prefix + "css/style-blog.css"
 			adjustedConfig.JSPath = prefix + "js/script.js"
-			fmt.Printf("Nested blog structure detected with depth %d, using prefix: %s\n", nestingDepth, prefix)
 			return adjustedConfig
 		}
 	}
@@ -380,7 +394,6 @@ func adjustPaths(config Config, depth int, outputDir string) Config {
 		}
 	}
 
-	fmt.Printf("Adjusted paths - CSS: %s, JS: %s\n", adjustedConfig.CSSPath, adjustedConfig.JSPath)
 	return adjustedConfig
 }
 
@@ -420,6 +433,98 @@ func extractMetadata(mdContent []byte) (map[string]string, []byte) {
 	}
 
 	return metadata, mdContent
+}
+
+// extractLandingSections parses markdown content into landing page sections
+// Sections are delimited by <!-- Section: command --> comments
+func extractLandingSections(content []byte) []LandingSection {
+	var sections []LandingSection
+	contentStr := string(content)
+
+	// Regular expression to match section delimiters
+	// Format: <!-- Section: command -->
+	sectionRe := regexp.MustCompile(`<!--\s*Section:\s*(.+?)\s*-->`)
+
+	// Find all section markers
+	matches := sectionRe.FindAllStringSubmatchIndex(contentStr, -1)
+
+	if len(matches) == 0 {
+		return sections
+	}
+
+	for i, match := range matches {
+		// match[0] and match[1] are the full match boundaries
+		// match[2] and match[3] are the command capture group boundaries
+		command := contentStr[match[2]:match[3]]
+
+		// Determine the content boundaries
+		contentStart := match[1] // End of the current marker
+		var contentEnd int
+		if i+1 < len(matches) {
+			contentEnd = matches[i+1][0] // Start of the next marker
+		} else {
+			// For the last section, find <!-- Links --> or end of content
+			linksIdx := strings.Index(contentStr[contentStart:], "<!-- Links -->")
+			if linksIdx != -1 {
+				contentEnd = contentStart + linksIdx
+			} else {
+				contentEnd = len(contentStr)
+			}
+		}
+
+		// Extract and trim the section content
+		sectionContent := strings.TrimSpace(contentStr[contentStart:contentEnd])
+
+		if sectionContent != "" {
+			// Parse the markdown content to HTML
+			htmlContent := parseMarkdown([]byte(sectionContent))
+
+			sections = append(sections, LandingSection{
+				Command: command,
+				Content: htmlContent,
+			})
+		}
+	}
+
+	return sections
+}
+
+// extractLandingLinks parses the <!-- Links --> section from markdown content
+// Format: <!-- Links --> followed by markdown links like - [name](url)
+func extractLandingLinks(content []byte) []LandingLink {
+	var links []LandingLink
+	contentStr := string(content)
+
+	// Find the <!-- Links --> marker
+	linksIdx := strings.Index(contentStr, "<!-- Links -->")
+	if linksIdx == -1 {
+		return links
+	}
+
+	// Get content after the marker
+	linksContent := contentStr[linksIdx+len("<!-- Links -->"):]
+
+	// Regular expression to match markdown links: [name](url)
+	linkRe := regexp.MustCompile(`\[([^\]]+)\]\(([^)]+)\)`)
+
+	matches := linkRe.FindAllStringSubmatch(linksContent, -1)
+	for _, match := range matches {
+		if len(match) >= 3 {
+			name := match[1]
+			url := match[2]
+
+			// Determine if external (starts with http:// or https://)
+			external := strings.HasPrefix(url, "http://") || strings.HasPrefix(url, "https://")
+
+			links = append(links, LandingLink{
+				Name:     name,
+				URL:      url,
+				External: external,
+			})
+		}
+	}
+
+	return links
 }
 
 // renderCodeWithSyntaxHighlighting renders a code block with syntax highlighting
@@ -597,8 +702,6 @@ func getFolderTitle(inputDir string, defaultTitle string) string {
 
 // calculateBackURL determines the URL for going back to the parent directory
 func calculateBackURL(depth int) string {
-	fmt.Printf("Calculating back URL for depth: %d\n", depth)
-
 	if depth <= 0 {
 		return ""
 	}
@@ -613,7 +716,6 @@ func calculateBackURL(depth int) string {
 	}
 	backURL += "index.html"
 
-	fmt.Printf("Generated back URL: %s\n", backURL)
 	return backURL
 }
 
@@ -663,7 +765,7 @@ func formatAuthorAsEmail(authorName string, siteURL string) string {
 	if authorName == "" {
 		return ""
 	}
-	
+
 	// Extract domain from site URL
 	domain := "example.com"
 	if siteURL != "" {
@@ -678,11 +780,11 @@ func formatAuthorAsEmail(authorName string, siteURL string) string {
 			domain = url
 		}
 	}
-	
+
 	// Create email from author name (lowercase, replace spaces with dots)
 	emailName := strings.ToLower(strings.ReplaceAll(authorName, " ", "."))
 	email := fmt.Sprintf("%s@%s", emailName, domain)
-	
+
 	// Return in RSS 2.0 format: "email@domain.com (Name)"
 	return fmt.Sprintf("%s (%s)", email, authorName)
 }
@@ -725,7 +827,7 @@ func generateRSSFeed(blogPosts []BlogPost, config Config, outputDir string) erro
 			// Fallback to relative link if FullURL not set
 			fullURL = post.Link
 		}
-		
+
 		// Make it absolute if site URL is provided
 		if config.SiteURL != "" && !strings.HasPrefix(fullURL, "http") {
 			// Ensure site URL doesn't end with / and link doesn't start with /
@@ -770,15 +872,33 @@ func generateRSSFeed(blogPosts []BlogPost, config Config, outputDir string) erro
 		// For blog root: /blog/feed.xml
 		// For blog/category: /blog/category/feed.xml
 		feedURL := config.SiteURL
-		relPath := strings.TrimPrefix(outputDir, "blog")
-		relPath = strings.TrimPrefix(relPath, string(filepath.Separator))
-		if relPath == "" {
-			feedURL = strings.TrimSuffix(feedURL, "/") + "/blog/feed.xml"
-		} else {
-			// Convert path separators to forward slashes
-			relPath = strings.ReplaceAll(relPath, string(filepath.Separator), "/")
-			feedURL = strings.TrimSuffix(feedURL, "/") + "/blog/" + relPath + "/feed.xml"
+
+		// Find "blog" in the output path and extract everything after it
+		outComponents := strings.Split(outputDir, string(filepath.Separator))
+		blogIdx := -1
+		for i, comp := range outComponents {
+			if comp == "blog" {
+				blogIdx = i
+				break
+			}
 		}
+
+		if blogIdx >= 0 {
+			// Get path components after "blog"
+			afterBlog := outComponents[blogIdx+1:]
+			if len(afterBlog) == 0 {
+				// At blog root
+				feedURL = strings.TrimSuffix(feedURL, "/") + "/blog/feed.xml"
+			} else {
+				// In a blog subdirectory
+				subPath := strings.Join(afterBlog, "/")
+				feedURL = strings.TrimSuffix(feedURL, "/") + "/blog/" + subPath + "/feed.xml"
+			}
+		} else {
+			// Fallback: just append feed.xml to the output dir
+			feedURL = strings.TrimSuffix(feedURL, "/") + "/" + strings.ReplaceAll(outputDir, string(filepath.Separator), "/") + "/feed.xml"
+		}
+
 		atomLink = &AtomLink{
 			Href: feedURL,
 			Rel:  "self",
@@ -843,6 +963,65 @@ func GenerateTemplateFile(path string) error {
 	return os.WriteFile(path, templateContent, 0644)
 }
 
+// ConvertLandingPage converts a markdown file to a landing page HTML
+func ConvertLandingPage(mdFile string, config Config) error {
+	// Read markdown file
+	mdContent, err := os.ReadFile(mdFile)
+	if err != nil {
+		return fmt.Errorf("error reading markdown file: %v", err)
+	}
+
+	// Extract metadata
+	metadata, contentWithoutMeta := extractMetadata(mdContent)
+
+	// Extract sections and links
+	sections := extractLandingSections(contentWithoutMeta)
+	links := extractLandingLinks(contentWithoutMeta)
+
+	// Load landing template
+	tmpl, err := template.ParseFS(templateFS, "templates/landing.html")
+	if err != nil {
+		return fmt.Errorf("error parsing landing template: %v", err)
+	}
+
+	// Create output file (index.html at output root)
+	outputFile := filepath.Join(config.OutputDir, "index.html")
+	// Ensure the output directory exists
+	if err := os.MkdirAll(config.OutputDir, 0755); err != nil {
+		return fmt.Errorf("error creating output directory: %v", err)
+	}
+	file, err := os.Create(outputFile)
+	if err != nil {
+		return fmt.Errorf("error creating output file: %v", err)
+	}
+	defer file.Close()
+
+	// Prepare template data
+	title := metadata["Title"]
+	if title == "" {
+		title = "Home"
+	}
+
+	description := metadata["Description"]
+
+	data := LandingData{
+		Title:       title,
+		Description: description,
+		CSSPath:     config.CSSPath,
+		JSPath:      config.JSPath,
+		Sections:    sections,
+		Links:       links,
+	}
+
+	// Execute template
+	if err := tmpl.Execute(file, data); err != nil {
+		return fmt.Errorf("error executing landing template: %v", err)
+	}
+
+	fmt.Printf("Generated landing page: %s\n", outputFile)
+	return nil
+}
+
 // ConvertFile converts a markdown file to HTML
 func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]string, error) {
 	// Read markdown file
@@ -853,6 +1032,15 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 
 	// Extract metadata
 	metadata, contentWithoutMeta := extractMetadata(mdContent)
+
+	// Check if this is a landing page template
+	if metadata["Template"] == "landing" {
+		err := ConvertLandingPage(mdFile, config)
+		if err != nil {
+			return nil, err
+		}
+		return metadata, nil
+	}
 
 	// Calculate the directory of the current file
 	fileDir := filepath.Dir(mdFile)
@@ -962,6 +1150,26 @@ func ConvertDirectory(inputDir string, config Config) error {
 		}
 	}
 
+	// Check for landing page (index.md with Template: landing) at input root
+	landingFile := filepath.Join(inputDir, "index.md")
+	if _, err := os.Stat(landingFile); err == nil {
+		// Read and check metadata
+		mdContent, err := os.ReadFile(landingFile)
+		if err == nil {
+			metadata, _ := extractMetadata(mdContent)
+			if metadata["Template"] == "landing" {
+				// Process landing page with site root CSS
+				landingConfig := config
+				landingConfig.CSSPath = "css/style.css"
+				landingConfig.JSPath = "js/script.js"
+
+				if err := ConvertLandingPage(landingFile, landingConfig); err != nil {
+					return fmt.Errorf("error converting landing page: %v", err)
+				}
+			}
+		}
+	}
+
 	// Calculate directory depth
 	currentDepth, err := calculatePathDepth(inputDir, inputRoot)
 	if err != nil {
@@ -970,15 +1178,27 @@ func ConvertDirectory(inputDir string, config Config) error {
 	}
 
 	// Special handling for blog paths
+	// Find blog in the output path components (may be prefixed with dist/ or similar)
 	outComponents := strings.Split(config.OutputDir, string(filepath.Separator))
-	isBlogRoot := len(outComponents) == 1 && outComponents[0] == "blog"
-	
-	if len(outComponents) >= 1 && outComponents[0] == "blog" {
-		// Force blog structure to use the correct depth
-		if len(outComponents) == 2 {
-			// First level category (blog/X)
-			fmt.Printf("Blog category detected: %s\n", config.OutputDir)
+	blogIndex := -1
+	for i, comp := range outComponents {
+		if comp == "blog" {
+			blogIndex = i
+			break
+		}
+	}
 
+	// Calculate blog-relative components (everything after "blog")
+	var blogComponents []string
+	if blogIndex >= 0 {
+		blogComponents = outComponents[blogIndex:]
+	}
+	isBlogRoot := len(blogComponents) == 1 && blogIndex >= 0
+
+	if blogIndex >= 0 {
+		// Force blog structure to use the correct depth
+		if len(blogComponents) == 2 {
+			// First level category (blog/X)
 			// Use explicit depth of 2 levels for CSS/JS paths (../../)
 			currentConfig := config
 			currentConfig.CSSPath = "../../css/style-blog.css"
@@ -993,23 +1213,21 @@ func ConvertDirectory(inputDir string, config Config) error {
 			if err != nil {
 				return err
 			}
-			
+
 			// Generate RSS feed for this category if enabled
 			if config.GenerateRSS {
 				// Use category name for the feed title
-				categoryName := outComponents[1]
+				categoryName := blogComponents[1]
 				categoryConfig := config
 				categoryConfig.SiteTitle = fmt.Sprintf("%s - %s", config.SiteTitle, categoryName)
 				if err := generateRSSFeed(blogPosts, categoryConfig, config.OutputDir); err != nil {
 					return fmt.Errorf("error generating RSS feed for category %s: %v", categoryName, err)
 				}
 			}
-			
+
 			return nil
 		} else if isBlogRoot {
 			// Blog root directory
-			fmt.Printf("Blog root detected: %s\n", config.OutputDir)
-
 			// Use explicit depth of 1 level for CSS/JS paths (../)
 			currentConfig := config
 			currentConfig.CSSPath = "../css/style-blog.css"
@@ -1024,20 +1242,18 @@ func ConvertDirectory(inputDir string, config Config) error {
 			if err != nil {
 				return err
 			}
-			
+
 			// Generate RSS feed at blog root if enabled
 			if config.GenerateRSS {
 				if err := generateRSSFeed(blogPosts, config, config.OutputDir); err != nil {
 					return fmt.Errorf("error generating RSS feed: %v", err)
 				}
 			}
-			
+
 			return nil
 		} else {
 			// Nested blog structure (blog/X/Y/...)
-			nestingDepth := len(outComponents) - 1 // Count depth starting from blog
-			fmt.Printf("Nested blog structure detected: %s (depth: %d)\n",
-				config.OutputDir, nestingDepth)
+			nestingDepth := len(blogComponents) - 1 // Count depth starting from blog
 
 			// Calculate proper path prefix
 			prefix := ""
@@ -1058,18 +1274,18 @@ func ConvertDirectory(inputDir string, config Config) error {
 			if err != nil {
 				return err
 			}
-			
+
 			// Generate RSS feed for this nested directory if enabled
 			if config.GenerateRSS {
 				// Use directory path for the feed title
-				dirName := outComponents[len(outComponents)-1]
+				dirName := blogComponents[len(blogComponents)-1]
 				categoryConfig := config
 				categoryConfig.SiteTitle = fmt.Sprintf("%s - %s", config.SiteTitle, dirName)
 				if err := generateRSSFeed(blogPosts, categoryConfig, config.OutputDir); err != nil {
 					return fmt.Errorf("error generating RSS feed for directory %s: %v", dirName, err)
 				}
 			}
-			
+
 			return nil
 		}
 	}
@@ -1090,11 +1306,21 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 
 	var blogPosts []BlogPost
 	hasIndexMd := false
+	hasLandingPage := false
 
-	// First pass: Check if there's an index.md file
+	// First pass: Check if there's an index.md file (and if it's a landing page)
 	for _, file := range files {
 		if !file.IsDir() && (file.Name() == "index.md" || file.Name() == "index.markdown") {
 			hasIndexMd = true
+			// Check if it's a landing page template
+			filePath := filepath.Join(inputDir, file.Name())
+			mdContent, err := os.ReadFile(filePath)
+			if err == nil {
+				metadata, _ := extractMetadata(mdContent)
+				if metadata["Template"] == "landing" {
+					hasLandingPage = true
+				}
+			}
 			break
 		}
 	}
@@ -1117,11 +1343,20 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 			subConfig.OutputDir = subOutputDir
 
 			// Adjust CSS/JS paths for the subdirectory depth
+			// Find blog in the output path components (may be prefixed with dist/ or similar)
 			subOutComponents := strings.Split(subOutputDir, string(filepath.Separator))
-			if len(subOutComponents) >= 1 && subOutComponents[0] == "blog" {
+			subBlogIndex := -1
+			for i, comp := range subOutComponents {
+				if comp == "blog" {
+					subBlogIndex = i
+					break
+				}
+			}
+
+			if subBlogIndex >= 0 {
 				// For blog structure, calculate depth from site root
 				// blog/ = 1 level up, blog/X/ = 2 levels up, blog/X/Y/ = 3 levels up, etc.
-				blogDepth := len(subOutComponents)
+				blogDepth := len(subOutComponents) - subBlogIndex
 				prefix := ""
 				for i := 0; i < blogDepth; i++ {
 					prefix += "../"
@@ -1138,26 +1373,56 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 			if err != nil {
 				return nil, err
 			}
-			
-			// Generate RSS feed for blog category folders if enabled
+
+			// Generate RSS feed for blog folders if enabled
 			if config.GenerateRSS && len(subPosts) > 0 {
-				// Check if this is a blog category folder (blog/X)
-				outComponents := strings.Split(subOutputDir, string(filepath.Separator))
-				if len(outComponents) >= 2 && outComponents[0] == "blog" && len(outComponents) == 2 {
-					// This is a first-level category folder (blog/X)
-					categoryName := outComponents[1]
-					categoryConfig := config
-					categoryConfig.SiteTitle = fmt.Sprintf("%s - %s", config.SiteTitle, categoryName)
-					if err := generateRSSFeed(subPosts, categoryConfig, subOutputDir); err != nil {
-						// Log error but don't fail the entire process
-						fmt.Fprintf(os.Stderr, "Warning: error generating RSS feed for category %s: %v\n", categoryName, err)
+				// Check if this is a blog folder (blog or blog/X)
+				// Find blog index in path components
+				blogIdx := -1
+				for i, comp := range subOutComponents {
+					if comp == "blog" {
+						blogIdx = i
+						break
+					}
+				}
+				if blogIdx >= 0 {
+					blogRelComponents := subOutComponents[blogIdx:]
+					if len(blogRelComponents) == 1 {
+						// This is the blog root folder (blog/)
+						// Generate RSS feed with all posts from all categories
+						if err := generateRSSFeed(subPosts, config, subOutputDir); err != nil {
+							// Log error but don't fail the entire process
+							fmt.Fprintf(os.Stderr, "Warning: error generating RSS feed for blog: %v\n", err)
+						}
+					} else if len(blogRelComponents) == 2 {
+						// This is a first-level category folder (blog/X)
+						categoryName := blogRelComponents[1]
+						categoryConfig := config
+						categoryConfig.SiteTitle = fmt.Sprintf("%s - %s", config.SiteTitle, categoryName)
+						if err := generateRSSFeed(subPosts, categoryConfig, subOutputDir); err != nil {
+							// Log error but don't fail the entire process
+							fmt.Fprintf(os.Stderr, "Warning: error generating RSS feed for category %s: %v\n", categoryName, err)
+						}
 					}
 				}
 			}
-			
+
 			// Add subdirectory posts to our collection
 			blogPosts = append(blogPosts, subPosts...)
 		} else if !file.IsDir() && (strings.HasSuffix(file.Name(), ".md") || strings.HasSuffix(file.Name(), ".markdown")) {
+			// Skip landing page files (they're processed separately in ConvertDirectory)
+			if file.Name() == "index.md" || file.Name() == "index.markdown" {
+				// Check if it's a landing page template
+				mdContent, err := os.ReadFile(filePath)
+				if err == nil {
+					metadata, _ := extractMetadata(mdContent)
+					if metadata["Template"] == "landing" {
+						// Skip - already processed by ConvertDirectory
+						continue
+					}
+				}
+			}
+
 			metadata, err := ConvertFile(filePath, config, inputRoot)
 			if err != nil {
 				return nil, err
@@ -1197,7 +1462,7 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 				}
 				blogRoot = parent
 			}
-			
+
 			var relPath string
 			if foundBlogRoot {
 				// Calculate relative path from blog root
@@ -1212,7 +1477,7 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 				// Fallback: use output directory structure
 				relPath = strings.ReplaceAll(outputFile, string(filepath.Separator), "/")
 			}
-			
+
 			// Get author from metadata or use default
 			author := metadata["Author"]
 			if author == "" {
@@ -1231,7 +1496,8 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 	}
 
 	// Generate index.html either if requested via config or if there's no index.md
-	if config.GenerateList || !hasIndexMd {
+	// But skip if there's a landing page (it's handled separately)
+	if !hasLandingPage && (config.GenerateList || !hasIndexMd) {
 		// Create a list of subdirectories
 		var subdirectories []Directory
 		for _, file := range files {
@@ -1250,8 +1516,32 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 		// Get folder name for the title
 		folderName := getFolderTitle(inputDir, config.SiteTitle)
 
-		// Calculate appropriate back URL based on depth
-		backURL := calculateBackURL(depth)
+		// Calculate appropriate back URL based on blog structure
+		// Find blog in the output path to calculate correct relative path
+		outComponents := strings.Split(config.OutputDir, string(filepath.Separator))
+		blogIdx := -1
+		for i, comp := range outComponents {
+			if comp == "blog" {
+				blogIdx = i
+				break
+			}
+		}
+
+		var backURL string
+		if blogIdx >= 0 {
+			// Calculate back URL relative to blog structure
+			blogDepth := len(outComponents) - blogIdx - 1 // depth within blog (0 for blog/, 1 for blog/X/, etc.)
+			if blogDepth == 0 {
+				// At blog root, go back to site root
+				backURL = "../index.html"
+			} else {
+				// In a blog category, go back to blog root
+				backURL = "../index.html"
+			}
+		} else {
+			// Not in blog, use standard calculation
+			backURL = calculateBackURL(depth)
+		}
 
 		// Generate the index file
 		if err := generateIndex(
