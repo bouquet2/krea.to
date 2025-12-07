@@ -12,123 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const body = document.body;
     const terminal = document.querySelector('.terminal');
     
-    // Hamburger menu toggle functionality
-    const hamburgerMenu = document.querySelector('.hamburger-menu');
-    const hamburgerIcon = document.querySelector('.hamburger-icon');
-    const menuItems = document.querySelector('.menu-items');
-    
-    if (hamburgerIcon) {
-        hamburgerIcon.addEventListener('click', function(e) {
-            e.stopPropagation();
-            hamburgerMenu.classList.toggle('menu-open');
-        });
-    }
-    
-    // Close menu when clicking outside
-    document.addEventListener('click', function(e) {
-        if (hamburgerMenu && !hamburgerMenu.contains(e.target)) {
-            hamburgerMenu.classList.remove('menu-open');
-        }
-    });
-    
-    // Prevent menu from closing when clicking inside menu items
-    if (menuItems) {
-        menuItems.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-    }
-    
-    // Color scheme configurations
-    const schemeConfigs = {
-        'frappe': {
-            '--bg-color': '#303446',
-            '--text-color': '#c6d0f5',
-            '--accent-color': '#f4b8e4',
-            '--secondary-color': '#ca9ee6',
-            '--terminal-header': '#292c3c',
-            '--link-color': '#8caaee'
-        },
-        'mocha': {
-            '--bg-color': '#1e1e2e',
-            '--text-color': '#cdd6f4',
-            '--accent-color': '#f5c2e7',
-            '--secondary-color': '#cba6f7',
-            '--terminal-header': '#181825',
-            '--link-color': '#89b4fa'
-        },
-        'latte': {
-            '--bg-color': '#eff1f5',
-            '--text-color': '#4c4f69',
-            '--accent-color': '#ea76cb',
-            '--secondary-color': '#8839ef',
-            '--terminal-header': '#e6e9ef',
-            '--link-color': '#1e66f5'
-        },
-        'macchiato': {
-            '--bg-color': '#24273a',
-            '--text-color': '#cad3f5',
-            '--accent-color': '#f5bde6',
-            '--secondary-color': '#c6a0f6',
-            '--terminal-header': '#1e2030',
-            '--link-color': '#8aadf4'
-        },
-        'gruvbox': {
-            '--bg-color': '#282828',
-            '--text-color': '#ebdbb2',
-            '--accent-color': '#b8bb26',
-            '--secondary-color': '#fabd2f',
-            '--terminal-header': '#1d2021',
-            '--link-color': '#83a598'
-        },
-        'nord': {
-            '--bg-color': '#2e3440',
-            '--text-color': '#eceff4',
-            '--accent-color': '#88c0d0',
-            '--secondary-color': '#81a1c1',
-            '--terminal-header': '#3b4252',
-            '--link-color': '#5e81ac'
-        },
-        'tokyonight': {
-            '--bg-color': '#1a1b26',
-            '--text-color': '#a9b1d6',
-            '--accent-color': '#bb9af7',
-            '--secondary-color': '#7aa2f7',
-            '--terminal-header': '#24283b',
-            '--link-color': '#7dcfff'
-        },
-        'monokai': {
-            '--bg-color': '#1B1E1C',
-            '--text-color': '#F5F5F5',
-            '--accent-color': '#FF1493',
-            '--secondary-color': '#AF87FF',
-            '--terminal-header': '#333333',
-            '--link-color': '#5FD7FF'
-        },
-        'onedark': {
-            '--bg-color': '#282c34',
-            '--text-color': '#abb2bf',
-            '--accent-color': '#c678dd',
-            '--secondary-color': '#61afef',
-            '--terminal-header': '#21252b',
-            '--link-color': '#e06c75'
-        },
-        'solarized': {
-            '--bg-color': '#002b36',
-            '--text-color': '#93a1a1',
-            '--accent-color': '#d33682',
-            '--secondary-color': '#268bd2',
-            '--terminal-header': '#073642',
-            '--link-color': '#2aa198'
-        },
-        'kanagawa': {
-            '--bg-color': '#1F1F28',
-            '--text-color': '#DCD7BA',
-            '--accent-color': '#957FB8',
-            '--secondary-color': '#7FB4CA',
-            '--terminal-header': '#16161D',
-            '--link-color': '#98BB6C'
-        }
-    };
+    // Color schemes available
+    const schemes = ['mocha', 'frappe', 'latte', 'macchiato', 'gruvbox', 'nord', 'tokyonight', 'monokai', 'onedark', 'solarized', 'kanagawa'];
 
     const updateAccessibilityButtonState = () => {
         if (!accessibilityButton) return;
@@ -229,11 +114,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (fontSizeRange) {
         fontSizeRange.value = savedFontSize;
         if (fontSizeValue) fontSizeValue.textContent = `${savedFontSize}em`;
-        body.style.setProperty('font-size', `${savedFontSize}em`, 'important');
+        document.documentElement.style.setProperty('--font-size', `${savedFontSize}em`);
         
         fontSizeRange.addEventListener('input', function() {
             const size = this.value;
-            body.style.setProperty('font-size', `${size}em`, 'important');
+            document.documentElement.style.setProperty('--font-size', `${size}em`);
             if (fontSizeValue) fontSizeValue.textContent = `${size}em`;
             localStorage.setItem('fontSize', size);
         });
@@ -264,18 +149,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Apply saved font
         if (savedFont === 'pokemon') {
-            body.style.setProperty('font-family', "'Pokemon DP Pro', sans-serif", 'important');
+            document.documentElement.style.setProperty('--font-family', "'Pokemon DP Pro', sans-serif");
         } else {
-            body.style.setProperty('font-family', "'Scientifica', sans-serif", 'important');
+            document.documentElement.style.setProperty('--font-family', "'Scientifica', sans-serif");
         }
         
         fontSelect.addEventListener('change', function() {
             const selectedFont = this.value;
             
             if (selectedFont === 'pokemon') {
-                body.style.setProperty('font-family', "'Pokemon DP Pro', sans-serif", 'important');
+                document.documentElement.style.setProperty('--font-family', "'Pokemon DP Pro', sans-serif");
             } else {
-                body.style.setProperty('font-family', "'Scientifica', sans-serif", 'important');
+                document.documentElement.style.setProperty('--font-family', "'Scientifica', sans-serif");
             }
             
             localStorage.setItem('fontFamily', selectedFont);
@@ -302,33 +187,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Helper function to apply a color scheme
     const applyScheme = (schemeName) => {
-        const config = schemeConfigs[schemeName];
-        if (config) {
-            for (const [property, value] of Object.entries(config)) {
-                document.documentElement.style.setProperty(property, value);
-            }
+        if (schemes.includes(schemeName)) {
             body.setAttribute('data-theme', schemeName);
             localStorage.setItem('colorScheme', schemeName);
-            
-            // Update background image based on scheme
-            // Catppuccin variants use the same background
-            let backgroundImage = schemeName;
-            if (['mocha', 'frappe', 'macchiato', 'latte'].includes(schemeName)) {
-                backgroundImage = 'catppuccin-dark';
-            }
-            
-            // Determine file extension based on theme
-            let extension = 'jpg'; // default for most themes
-            if (['mocha', 'frappe', 'macchiato', 'latte', 'catppuccin-dark', 'monokai', 'onedark', 'kanagawa'].includes(backgroundImage)) {
-                extension = 'avif';
-            } else if (['solarized', 'gruvbox', 'tokyonight', 'nord'].includes(backgroundImage)) {
-                extension = 'png';
-            }
-            
-            // Only set background if terminal exists (main site only)
-            if (terminal) {
-                document.documentElement.style.setProperty('--background-image', `url('../assets/${backgroundImage}.${extension}')`);
-            }
         }
     };
     
@@ -389,8 +250,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Only run terminal-specific code if terminal exists (main site)
     if (terminal) {
-        const schemes = ['mocha', 'frappe', 'latte', 'macchiato', 'gruvbox', 'nord', 'tokyonight', 'monokai', 'onedark', 'solarized', 'kanagawa'];
-        
         // Lucky button functionality
         if (luckyButton) {
             luckyButton.addEventListener('click', function() {
