@@ -8,7 +8,7 @@ DEBUG_FLAG = $(if $(filter 1,$(DEBUG)),--debug,)
 MD2HTML_BIN = md2html/md2html
 DIST_DIR = dist
 ASSETS = css js fonts assets
-CONVERT_FLAGS = --input md --output $(DIST_DIR) --css "css/style.css" --addlist --recursive --rss --site-url 'https://krea.to' $(DEBUG_FLAG)
+CONVERT_FLAGS = --input md --output $(DIST_DIR) --css "css/style.css" --js "js/script.js" --addlist --recursive --rss --site-url 'https://krea.to' $(DEBUG_FLAG)
 
 # Default target
 all: build
