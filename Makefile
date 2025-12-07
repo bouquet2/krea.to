@@ -1,4 +1,4 @@
-.PHONY: all clean help build tidy fmt
+.PHONY: all clean help build tidy fmt serve
 
 # Default target
 all: build
@@ -9,7 +9,7 @@ build: tidy
 	cd md2html && go build -o md2html ./cmd/md2html
 	@echo "Generating site..."
 	mkdir -p dist/blog
-	md2html/md2html -input md -output dist -css "css/style-blog.css" -addlist -recursive -rss -site-url 'https://krea.to'
+	md2html/md2html convert --input md --output dist --css "css/style-blog.css" --addlist --recursive --rss --site-url 'https://krea.to'
 	@echo "Copying static assets..."
 	cp -r css dist/
 	cp -r js dist/
@@ -23,6 +23,14 @@ clean:
 	@echo "Cleaning..."
 	rm -f md2html/md2html
 	rm -rf dist
+
+# Serve the site locally with a development server
+serve: tidy
+	@echo "Building md2html..."
+	cd md2html && go build -o md2html ./cmd/md2html
+	@echo "Generating site..."
+	mkdir -p dist/blog
+	md2html/md2html convert --input md --output dist --css "css/style-blog.css" --addlist --recursive --rss --site-url 'https://krea.to' --serve --port '8080'
 
 # Format code
 fmt:
@@ -43,7 +51,9 @@ help:
 	@echo "  clean         - Remove generated files and binary"
 	@echo "  fmt           - Format and lint code"
 	@echo "  tidy          - Tidy Go dependencies"
+	@echo "  serve         - Build site and start development server on localhost:8080"
 	@echo "  help          - Show this message"
 	@echo ""
 	@echo "To add blog posts, create markdown files in md/blog/"
-	@echo "The landing page is defined in md/index.md" 
+	@echo "The landing page is defined in md/index.md"
+

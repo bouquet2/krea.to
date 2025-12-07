@@ -20,13 +20,13 @@ My personal website and blog, featuring a terminal-style interface and a custom 
 - **Syntax Highlighting** - Code blocks with syntax highlighting
 - **Responsive Design** - Works great on all screen sizes, including but not limited to phone, tablet, and laptop
 
-## Building the Blog
+## Building
 
-The blog uses a custom Go-based markdown converter. To generate blog posts:
+The website uses a custom Go-based markdown converter. To generate blog posts:
 
 ```bash
-# Build the converter and generate all blog pages
-make blog
+# Build the converter and generate all pages
+make
 
 # Clean generated files
 make clean
@@ -50,7 +50,7 @@ make help
    
    Your content here...
    ```
-3. Run `make blog` to generate the HTML
+3. Run `make` to generate the HTML
 4. Commit and push the changes
 
 ## Development
