@@ -817,19 +817,6 @@ body:has(.terminal) ul {
     content: "📁 ";
 }
 
-.gif-output {
-    margin: 10px 0;
-    border: 1px solid var(--accent-color);
-    border-radius: 4px;
-    padding: 5px;
-    background-color: var(--terminal-header);
-}
-
-.gif-output img {
-    display: block;
-    margin: 0 auto;
-}
-
 @keyframes typing {
     from { width: 0 }
     to { width: 100% }
