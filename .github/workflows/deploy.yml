@@ -29,7 +29,7 @@ jobs:
         uses: actions/setup-go@v6
 
       - name: Generate blog content
-        run: make blog
+        run: make
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -37,7 +37,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: '.'
+          path: 'dist/'
 
       - name: Deploy to GitHub Pages
         id: deployment
