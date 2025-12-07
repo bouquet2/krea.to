@@ -205,18 +205,14 @@ func adjustPaths(config Config, depth int, outputDir string) Config {
 		blogComponents := outComponents[blogIndex:]
 		// For first-level blog categories (blog/X), ALWAYS use ../../ prefix regardless of depth calculation
 		if len(blogComponents) == 2 {
-			adjustedConfig.CSSPath = "../../css/style.css"
-			adjustedConfig.JSPath = "../../js/script.js"
+			adjustedConfig.CSSPath = prependPathPrefix(config.CSSPath, 2)
+			adjustedConfig.JSPath = prependPathPrefix(config.JSPath, 2)
 			return adjustedConfig
 		} else if len(blogComponents) > 2 {
 			// For nested blog structure (blog/X/Y), count the components to determine proper path
 			nestingDepth := len(blogComponents) - 1 // blog/Nim/SubDir would be depth 2
-			prefix := ""
-			for i := 0; i < nestingDepth; i++ {
-				prefix += "../"
-			}
-			adjustedConfig.CSSPath = prefix + "css/style.css"
-			adjustedConfig.JSPath = prefix + "js/script.js"
+			adjustedConfig.CSSPath = prependPathPrefix(config.CSSPath, nestingDepth)
+			adjustedConfig.JSPath = prependPathPrefix(config.JSPath, nestingDepth)
 			return adjustedConfig
 		}
 	}
@@ -282,4 +278,25 @@ func calculateBackURL(depth int) string {
 	backURL += "index.html"
 
 	return backURL
+}
+
+// prependPathPrefix adds ../ prefixes to a path based on depth
+// If the path is empty or starts with http, it returns it unchanged
+func prependPathPrefix(path string, depth int) string {
+	if path == "" || strings.HasPrefix(path, "http") {
+		return path
+	}
+
+	if depth <= 0 {
+		return path
+	}
+
+	prefix := ""
+	for i := 0; i < depth; i++ {
+		prefix += "../"
+	}
+
+	// Remove leading slash if present
+	cleanPath := strings.TrimPrefix(path, "/")
+	return prefix + cleanPath
 }
