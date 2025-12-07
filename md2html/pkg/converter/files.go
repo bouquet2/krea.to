@@ -6,15 +6,21 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/rs/zerolog/log"
 )
 
 // ConvertLandingPage converts a markdown file to a landing page HTML
 func ConvertLandingPage(mdFile string, config Config) error {
+	logger := log.With().Str("file", mdFile).Str("type", "landing_page").Logger()
+	logger.Debug().Msg("Starting conversion of landing page")
+
 	// Read markdown file
 	mdContent, err := os.ReadFile(mdFile)
 	if err != nil {
 		return fmt.Errorf("error reading markdown file: %v", err)
 	}
+	logger.Debug().Int("size_bytes", len(mdContent)).Msg("Landing page markdown file read successfully")
 
 	// Extract metadata
 	metadata, contentWithoutMeta := extractMetadata(mdContent)
@@ -31,6 +37,7 @@ func ConvertLandingPage(mdFile string, config Config) error {
 
 	// Create output file (index.html at output root)
 	outputFile := filepath.Join(config.OutputDir, "index.html")
+	logger.Debug().Str("output_file", outputFile).Msg("Creating landing page HTML file")
 	// Ensure the output directory exists
 	if err := os.MkdirAll(config.OutputDir, 0755); err != nil {
 		return fmt.Errorf("error creating output directory: %v", err)
@@ -40,6 +47,7 @@ func ConvertLandingPage(mdFile string, config Config) error {
 		return fmt.Errorf("error creating output file: %v", err)
 	}
 	defer file.Close()
+	logger.Debug().Msg("Landing page output file created successfully")
 
 	// Prepare template data
 	title := metadata["Title"]
@@ -63,23 +71,30 @@ func ConvertLandingPage(mdFile string, config Config) error {
 		return fmt.Errorf("error executing landing template: %v", err)
 	}
 
+	logger.Debug().Str("output_file", outputFile).Msg("Landing page successfully generated")
 	fmt.Printf("Generated landing page: %s\n", outputFile)
 	return nil
 }
 
 // ConvertFile converts a markdown file to HTML
 func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]string, error) {
+	logger := log.With().Str("file", mdFile).Logger()
+	logger.Debug().Msg("Starting conversion of markdown file")
+
 	// Read markdown file
 	mdContent, err := os.ReadFile(mdFile)
 	if err != nil {
 		return nil, fmt.Errorf("error reading markdown file: %v", err)
 	}
+	logger.Debug().Int("size_bytes", len(mdContent)).Msg("Markdown file read successfully")
 
 	// Extract metadata
 	metadata, contentWithoutMeta := extractMetadata(mdContent)
+	logger.Debug().Str("title", metadata["Title"]).Str("author", metadata["Author"]).Msg("Metadata extracted")
 
 	// Check if this is a landing page template
 	if metadata["Template"] == "landing" {
+		logger.Debug().Msg("File is landing page template, processing as landing page")
 		err := ConvertLandingPage(mdFile, config)
 		if err != nil {
 			return nil, err
@@ -112,6 +127,7 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 
 	// Create output file
 	outputFile := filepath.Join(config.OutputDir, fileNameWithoutExt+".html")
+	logger.Debug().Str("output_file", outputFile).Msg("Creating output HTML file")
 	// Ensure the output directory exists
 	if err := os.MkdirAll(filepath.Dir(outputFile), 0755); err != nil {
 		return nil, fmt.Errorf("error creating output directory: %v", err)
@@ -121,6 +137,7 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 		return nil, fmt.Errorf("error creating output file: %v", err)
 	}
 	defer file.Close()
+	logger.Debug().Msg("Output file created successfully")
 
 	// Prepare template data
 	title := metadata["Title"]
@@ -170,11 +187,15 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 		return nil, fmt.Errorf("error executing template: %v", err)
 	}
 
+	logger.Debug().Str("output_file", outputFile).Msg("Markdown file successfully converted to HTML")
 	return metadata, nil
 }
 
 // ConvertDirectory converts all markdown files in a directory
 func ConvertDirectory(inputDir string, config Config) error {
+	logger := log.With().Str("input_dir", inputDir).Str("output_dir", config.OutputDir).Logger()
+	logger.Debug().Msg("Starting directory conversion")
+	logger.Debug().Bool("recursive", config.Recursive).Bool("generate_rss", config.GenerateRSS).Msg("Conversion config")
 	// Create output directory if it doesn't exist
 	if err := os.MkdirAll(config.OutputDir, 0755); err != nil {
 		return fmt.Errorf("error creating output directory: %v", err)
@@ -344,10 +365,14 @@ func ConvertDirectory(inputDir string, config Config) error {
 // processFiles processes markdown files in a directory and handles subdirectories
 // Returns collected blog posts for RSS feed generation
 func processFiles(inputDir string, inputRoot string, config Config, depth int) ([]BlogPost, error) {
+	logger := log.With().Str("dir", inputDir).Int("depth", depth).Logger()
+	logger.Debug().Msg("Starting to process files in directory")
+
 	files, err := os.ReadDir(inputDir)
 	if err != nil {
 		return nil, fmt.Errorf("error reading input directory: %v", err)
 	}
+	logger.Debug().Int("file_count", len(files)).Msg("Files in directory")
 
 	var blogPosts []BlogPost
 	hasIndexMd := false
@@ -375,6 +400,7 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 		filePath := filepath.Join(inputDir, file.Name())
 
 		if file.IsDir() && config.Recursive {
+			logger.Debug().Str("dir", file.Name()).Msg("Processing subdirectory recursively")
 			// For subdirectories, create corresponding output directory
 			relPath, err := filepath.Rel(inputDir, filePath)
 			if err != nil {
@@ -463,15 +489,18 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 					metadata, _ := extractMetadata(mdContent)
 					if metadata["Template"] == "landing" {
 						// Skip - already processed by ConvertDirectory
+						logger.Debug().Str("file", file.Name()).Msg("Skipping landing page (already processed)")
 						continue
 					}
 				}
 			}
 
+			logger.Debug().Str("file", file.Name()).Msg("Processing markdown file")
 			metadata, err := ConvertFile(filePath, config, inputRoot)
 			if err != nil {
 				return nil, err
 			}
+			logger.Debug().Str("file", file.Name()).Msg("Markdown file processed successfully")
 
 			// Skip index.md for the blog post list
 			if file.Name() == "index.md" || file.Name() == "index.markdown" {
