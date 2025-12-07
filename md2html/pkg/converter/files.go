@@ -267,7 +267,7 @@ func ConvertDirectory(inputDir string, config Config) error {
 			// First level category (blog/X)
 			// Use explicit depth of 2 levels for CSS/JS paths (../../)
 			currentConfig := config
-			currentConfig.CSSPath = "../../css/style-blog.css"
+			currentConfig.CSSPath = "../../css/style.css"
 			currentConfig.JSPath = "../../js/script.js"
 			// Enable recursive processing for RSS to collect all posts from this category
 			if config.GenerateRSS {
@@ -296,7 +296,7 @@ func ConvertDirectory(inputDir string, config Config) error {
 			// Blog root directory
 			// Use explicit depth of 1 level for CSS/JS paths (../)
 			currentConfig := config
-			currentConfig.CSSPath = "../css/style-blog.css"
+			currentConfig.CSSPath = "../css/style.css"
 			currentConfig.JSPath = "../js/script.js"
 			// Enable recursive processing for RSS to collect all posts from subdirectories
 			if config.GenerateRSS {
@@ -329,7 +329,7 @@ func ConvertDirectory(inputDir string, config Config) error {
 
 			// Apply blog-specific paths with proper nesting
 			currentConfig := config
-			currentConfig.CSSPath = prefix + "css/style-blog.css"
+			currentConfig.CSSPath = prefix + "css/style.css"
 			currentConfig.JSPath = prefix + "js/script.js"
 			// Enable recursive processing for RSS to collect all posts from this subdirectory
 			if config.GenerateRSS {
@@ -432,7 +432,7 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 				for i := 0; i < blogDepth; i++ {
 					prefix += "../"
 				}
-				subConfig.CSSPath = prefix + "css/style-blog.css"
+				subConfig.CSSPath = prefix + "css/style.css"
 				subConfig.JSPath = prefix + "js/script.js"
 			} else {
 				// For non-blog structure, use standard depth calculation

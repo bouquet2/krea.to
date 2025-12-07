@@ -1,40 +1,49 @@
-.PHONY: all clean help build tidy fmt serve
+.PHONY: all clean help build tidy fmt serve build-bin copy-assets convert-markdown
 
 # Environment variables
 DEBUG ?= 0
 DEBUG_FLAG = $(if $(filter 1,$(DEBUG)),--debug,)
 
+# Build configuration
+MD2HTML_BIN = md2html/md2html
+DIST_DIR = dist
+ASSETS = css js fonts assets
+CONVERT_FLAGS = --input md --output $(DIST_DIR) --css "css/style.css" --addlist --recursive --rss --site-url 'https://krea.to' $(DEBUG_FLAG)
+
 # Default target
 all: build
 
-# Build site (landing page + blog posts)
-build: tidy
+# Build md2html binary
+build-bin:
 	@echo "Building md2html..."
 	cd md2html && go build -o md2html ./cmd/md2html
-	@echo "Generating site..."
-	mkdir -p dist/blog
-	md2html/md2html convert --input md --output dist --css "css/style-blog.css" --addlist --recursive --rss --site-url 'https://krea.to' $(DEBUG_FLAG)
+
+# Copy static assets to dist directory
+copy-assets:
 	@echo "Copying static assets..."
-	cp -r css dist/
-	cp -r js dist/
-	cp -r fonts dist/
-	cp -r assets dist/
-	cp CNAME dist/
-	@echo "Build complete. Output in dist/"
+	mkdir -p $(DIST_DIR)/blog
+	$(foreach asset,$(ASSETS),cp -r $(asset) $(DIST_DIR)/;)
+	cp CNAME $(DIST_DIR)/
+
+# Convert markdown to HTML
+convert-markdown:
+	@echo "Generating site..."
+	$(MD2HTML_BIN) convert $(CONVERT_FLAGS)
+
+# Build site (landing page + blog posts)
+build: tidy build-bin copy-assets convert-markdown
+	@echo "Build complete. Output in $(DIST_DIR)/"
 
 # Clean all generated files
 clean:
 	@echo "Cleaning..."
-	rm -f md2html/md2html
-	rm -rf dist
+	rm -f $(MD2HTML_BIN)
+	rm -rf $(DIST_DIR)
 
 # Serve the site locally with a development server
-serve: tidy
-	@echo "Building md2html..."
-	cd md2html && go build -o md2html ./cmd/md2html
+serve: tidy build-bin copy-assets
 	@echo "Generating site..."
-	mkdir -p dist/blog
-	md2html/md2html convert --input md --output dist --css "css/style-blog.css" --addlist --recursive --rss --site-url 'https://krea.to' $(DEBUG_FLAG) --serve --port '8080'
+	$(MD2HTML_BIN) convert $(CONVERT_FLAGS) --serve --port '8080'
 
 # Format code
 fmt:

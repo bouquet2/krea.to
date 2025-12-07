@@ -94,7 +94,7 @@ func init() {
 	convertCmd.Flags().StringVarP(&inputDir, "input", "i", "", "Directory containing markdown files (required)")
 	convertCmd.Flags().StringVarP(&outputDir, "output", "o", "output", "Directory to save HTML files")
 	convertCmd.Flags().StringVarP(&convertTemplateFile, "template", "t", "", "HTML template file (optional)")
-	convertCmd.Flags().StringVar(&cssPath, "css", "css/style-blog.css", "Path to CSS file")
+	convertCmd.Flags().StringVar(&cssPath, "css", "css/style.css", "Path to CSS file")
 	convertCmd.Flags().StringVar(&jsPath, "js", "js/script.js", "Path to JavaScript file")
 	convertCmd.Flags().StringVar(&siteTitle, "title", "Kreato's Website", "Site title")
 	convertCmd.Flags().StringVar(&author, "author", "Kreato", "Default author name")

@@ -205,7 +205,7 @@ func adjustPaths(config Config, depth int, outputDir string) Config {
 		blogComponents := outComponents[blogIndex:]
 		// For first-level blog categories (blog/X), ALWAYS use ../../ prefix regardless of depth calculation
 		if len(blogComponents) == 2 {
-			adjustedConfig.CSSPath = "../../css/style-blog.css"
+			adjustedConfig.CSSPath = "../../css/style.css"
 			adjustedConfig.JSPath = "../../js/script.js"
 			return adjustedConfig
 		} else if len(blogComponents) > 2 {
@@ -215,7 +215,7 @@ func adjustPaths(config Config, depth int, outputDir string) Config {
 			for i := 0; i < nestingDepth; i++ {
 				prefix += "../"
 			}
-			adjustedConfig.CSSPath = prefix + "css/style-blog.css"
+			adjustedConfig.CSSPath = prefix + "css/style.css"
 			adjustedConfig.JSPath = prefix + "js/script.js"
 			return adjustedConfig
 		}

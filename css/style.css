@@ -1,5 +1,402 @@
+/* Unified styles for main site, blog, and common functionality */
+
+/* Screen reader only class for accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+@font-face {
+    font-family: 'Pokemon DP Pro';
+    src: url('../fonts/pokemon-dp-pro.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Scientifica';
+    src: url('../fonts/scientifica.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    /* Default dark theme (mocha) */
+    --bg-color: #1e1e2e;
+    --text-color: #cdd6f4;
+    --accent-color: #f5c2e7;
+    --secondary-color: #cba6f7;
+    --terminal-header: #181825;
+    --link-color: #89b4fa;
+    --terminal-blur: 20px;
+}
+
+/* Light theme (latte) */
+body.light-theme {
+    --bg-color: #eff1f5;
+    --text-color: #4c4f69;
+    --accent-color: #ea76cb;
+    --secondary-color: #8839ef;
+    --terminal-header: #e6e9ef;
+    --link-color: #1e66f5;
+}
+
+/* Light theme for browsers that support prefers-color-scheme */
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg-color: #eff1f5;
+        --text-color: #4c4f69;
+        --accent-color: #ea76cb;
+        --secondary-color: #8839ef;
+        --terminal-header: #e6e9ef;
+        --link-color: #1e66f5;
+    }
+}
+
+/* Common heading styles */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--secondary-color);
+    margin-bottom: 0.8em;
+}
+
+/* Common link styles */
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+/* Common code styling */
+code {
+    font-family: 'Pokemon DP Pro', monospace;
+    background-color: var(--terminal-header);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 1.1em;
+}
+
+pre {
+    background-color: var(--terminal-header);
+    padding: 16px;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin: 20px 0;
+}
+
+pre code {
+    font-family: 'Pokemon DP Pro', monospace;
+    background: transparent;
+    padding: 0;
+    font-size: 1.1em;
+}
+
+/* Hamburger menu */
+
+.quick-actions {
+    position: fixed;
+    bottom: 20px;
+    right: 80px;
+    display: flex;
+    gap: 12px;
+    z-index: 100;
+}
+
+.icon-button {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(24, 24, 37, 0.75);
+    color: var(--secondary-color);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    padding: 0;
+    position: relative;
+    text-decoration: none;
+}
+
+.icon-button:hover,
+.icon-button:focus-visible {
+    background-color: var(--secondary-color);
+    color: var(--bg-color);
+    transform: translateY(-2px);
+}
+
+.icon-button:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.icon-button .icon {
+    width: 22px;
+    height: 22px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s ease;
+}
+
+.theme-toggle .icon-sun {
+    opacity: 1;
+}
+
+.theme-toggle .icon-moon {
+    opacity: 0;
+}
+
+body.light-theme .theme-toggle .icon-sun {
+    opacity: 0;
+}
+
+body.light-theme .theme-toggle .icon-moon {
+    opacity: 1;
+}
+
+.icon-button svg {
+    stroke: currentColor;
+}
+
+/* Light theme icon buttons */
+body.light-theme .icon-button {
+    background-color: rgba(230, 233, 239, 0.9);
+    color: var(--secondary-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+body.light-theme .icon-button:hover,
+body.light-theme .icon-button:focus-visible {
+    background-color: var(--secondary-color);
+    color: var(--bg-color);
+}
+
+.hamburger-menu {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+.hamburger-icon {
+    width: 50px;
+    height: 50px;
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.hamburger-icon:hover {
+    background-color: var(--accent-color);
+    transform: scale(1.05);
+}
+
+.hamburger-icon span {
+    width: 20px;
+    height: 2px;
+    background-color: var(--bg-color);
+    transition: all 0.3s ease;
+    border-radius: 1px;
+}
+
+.hamburger-menu.menu-open .hamburger-icon span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger-menu.menu-open .hamburger-icon span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-menu.menu-open .hamburger-icon span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+}
+
+.menu-items {
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+    padding: 10px;
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+}
+
+.hamburger-menu.menu-open .menu-items {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.menu-items button {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    margin: 4px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s, color 0.3s;
+    font-family: 'Pokemon DP Pro', sans-serif;
+    background-color: transparent;
+    color: var(--bg-color);
+    font-size: 1.1em;
+    text-align: left;
+}
+
+.menu-items button:hover {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+}
+
+.menu-section {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 8px;
+}
+
+.menu-label {
+    display: block;
+    font-family: 'Pokemon DP Pro', sans-serif;
+    font-size: 0.9em;
+    color: var(--bg-color);
+    margin-bottom: 6px;
+    padding: 0 16px;
+    opacity: 0.8;
+}
+
+.menu-select {
+    width: 100%;
+    padding: 8px 12px;
+    margin: 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    font-family: 'Pokemon DP Pro', sans-serif;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--bg-color);
+    transition: background-color 0.3s;
+}
+
+.menu-select:hover,
+.menu-select:focus {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    outline: none;
+}
+
+.menu-select option {
+    background-color: var(--secondary-color);
+    color: var(--bg-color);
+}
+
+.range-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.menu-range {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+.menu-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.menu-range::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.menu-range::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.menu-range::-moz-range-thumb:hover {
+    transform: scale(1.2);
+}
+
+.range-value {
+    font-family: 'Pokemon DP Pro', sans-serif;
+    font-size: 0.9em;
+    color: var(--bg-color);
+    min-width: 40px;
+    text-align: right;
+}
+
+/* Accessibility mode */
+.accessibility-mode {
+    font-family: 'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', sans-serif !important;
+    line-height: 1.8 !important;
+    letter-spacing: 0.5px !important;
+    transition: font-family 0.3s ease, line-height 0.3s ease, letter-spacing 0.3s ease !important;
+}
+
+.accessibility-mode code, 
+.accessibility-mode pre code {
+    font-family: 'Courier New', monospace !important;
+    font-size: 1.1em !important;
+}
+
+.accessibility-mode .menu-items button,
+.accessibility-mode .menu-label,
+.accessibility-mode .menu-select,
+.accessibility-mode .range-value {
+    font-family: 'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', sans-serif !important;
+}
+
 /* Main site styles */
-@import 'common.css';
 
 * {
     margin: 0;
@@ -19,6 +416,14 @@ body {
     min-height: 100vh;
 }
 
+/* Blog-specific body styles (pages without .terminal) */
+body:not(:has(.terminal)) {
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    font-size: 1.2em;
+}
+
 /* Background animation wrapper */
 body::before {
     content: '';
@@ -35,6 +440,11 @@ body::before {
     opacity: 1;
     transition: opacity 0.5s ease, background-image 0.5s ease;
     pointer-events: none;
+}
+
+/* Disable background for blog pages */
+body:not(:has(.terminal))::before {
+    display: none;
 }
 
 /* Background disabled state */
@@ -354,21 +764,41 @@ body[data-theme="kanagawa"] .terminal.no-transparency .terminal-header {
 }
 
 h1 {
+    color: var(--secondary-color);
+    margin-bottom: 0.8em;
+}
+
+h2 {
+    color: var(--secondary-color);
+    margin-bottom: 0.8em;
+}
+
+/* Terminal-only sizing for h1/h2 (main site uses fixed pixel sizes) */
+body:has(.terminal) h1 {
     font-size: 20px;
     margin-bottom: 10px;
 }
 
-h2 {
+body:has(.terminal) h2 {
     font-size: 16px;
     margin-top: 15px;
     margin-bottom: 10px;
 }
 
 p {
+    margin-bottom: 1em;
+}
+
+body:has(.terminal) p {
     margin-bottom: 10px;
 }
 
 ul {
+    margin-left: 1.5em;
+    margin-bottom: 1em;
+}
+
+body:has(.terminal) ul {
     margin-left: 20px;
     margin-bottom: 10px;
 }
@@ -410,43 +840,6 @@ ul {
     50% { opacity: 0; }
 }
 
-@media (max-width: 600px) {
-    body {
-        padding: 5px;
-        font-size: 1.1em;
-    }
-
-    .terminal {
-        margin: 5px auto;
-        border-radius: 12px;
-    }
-    
-    .terminal-content {
-        padding: 10px;
-        font-size: 1em;
-    }
-
-    .prompt {
-        font-size: 1em;
-    }
-    
-    h1 {
-        font-size: 1.4em;
-    }
-    
-    h2 {
-        font-size: 1.2em;
-    }
-
-    p, ul, li {
-        font-size: 1em;
-    }
-
-    .output {
-        margin-left: 10px;
-    }
-} 
-
 /* Song display styles */
 .song-info {
     display: flex;
@@ -483,7 +876,289 @@ ul {
     transform: scale(1.05);
 }
 
+/* Blog-specific styles */
+
+/* Override quick-actions positioning for blog pages (no hamburger menu) */
+body:not(:has(.terminal)) .quick-actions {
+    right: 20px;
+}
+
+body:not(:has(.terminal)) blockquote {
+    border-left: 3px solid var(--accent-color);
+    padding-left: 16px;
+    margin-left: 0;
+    color: var(--text-color);
+}
+
+body:not(:has(.terminal)) hr {
+    border: none;
+    border-top: 2px solid var(--accent-color);
+    margin: 24px 0;
+}
+
+body:not(:has(.terminal)) img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Line numbers styling */
+.chroma .lnt {
+    margin-right: 0.8em;
+    padding: 0 0.4em;
+    color: #636363;
+}
+
+/* Syntax highlighting styles */
+/* Background */ .bg { color: #d8dee9; background-color: #2e3440; }
+/* PreWrapper */ .chroma { color: #d8dee9; background-color: #2e3440; }
+/* Error */ .chroma .err { color: #bf616a }
+/* LineLink */ .chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+/* LineTableTD */ .chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .chroma .hl { background-color: #424853 }
+/* LineNumbersTable */ .chroma .lnt { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #6c6f74 }
+/* LineNumbers */ .chroma .ln { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #6c6f74 }
+/* Line */ .chroma .line { display: flex; }
+/* Keyword */ .chroma .k { color: #81a1c1; font-weight: bold }
+/* KeywordConstant */ .chroma .kc { color: #81a1c1; font-weight: bold }
+/* KeywordDeclaration */ .chroma .kd { color: #81a1c1; font-weight: bold }
+/* KeywordNamespace */ .chroma .kn { color: #81a1c1; font-weight: bold }
+/* KeywordPseudo */ .chroma .kp { color: #81a1c1 }
+/* KeywordReserved */ .chroma .kr { color: #81a1c1; font-weight: bold }
+/* KeywordType */ .chroma .kt { color: #81a1c1 }
+/* NameAttribute */ .chroma .na { color: #8fbcbb }
+/* NameClass */ .chroma .nc { color: #8fbcbb }
+/* NameConstant */ .chroma .no { color: #8fbcbb }
+/* NameDecorator */ .chroma .nd { color: #d08770 }
+/* NameEntity */ .chroma .ni { color: #d08770 }
+/* NameException */ .chroma .ne { color: #bf616a }
+/* NameLabel */ .chroma .nl { color: #8fbcbb }
+/* NameNamespace */ .chroma .nn { color: #8fbcbb }
+/* NameProperty */ .chroma .py { color: #8fbcbb }
+/* NameTag */ .chroma .nt { color: #81a1c1 }
+/* NameBuiltin */ .chroma .nb { color: #81a1c1 }
+/* NameBuiltinPseudo */ .chroma .bp { color: #81a1c1 }
+/* NameFunction */ .chroma .nf { color: #88c0d0 }
+/* NameFunctionMagic */ .chroma .fm { color: #88c0d0 }
+/* LiteralString */ .chroma .s { color: #a3be8c }
+/* LiteralStringAffix */ .chroma .sa { color: #a3be8c }
+/* LiteralStringBacktick */ .chroma .sb { color: #a3be8c }
+/* LiteralStringChar */ .chroma .sc { color: #a3be8c }
+/* LiteralStringDelimiter */ .chroma .dl { color: #a3be8c }
+/* LiteralStringDoc */ .chroma .sd { color: #616e87 }
+/* LiteralStringDouble */ .chroma .s2 { color: #a3be8c }
+/* LiteralStringEscape */ .chroma .se { color: #ebcb8b }
+/* LiteralStringHeredoc */ .chroma .sh { color: #a3be8c }
+/* LiteralStringInterpol */ .chroma .si { color: #a3be8c }
+/* LiteralStringOther */ .chroma .sx { color: #a3be8c }
+/* LiteralStringRegex */ .chroma .sr { color: #ebcb8b }
+/* LiteralStringSingle */ .chroma .s1 { color: #a3be8c }
+/* LiteralStringSymbol */ .chroma .ss { color: #a3be8c }
+/* LiteralNumber */ .chroma .m { color: #b48ead }
+/* LiteralNumberBin */ .chroma .mb { color: #b48ead }
+/* LiteralNumberFloat */ .chroma .mf { color: #b48ead }
+/* LiteralNumberHex */ .chroma .mh { color: #b48ead }
+/* LiteralNumberInteger */ .chroma .mi { color: #b48ead }
+/* LiteralNumberIntegerLong */ .chroma .il { color: #b48ead }
+/* LiteralNumberOct */ .chroma .mo { color: #b48ead }
+/* Operator */ .chroma .o { color: #81a1c1 }
+/* OperatorWord */ .chroma .ow { color: #81a1c1; font-weight: bold }
+/* Punctuation */ .chroma .p { color: #eceff4 }
+/* Comment */ .chroma .c { color: #616e87; font-style: italic }
+/* CommentHashbang */ .chroma .ch { color: #616e87; font-style: italic }
+/* CommentMultiline */ .chroma .cm { color: #616e87; font-style: italic }
+/* CommentSingle */ .chroma .c1 { color: #616e87; font-style: italic }
+/* CommentSpecial */ .chroma .cs { color: #616e87; font-style: italic }
+/* CommentPreproc */ .chroma .cp { color: #5e81ac; font-style: italic }
+/* CommentPreprocFile */ .chroma .cpf { color: #5e81ac; font-style: italic }
+/* GenericDeleted */ .chroma .gd { color: #bf616a }
+/* GenericEmph */ .chroma .ge { font-style: italic }
+/* GenericError */ .chroma .gr { color: #bf616a }
+/* GenericHeading */ .chroma .gh { color: #88c0d0; font-weight: bold }
+/* GenericInserted */ .chroma .gi { color: #a3be8c }
+/* GenericPrompt */ .chroma .gp { color: #4c566a; font-weight: bold }
+/* GenericStrong */ .chroma .gs { font-weight: bold }
+/* GenericSubheading */ .chroma .gu { color: #88c0d0; font-weight: bold }
+/* GenericTraceback */ .chroma .gt { color: #bf616a }
+
+/* Blog-specific button styles */
+.theme-toggle button {
+    font-family: Arial, sans-serif;
+}
+
+/* Back button */
+.back-button {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 16px;
+    background-color: var(--terminal-header);
+    color: var(--link-color);
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.back-button:hover {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    text-decoration: none;
+}
+
+/* Directory list */
+.directory-list {
+    margin-bottom: 30px;
+}
+
+.directory-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.directory-list h2 {
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+}
+
+.directory {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--terminal-header);
+}
+
+.directory a {
+    display: inline-block;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.directory a::before {
+    content: "📁 ";
+}
+
+/* Blog list */
+.blog-list h2 {
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+}
+
+/* Post link styles */
+.post-link {
+    display: inline-block;
+    color: var(--link-color);
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    background-color: var(--terminal-header);
+}
+
+.post-link:hover {
+    color: var(--bg-color);
+    background-color: var(--accent-color);
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive design */
+/* Large screens - expand blog width */
+@media (min-width: 1200px) {
+    body:not(:has(.terminal)) {
+        max-width: 1000px;
+        font-size: 1.1em;
+    }
+}
+
+/* Mobile */
 @media (max-width: 600px) {
+    body:has(.terminal) .quick-actions {
+        bottom: 10px;
+        right: 65px;
+        gap: 10px;
+    }
+
+    body:not(:has(.terminal)) .quick-actions {
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .icon-button {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+    }
+
+    .icon-button .icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .hamburger-menu {
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .hamburger-icon {
+        width: 45px;
+        height: 45px;
+    }
+
+    .hamburger-icon span {
+        width: 18px;
+    }
+
+    .menu-items {
+        min-width: 180px;
+        bottom: 55px;
+    }
+
+    .menu-items button {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+
+    /* Ensure back button is visible */
+    .back-button {
+        margin-bottom: 60px;
+    }
+
+    body:has(.terminal) {
+        padding: 5px;
+        font-size: 1.1em;
+    }
+
+    .terminal {
+        margin: 5px auto;
+        border-radius: 12px;
+    }
+    
+    .terminal-content {
+        padding: 10px;
+        font-size: 1em;
+    }
+
+    .prompt {
+        font-size: 1em;
+    }
+    
+    h1 {
+        font-size: 1.4em;
+    }
+    
+    h2 {
+        font-size: 1.2em;
+    }
+
+    p, ul, li {
+        font-size: 1em;
+    }
+
+    .output {
+        margin-left: 10px;
+    }
+
     .song-info {
         flex-direction: column;
         gap: 15px;
@@ -500,4 +1175,4 @@ ul {
     .song-details p {
         font-size: 13px;
     }
-} 
+}
