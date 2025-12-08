@@ -15,19 +15,21 @@
     
     <link rel="stylesheet" href="{{.CSSPath}}">
 </head>
-<body>
+<body{{if index .Settings "fullscreen"}} class="fullscreen-mode"{{end}}>
     <main>
-    <div class="terminal">
+    <div class="terminal{{if index .Settings "fullscreen"}} terminal-fullscreen{{end}}">
+        {{if not (index .Settings "hide-topbar")}}
         <div class="terminal-header">
             <div class="terminal-button close"></div>
             <div class="terminal-button minimize"></div>
             <div class="terminal-button maximize"></div>
             <div class="terminal-title">krea.to (zsh)</div>
         </div>
-        <div class="terminal-content">
+        {{end}}
+        <div class="terminal-content{{if index .Settings "hide-topbar"}} terminal-content-no-header{{end}}">
             {{range .Sections}}
             <div class="terminal-section">
-                <div class="prompt">kreato@akiri:~$ <span class="typing-effect">{{.Command}}</span></div>
+                {{if not (index $.Settings "hide-shell")}}<div class="prompt">kreato@akiri:~$ <span class="typing-effect">{{.Command}}</span></div>{{end}}
                 <div class="output">
                     {{.Content}}
                 </div>
@@ -35,7 +37,7 @@
             {{end}}
 
             <div class="terminal-section">
-                <div class="prompt">kreato@akiri:~$ <span class="typing-effect">ls</span></div>
+                {{if not (index .Settings "hide-shell")}}<div class="prompt">kreato@akiri:~$ <span class="typing-effect">ls</span></div>{{end}}
                 <div class="output">
                     <div class="links">
                         {{range .Links}}

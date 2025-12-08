@@ -10,6 +10,24 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// parseSettings parses a comma-separated list of settings into a map
+// Example: "hide-topbar, fullscreen" -> map[string]bool{"hide-topbar": true, "fullscreen": true}
+func parseSettings(settingsStr string) map[string]bool {
+	settings := make(map[string]bool)
+	if settingsStr == "" {
+		return settings
+	}
+
+	parts := strings.Split(settingsStr, ",")
+	for _, part := range parts {
+		setting := strings.TrimSpace(strings.ToLower(part))
+		if setting != "" {
+			settings[setting] = true
+		}
+	}
+	return settings
+}
+
 // ConvertLandingPage converts a markdown file to a landing page HTML
 func ConvertLandingPage(mdFile string, config Config) error {
 	logger := log.With().Str("file", mdFile).Str("type", "landing_page").Logger()
@@ -57,6 +75,9 @@ func ConvertLandingPage(mdFile string, config Config) error {
 
 	description := metadata["Description"]
 
+	// Parse settings from metadata (comma-separated list)
+	settings := parseSettings(metadata["Settings"])
+
 	data := LandingData{
 		Title:       title,
 		Description: description,
@@ -64,6 +85,7 @@ func ConvertLandingPage(mdFile string, config Config) error {
 		JSPath:      config.JSPath,
 		Sections:    sections,
 		Links:       links,
+		Settings:    settings,
 	}
 
 	// Execute template

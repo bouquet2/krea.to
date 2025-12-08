@@ -85,6 +85,7 @@ type LandingData struct {
 	JSPath      string
 	Sections    []LandingSection
 	Links       []LandingLink
+	Settings    map[string]bool // Template settings from metadata
 }
 
 // ==========================================================================

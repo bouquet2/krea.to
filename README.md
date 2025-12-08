@@ -52,6 +52,30 @@ make help
 3. Run `make` to generate the HTML
 4. Commit and push the changes
 
+=======
+## Landing Page Settings
+
+The landing page template supports additional settings to customize its appearance. Add a `Settings` field to the metadata with comma-separated options:
+
+```markdown
+<!--
+Title: My Site
+Description: Site description
+Template: landing
+Settings: hide-topbar, fullscreen, hide-shell
+-->
+```
+
+### Available Settings
+
+| Setting | Description |
+|---------|-------------|
+| `hide-topbar` | Removes the terminal header bar (window buttons and title) |
+| `fullscreen` | Makes the terminal take up the full viewport without margins or borders |
+| `hide-shell` | Hides the shell prompts (`kreato@akiri:~$`) before each section |
+
+Settings can be combined as needed. For example, `Settings: fullscreen, hide-topbar` creates a clean fullscreen terminal without the window chrome.
+
 ## Color Schemes
 
 The site includes 11 carefully selected color schemes:
