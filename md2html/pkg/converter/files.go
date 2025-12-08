@@ -458,6 +458,11 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 				return nil, err
 			}
 
+			// Prepend subdirectory name to each post's Link for correct relative paths
+			for i := range subPosts {
+				subPosts[i].Link = file.Name() + "/" + subPosts[i].Link
+			}
+
 			// Generate RSS feed for blog folders if enabled
 			if config.GenerateRSS && len(subPosts) > 0 {
 				// Check if this is a blog folder (blog or blog/X)
