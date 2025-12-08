@@ -12,11 +12,10 @@ My personal website and blog, featuring a terminal-style interface and a custom 
 - **Theme Toggle** - Quick switch between light and dark modes
 - **Accessibility Mode** - Enhanced readability with Comic Sans font and increased spacing
 - **Customizable Settings** - Adjust font size, background, and transparency (including the intensity) with ease and slick animations
-- **Terminal Commands** - Interactive commands like `help`, `ls`, `cd`, `cat`, and more to tinker with and explore
+- **Automatic Generation** - All pages are generated from Markdown files using Go templates
 
 ### Blog
-- **Clean Reading Experience** - Distraction-free blog post layout
-- **Automatic Generation** - Blog posts are generated from Markdown files
+- **Clean Reading Experience** - Distraction-free blog post layout that uses the most of the current device
 - **Syntax Highlighting** - Code blocks with syntax highlighting
 - **Responsive Design** - Works great on all screen sizes, including but not limited to phone, tablet, and laptop
 
@@ -52,15 +51,6 @@ make help
    ```
 3. Run `make` to generate the HTML
 4. Commit and push the changes
-
-## Development
-
-The site uses vanilla HTML, CSS, and JavaScript - no build process required for the main site.
-
-- Edit `index.html` for main site content
-- Edit `css/` files for styling changes
-- Edit `js/script.js` for interactive features
-- Blog posts are in `md/` directory
 
 ## Color Schemes
 
