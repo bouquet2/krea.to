@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/kreatoo/md2html/pkg/converter"
 	"github.com/rs/zerolog"
@@ -36,6 +38,11 @@ var (
 	// Serve command flags
 	serveOutputDir string
 	servePort      string
+
+	// Minify command flags
+	minifyInput  string
+	minifyOutput string
+	minifyType   string
 
 	// Root command
 	rootCmd = &cobra.Command{
@@ -78,6 +85,14 @@ var (
 		Long:  "Start an HTTP development server to serve the converted HTML files",
 		RunE:  runServe,
 	}
+
+	// Minify command
+	minifyCmd = &cobra.Command{
+		Use:   "minify",
+		Short: "Minify CSS and JS files",
+		Long:  "Minify CSS and/or JavaScript files or directories to reduce file size",
+		RunE:  runMinify,
+	}
 )
 
 func init() {
@@ -85,6 +100,7 @@ func init() {
 	rootCmd.AddCommand(convertCmd)
 	rootCmd.AddCommand(createTemplateCmd)
 	rootCmd.AddCommand(serveCmd)
+	rootCmd.AddCommand(minifyCmd)
 
 	// Global flags
 	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "Enable verbose logging")
@@ -111,6 +127,11 @@ func init() {
 	// Serve command flags
 	serveCmd.Flags().StringVarP(&serveOutputDir, "output", "o", "output", "Directory to serve")
 	serveCmd.Flags().StringVar(&servePort, "port", "8080", "Port to serve on")
+
+	// Minify command flags
+	minifyCmd.Flags().StringVarP(&minifyInput, "input", "i", "", "Input file or directory (required)")
+	minifyCmd.Flags().StringVarP(&minifyOutput, "output", "o", "", "Output file or directory (required)")
+	minifyCmd.Flags().StringVarP(&minifyType, "type", "T", "css", "Type of files to minify: css, js, or all")
 }
 
 func runConvert(cmd *cobra.Command, args []string) error {
@@ -200,6 +221,91 @@ func runServe(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	return nil
+}
+
+func runMinify(cmd *cobra.Command, args []string) error {
+	logger := log.With().Str("command", "minify").Logger()
+
+	// Validate required fields
+	if minifyInput == "" {
+		logger.Error().Msg("input is required")
+		return cmd.Usage()
+	}
+	if minifyOutput == "" {
+		logger.Error().Msg("output is required")
+		return cmd.Usage()
+	}
+
+	// Validate type
+	minifyType = strings.ToLower(minifyType)
+	if minifyType != "css" && minifyType != "js" && minifyType != "all" {
+		logger.Error().Str("type", minifyType).Msg("invalid type: must be css, js, or all")
+		return cmd.Usage()
+	}
+
+	logger.Info().Str("input", minifyInput).Str("output", minifyOutput).Str("type", minifyType).Msg("Starting minification")
+
+	// Check if input is a file or directory
+	info, err := os.Stat(minifyInput)
+	if err != nil {
+		logger.Error().Err(err).Str("input", minifyInput).Msg("Failed to stat input")
+		return err
+	}
+
+	if info.IsDir() {
+		// Minify directory based on type
+		switch minifyType {
+		case "css":
+			if err := converter.MinifyCSSDir(minifyInput, minifyOutput); err != nil {
+				logger.Error().Err(err).Msg("CSS minification failed")
+				return err
+			}
+		case "js":
+			if err := converter.MinifyJSDir(minifyInput, minifyOutput); err != nil {
+				logger.Error().Err(err).Msg("JS minification failed")
+				return err
+			}
+		case "all":
+			if err := converter.MinifyCSSDir(minifyInput, minifyOutput); err != nil {
+				logger.Error().Err(err).Msg("CSS minification failed")
+				return err
+			}
+			if err := converter.MinifyJSDir(minifyInput, minifyOutput); err != nil {
+				logger.Error().Err(err).Msg("JS minification failed")
+				return err
+			}
+		}
+	} else {
+		// Minify single file - detect type from extension if not specified
+		ext := strings.ToLower(filepath.Ext(minifyInput))
+		if minifyType == "all" {
+			// Auto-detect from extension
+			if ext == ".css" {
+				minifyType = "css"
+			} else if ext == ".js" {
+				minifyType = "js"
+			} else {
+				logger.Error().Str("extension", ext).Msg("Cannot auto-detect file type")
+				return fmt.Errorf("cannot auto-detect file type for extension %s", ext)
+			}
+		}
+
+		switch minifyType {
+		case "css":
+			if err := converter.MinifyCSS(minifyInput, minifyOutput); err != nil {
+				logger.Error().Err(err).Msg("CSS minification failed")
+				return err
+			}
+		case "js":
+			if err := converter.MinifyJS(minifyInput, minifyOutput); err != nil {
+				logger.Error().Err(err).Msg("JS minification failed")
+				return err
+			}
+		}
+	}
+
+	logger.Info().Msg("Minification complete")
 	return nil
 }
 

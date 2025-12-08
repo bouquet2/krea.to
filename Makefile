@@ -1,4 +1,4 @@
-.PHONY: all clean help build tidy fmt serve build-bin copy-assets convert-markdown
+.PHONY: all clean help build tidy fmt serve build-bin copy-assets convert-markdown minify-css minify-js
 
 # Environment variables
 DEBUG ?= 0
@@ -7,7 +7,7 @@ DEBUG_FLAG = $(if $(filter 1,$(DEBUG)),--debug,)
 # Build configuration
 MD2HTML_BIN = md2html/md2html
 DIST_DIR = dist
-ASSETS = css js fonts assets
+ASSETS = fonts assets
 CONVERT_FLAGS = --input md --output $(DIST_DIR) --css "css/style.css" --js "js/script.js" --addlist --recursive --rss --site-url 'https://krea.to' $(DEBUG_FLAG)
 
 # Default target
@@ -25,13 +25,23 @@ copy-assets:
 	$(foreach asset,$(ASSETS),cp -r $(asset) $(DIST_DIR)/;)
 	cp CNAME $(DIST_DIR)/
 
+# Minify CSS files
+minify-css: build-bin
+	@echo "Minifying CSS..."
+	$(MD2HTML_BIN) minify --input css --output $(DIST_DIR)/css --type css
+
+# Minify JS files
+minify-js: build-bin
+	@echo "Minifying JS..."
+	$(MD2HTML_BIN) minify --input js --output $(DIST_DIR)/js --type js
+
 # Convert markdown to HTML
 convert-markdown:
 	@echo "Generating site..."
 	$(MD2HTML_BIN) convert $(CONVERT_FLAGS)
 
 # Build site (landing page + blog posts)
-build: tidy build-bin copy-assets convert-markdown
+build: tidy build-bin copy-assets minify-css minify-js convert-markdown
 	@echo "Build complete. Output in $(DIST_DIR)/"
 
 # Clean all generated files
@@ -41,7 +51,7 @@ clean:
 	rm -rf $(DIST_DIR)
 
 # Serve the site locally with a development server
-serve: tidy build-bin copy-assets
+serve: tidy build-bin copy-assets minify-css minify-js
 	@echo "Generating site..."
 	$(MD2HTML_BIN) convert $(CONVERT_FLAGS) --serve --port '8080'
 

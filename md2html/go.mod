@@ -1,6 +1,6 @@
 module github.com/kreatoo/md2html
 
-go 1.23.0
+go 1.24.0
 
 toolchain go1.25.5
 
@@ -10,6 +10,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.27
 	github.com/rs/zerolog v1.34.0
 	github.com/spf13/cobra v1.10.2
+	github.com/tdewolff/minify/v2 v2.24.7
 )
 
 require (
@@ -20,6 +21,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/spf13/pflag v1.0.9 // indirect
+	github.com/tdewolff/parse/v2 v2.8.5 // indirect
 	golang.org/x/net v0.38.0 // indirect
-	golang.org/x/sys v0.31.0 // indirect
+	golang.org/x/sys v0.37.0 // indirect
 )
