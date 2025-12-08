@@ -5,7 +5,9 @@ import (
 	"html/template"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
+	"time"
 
 	"github.com/rs/zerolog/log"
 )
@@ -47,6 +49,9 @@ func ConvertLandingPage(mdFile string, config Config) error {
 	sections := extractLandingSections(contentWithoutMeta)
 	links := extractLandingLinks(contentWithoutMeta)
 
+	// Fetch recent blog posts from Git history
+	recentPosts := fetchRecentPosts(filepath.Dir(mdFile), config, 5)
+
 	// Load landing template
 	tmpl, err := template.ParseFS(templateFS, "templates/landing.html")
 	if err != nil {
@@ -86,6 +91,7 @@ func ConvertLandingPage(mdFile string, config Config) error {
 		Sections:    sections,
 		Links:       links,
 		Settings:    settings,
+		Posts:       recentPosts,
 	}
 
 	// Execute template
@@ -168,13 +174,31 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 	}
 
 	author := metadata["Author"]
-	if author == "" {
-		author = config.DefaultAuthor
-	}
-
 	description := metadata["Description"]
 	date := metadata["Date"]
 	image := metadata["Image"]
+
+	// If no date or author in metadata, try to get from Git history
+	if date == "" || author == "" {
+		gitInfo, err := GetFileGitInfo(mdFile)
+		if err == nil {
+			if date == "" {
+				date = gitInfo.LastModified.Format("2006-01-02")
+				metadata["Date"] = date // Store in metadata for later use
+				logger.Debug().Str("git_date", date).Msg("Using Git commit date for post")
+			}
+			if author == "" {
+				author = gitInfo.Author
+				metadata["Author"] = author // Store in metadata for later use
+				logger.Debug().Str("git_author", author).Msg("Using Git commit author for post")
+			}
+		}
+	}
+
+	// Fall back to default author if still empty
+	if author == "" {
+		author = config.DefaultAuthor
+	}
 
 	// Calculate the URL for the page
 	var url string
@@ -576,6 +600,11 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 				author = config.DefaultAuthor
 			}
 
+			// Read file content for search indexing
+			mdContent, _ := os.ReadFile(filePath)
+			_, contentWithoutMeta := extractMetadata(mdContent)
+			plainContent := extractPlainText(contentWithoutMeta)
+
 			blogPosts = append(blogPosts, BlogPost{
 				Title:       title,
 				Link:        fileNameWithoutExt + ".html",
@@ -583,6 +612,8 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 				Date:        metadata["Date"],
 				FullURL:     relPath,
 				Author:      author,
+				Content:     plainContent,
+				FilePath:    filePath,
 			})
 		}
 	}
@@ -650,4 +681,129 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 	}
 
 	return blogPosts, nil
+}
+
+// fetchRecentPosts finds and returns the most recent blog posts sorted by Git commit date
+func fetchRecentPosts(rootDir string, config Config, limit int) []BlogPost {
+	logger := log.With().Str("root_dir", rootDir).Int("limit", limit).Logger()
+	logger.Debug().Msg("Fetching recent posts from Git history")
+
+	// Look for blog directory relative to root
+	blogDir := filepath.Join(rootDir, "blog")
+	if _, err := os.Stat(blogDir); os.IsNotExist(err) {
+		logger.Debug().Msg("Blog directory not found, skipping recent posts")
+		return nil
+	}
+
+	// Open Git repository
+	gitRepo, err := OpenGitRepository(rootDir)
+	if err != nil {
+		logger.Debug().Err(err).Msg("Could not open Git repository")
+		return nil
+	}
+
+	// Collect all markdown files from blog directory
+	var mdFiles []string
+	err = filepath.Walk(blogDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && (strings.HasSuffix(path, ".md") || strings.HasSuffix(path, ".markdown")) {
+			// Skip index files
+			if info.Name() != "index.md" && info.Name() != "index.markdown" {
+				mdFiles = append(mdFiles, path)
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		logger.Debug().Err(err).Msg("Error walking blog directory")
+		return nil
+	}
+
+	logger.Debug().Int("files_found", len(mdFiles)).Msg("Found markdown files in blog directory")
+
+	// Build posts with Git dates
+	type postWithDate struct {
+		post    BlogPost
+		gitDate time.Time
+	}
+	var postsWithDates []postWithDate
+
+	for _, filePath := range mdFiles {
+		// Read file to get metadata
+		mdContent, err := os.ReadFile(filePath)
+		if err != nil {
+			logger.Debug().Str("file", filePath).Err(err).Msg("Could not read markdown file")
+			continue
+		}
+
+		metadata, _ := extractMetadata(mdContent)
+
+		// Skip landing page templates
+		if metadata["Template"] == "landing" {
+			continue
+		}
+
+		// Get Git commit date
+		gitInfo, err := gitRepo.GetFileLastModified(filePath)
+		var gitDate time.Time
+		if err != nil {
+			logger.Debug().Str("file", filePath).Err(err).Msg("Could not get Git date, using metadata date")
+			// Fall back to metadata date
+			gitDate, _ = time.Parse("2006-01-02", metadata["Date"])
+		} else {
+			gitDate = gitInfo.LastModified
+		}
+
+		// Build the link path relative to site root
+		relPath, err := filepath.Rel(rootDir, filePath)
+		if err != nil {
+			relPath = filePath
+		}
+
+		// Convert to HTML link
+		fileNameWithoutExt := strings.TrimSuffix(filepath.Base(filePath), filepath.Ext(filePath))
+		fileNameWithoutExt = strings.ReplaceAll(fileNameWithoutExt, " ", "-")
+
+		// Build the full link path (blog/Category/post.html)
+		dirPath := filepath.Dir(relPath)
+		link := filepath.Join(dirPath, fileNameWithoutExt+".html")
+		link = strings.ReplaceAll(link, string(filepath.Separator), "/")
+
+		// Get title from metadata or filename
+		title := metadata["Title"]
+		if title == "" {
+			title = strings.TrimSuffix(filepath.Base(filePath), filepath.Ext(filePath))
+		}
+
+		post := BlogPost{
+			Title:       title,
+			Link:        link,
+			Description: metadata["Description"],
+			Date:        gitDate.Format("2006-01-02"),
+			FilePath:    filePath,
+		}
+
+		postsWithDates = append(postsWithDates, postWithDate{post: post, gitDate: gitDate})
+	}
+
+	// Sort by Git date (newest first)
+	sort.Slice(postsWithDates, func(i, j int) bool {
+		return postsWithDates[i].gitDate.After(postsWithDates[j].gitDate)
+	})
+
+	// Limit the results
+	if len(postsWithDates) > limit {
+		postsWithDates = postsWithDates[:limit]
+	}
+
+	// Extract just the posts
+	var posts []BlogPost
+	for _, pwd := range postsWithDates {
+		posts = append(posts, pwd.post)
+	}
+
+	logger.Debug().Int("posts_returned", len(posts)).Msg("Recent posts fetched successfully")
+	return posts
 }

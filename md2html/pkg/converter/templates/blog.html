@@ -27,8 +27,11 @@
         <article class="blog-post">
             <header>
                 <h1>{{.Title}}</h1>
-                {{if .Date}}<time datetime="{{.Date}}">{{.Date}}</time>{{end}}
-                {{if .Author}}<p class="author">By {{.Author}}</p>{{end}}
+                <p class="post-meta">
+                    {{if .Author}}<span class="author">by {{.Author}}</span>{{end}}
+                    {{if and .Author .Date}}<span class="meta-separator">•</span>{{end}}
+                    {{if .Date}}<span class="created-at">Created at <time datetime="{{.Date}}">{{.Date}}</time></span>{{end}}
+                </p>
             </header>
             <div class="content">
                 {{.Content}}

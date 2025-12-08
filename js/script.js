@@ -248,6 +248,165 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Blog search functionality
+    const searchInput = document.getElementById('search-input');
+    const noResults = document.getElementById('no-results');
+    const searchShortcut = document.getElementById('search-shortcut');
+    let searchIndex = null;
+    
+    if (searchInput) {
+        // Detect OS and update shortcut hint
+        const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 || 
+                      navigator.userAgent.toUpperCase().indexOf('MAC') >= 0;
+        if (searchShortcut && !isMac) {
+            searchShortcut.textContent = 'Ctrl K';
+        }
+        
+        // Keyboard shortcut: Cmd+K (Mac) or Ctrl+K (Windows/Linux)
+        document.addEventListener('keydown', function(e) {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                searchInput.focus();
+                searchInput.select();
+            }
+            // Escape to blur search
+            if (e.key === 'Escape' && document.activeElement === searchInput) {
+                searchInput.blur();
+            }
+        });
+        
+        // Load search index
+        fetch('search-index.json')
+            .then(response => response.json())
+            .then(data => {
+                searchIndex = data;
+                // Create a map for quick lookup by link
+                searchIndex.forEach(entry => {
+                    entry.linkKey = entry.link;
+                });
+            })
+            .catch(err => {
+                console.log('Search index not available, using basic search');
+            });
+        
+        // Helper function to highlight matched text
+        const highlightMatch = (text, query) => {
+            if (!query) return text;
+            const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            return text.replace(regex, '<mark>$1</mark>');
+        };
+        
+        // Helper function to get context around the match
+        const getMatchContext = (text, query, contextLength = 50) => {
+            if (!text) return null;
+            const lowerText = text.toLowerCase();
+            const lowerQuery = query.toLowerCase();
+            const matchIndex = lowerText.indexOf(lowerQuery);
+            
+            if (matchIndex === -1) return null;
+            
+            const start = Math.max(0, matchIndex - contextLength);
+            const end = Math.min(text.length, matchIndex + query.length + contextLength);
+            
+            let context = text.substring(start, end);
+            if (start > 0) context = '...' + context;
+            if (end < text.length) context = context + '...';
+            
+            return highlightMatch(context, query);
+        };
+        
+        // Find search index entry by link
+        const findIndexEntry = (link) => {
+            if (!searchIndex) return null;
+            return searchIndex.find(entry => entry.link === link || entry.linkKey === link);
+        };
+        
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            const blogPosts = document.querySelectorAll('.blog-list .blog-post');
+            const directories = document.querySelectorAll('.directory-list .directory');
+            let visiblePosts = 0;
+            let visibleDirs = 0;
+            
+            // Filter blog posts
+            blogPosts.forEach(post => {
+                const title = post.dataset.title || '';
+                const description = post.dataset.description || '';
+                const postLink = post.querySelector('a')?.getAttribute('href') || '';
+                
+                // Get content from search index if available
+                const indexEntry = findIndexEntry(postLink);
+                const content = indexEntry?.content || '';
+                
+                const titleMatch = title.toLowerCase().includes(query);
+                const descMatch = description.toLowerCase().includes(query);
+                const contentMatch = content.toLowerCase().includes(query);
+                const matches = titleMatch || descMatch || contentMatch;
+                
+                const searchMatchEl = post.querySelector('.search-match');
+                const descriptionEl = post.querySelector('.post-description');
+                
+                if (matches && query) {
+                    post.style.display = '';
+                    visiblePosts++;
+                    
+                    // Show matched context
+                    if (searchMatchEl) {
+                        if (titleMatch) {
+                            searchMatchEl.innerHTML = '<strong>Title:</strong> ' + highlightMatch(title, query);
+                        } else if (descMatch) {
+                            const context = getMatchContext(description, query);
+                            searchMatchEl.innerHTML = '<strong>Description:</strong> ' + context;
+                        } else if (contentMatch) {
+                            const context = getMatchContext(content, query);
+                            searchMatchEl.innerHTML = '<strong>Content:</strong> ' + context;
+                        }
+                        searchMatchEl.style.display = 'block';
+                    }
+                    
+                    // Hide original description when showing match
+                    if (descriptionEl) descriptionEl.style.display = 'none';
+                } else if (!query) {
+                    // No search query - show all posts normally
+                    post.style.display = '';
+                    visiblePosts++;
+                    if (searchMatchEl) searchMatchEl.style.display = 'none';
+                    if (descriptionEl) descriptionEl.style.display = '';
+                } else {
+                    // No match
+                    post.style.display = 'none';
+                    if (searchMatchEl) searchMatchEl.style.display = 'none';
+                    if (descriptionEl) descriptionEl.style.display = '';
+                }
+            });
+            
+            // Filter directories
+            directories.forEach(dir => {
+                const name = dir.querySelector('a')?.textContent.toLowerCase() || '';
+                const matches = name.includes(query);
+                
+                dir.style.display = matches ? '' : 'none';
+                if (matches) visibleDirs++;
+            });
+            
+            // Show/hide section headers based on visible items
+            const blogList = document.querySelector('.blog-list');
+            const directoryList = document.querySelector('.directory-list');
+            
+            if (blogList) {
+                blogList.style.display = visiblePosts > 0 ? '' : 'none';
+            }
+            if (directoryList) {
+                directoryList.style.display = visibleDirs > 0 ? '' : 'none';
+            }
+            
+            // Show "no results" message if nothing matches
+            if (noResults) {
+                noResults.style.display = (visiblePosts === 0 && visibleDirs === 0 && query !== '') ? 'block' : 'none';
+            }
+        });
+    }
+
     // Only run terminal-specific code if terminal exists (main site)
     if (terminal) {
         // Lucky button functionality

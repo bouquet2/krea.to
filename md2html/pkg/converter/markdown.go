@@ -6,6 +6,7 @@ import (
 	"io"
 	"regexp"
 	"strings"
+	"unicode"
 
 	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
 	"github.com/alecthomas/chroma/v2/lexers"
@@ -186,4 +187,58 @@ func extractLandingLinks(content []byte) []LandingLink {
 	}
 
 	return links
+}
+
+// extractPlainText converts markdown content to plain text for search indexing
+func extractPlainText(content []byte) string {
+	text := string(content)
+
+	// Remove code blocks (``` ... ```)
+	codeBlockRe := regexp.MustCompile("(?s)```[^`]*```")
+	text = codeBlockRe.ReplaceAllString(text, " ")
+
+	// Remove inline code (`...`)
+	inlineCodeRe := regexp.MustCompile("`[^`]+`")
+	text = inlineCodeRe.ReplaceAllString(text, " ")
+
+	// Remove images ![alt](url)
+	imageRe := regexp.MustCompile(`!\[[^\]]*\]\([^)]+\)`)
+	text = imageRe.ReplaceAllString(text, " ")
+
+	// Convert links [text](url) to just text
+	linkRe := regexp.MustCompile(`\[([^\]]+)\]\([^)]+\)`)
+	text = linkRe.ReplaceAllString(text, "$1")
+
+	// Remove HTML comments
+	commentRe := regexp.MustCompile(`<!--[\s\S]*?-->`)
+	text = commentRe.ReplaceAllString(text, " ")
+
+	// Remove HTML tags
+	htmlRe := regexp.MustCompile(`<[^>]+>`)
+	text = htmlRe.ReplaceAllString(text, " ")
+
+	// Remove markdown formatting characters
+	text = strings.ReplaceAll(text, "#", " ")
+	text = strings.ReplaceAll(text, "*", "")
+	text = strings.ReplaceAll(text, "_", "")
+	text = strings.ReplaceAll(text, "~", "")
+	text = strings.ReplaceAll(text, ">", " ")
+	text = strings.ReplaceAll(text, "|", " ")
+
+	// Normalize whitespace
+	spaceRe := regexp.MustCompile(`\s+`)
+	text = spaceRe.ReplaceAllString(text, " ")
+
+	// Trim and limit length for reasonable index size
+	text = strings.TrimSpace(text)
+
+	// Remove non-printable characters
+	text = strings.Map(func(r rune) rune {
+		if unicode.IsPrint(r) || unicode.IsSpace(r) {
+			return r
+		}
+		return -1
+	}, text)
+
+	return text
 }

@@ -46,6 +46,21 @@
                     </div>
                 </div>
             </div>
+
+            {{if .Posts}}
+            <div class="terminal-section">
+                {{if not (index .Settings "hide-shell")}}<div class="prompt">kreato@akiri:~$ <span class="typing-effect">git log --oneline blog/</span></div>{{end}}
+                <div class="output">
+                    <div class="recent-posts">
+                        {{range .Posts}}
+                        <div class="recent-post">
+                            <a href="{{.Link}}" class="post-link">{{.Title}}</a>
+                        </div>
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+            {{end}}
         </div>
     </div>
     </main>

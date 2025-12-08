@@ -18,12 +18,24 @@
 </head>
 <body>
     <header>
-        <nav>
+        <nav class="nav-bar">
             <a href="{{.BackURL}}" class="back-button">← Back</a>
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="Search..." aria-label="Search">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <kbd class="search-shortcut" id="search-shortcut">⌘K</kbd>
+            </div>
         </nav>
     </header>
     <main>
         <h1>{{.Title}}</h1>
+        
+        <div id="no-results" class="no-results" style="display: none;">
+            No posts found matching your search.
+        </div>
         
         {{if .HasDirectories}}
         <section class="directory-list">
@@ -40,12 +52,12 @@
         
         {{if .Posts}}
         <section class="blog-list">
-            <h2>Posts</h2>
+            <h2>Most Recent Posts</h2>
             {{range .Posts}}
-            <article class="blog-post">
+            <article class="blog-post" data-title="{{.Title}}" data-description="{{.Description}}">
                 <h3><a href="{{.Link}}" class="post-link">{{.Title}}</a></h3>
-                {{if .Date}}<time datetime="{{.Date}}">{{.Date}}</time>{{end}}
-                {{if .Description}}<p>{{.Description}}</p>{{end}}
+                {{if .Description}}<p class="post-description">{{.Description}}</p>{{end}}
+                <p class="search-match" style="display: none;"></p>
             </article>
             {{end}}
         </section>

@@ -198,13 +198,21 @@ func generateRSSFeed(blogPosts []BlogPost, config Config, outputDir string) erro
 	if atomLink != nil {
 		xmlnsAtom = "http://www.w3.org/2005/Atom"
 	}
+
+	// Build title and description with fallbacks
+	title := config.SiteTitle
+	if title == "" {
+		title = "Blog"
+	}
+	description := fmt.Sprintf("Blog posts from %s", title)
+
 	feed := RSSFeed{
 		Version:   "2.0",
 		XMLNSAtom: xmlnsAtom,
 		Channel: RSSChannel{
-			Title:         config.SiteTitle,
+			Title:         title,
 			Link:          config.SiteURL,
-			Description:   fmt.Sprintf("Blog posts from %s", config.SiteTitle),
+			Description:   description,
 			Language:      "en-us",
 			LastBuildDate: time.Now().Format(time.RFC1123Z),
 			AtomLink:      atomLink,

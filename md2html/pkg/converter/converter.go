@@ -43,6 +43,8 @@ type BlogPost struct {
 	Date        string
 	FullURL     string // Full URL for RSS feed
 	Author      string // Author for RSS feed
+	Content     string // Plain text content for search indexing
+	FilePath    string // Original file path for Git history lookup
 }
 
 // Directory represents a subdirectory for the index page
@@ -86,6 +88,7 @@ type LandingData struct {
 	Sections    []LandingSection
 	Links       []LandingLink
 	Settings    map[string]bool // Template settings from metadata
+	Posts       []BlogPost      // Most recent blog posts from Git history
 }
 
 // ==========================================================================
