@@ -31,6 +31,8 @@ var (
 	siteURL             string
 	serve               bool
 	port                string
+	gitWebURL           string
+	showCommitInfo      bool
 
 	// Create-template command flags
 	createTemplateFile string
@@ -118,6 +120,8 @@ func init() {
 	convertCmd.Flags().BoolVar(&recursive, "recursive", false, "Process subdirectories recursively")
 	convertCmd.Flags().BoolVar(&generateRSS, "rss", false, "Generate RSS feed (feed.xml)")
 	convertCmd.Flags().StringVar(&siteURL, "site-url", "", "Site URL for RSS feed")
+	convertCmd.Flags().StringVar(&gitWebURL, "git-web-url", "", "Base URL for git web interface (e.g., https://github.com/user/repo/commit/)")
+	convertCmd.Flags().BoolVar(&showCommitInfo, "show-commit-info", false, "Display commit information in templates")
 	convertCmd.Flags().BoolVar(&serve, "serve", false, "Start development server after building")
 	convertCmd.Flags().StringVar(&port, "port", "8080", "Port to serve on")
 
@@ -168,16 +172,18 @@ func runConvert(cmd *cobra.Command, args []string) error {
 
 	// Configure the converter
 	config := converter.Config{
-		TemplateFile:  convertTemplateFile,
-		OutputDir:     outputDir,
-		CSSPath:       cssPath,
-		JSPath:        jsPath,
-		SiteTitle:     siteTitle,
-		DefaultAuthor: author,
-		GenerateList:  addList,
-		Recursive:     recursive,
-		GenerateRSS:   generateRSS,
-		SiteURL:       siteURL,
+		TemplateFile:   convertTemplateFile,
+		OutputDir:      outputDir,
+		CSSPath:        cssPath,
+		JSPath:         jsPath,
+		SiteTitle:      siteTitle,
+		DefaultAuthor:  author,
+		GenerateList:   addList,
+		Recursive:      recursive,
+		GenerateRSS:    generateRSS,
+		SiteURL:        siteURL,
+		GitWebURL:      gitWebURL,
+		ShowCommitInfo: showCommitInfo,
 	}
 
 	// Convert files

@@ -1439,6 +1439,32 @@ body:not(:has(.terminal)) img {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Remove underline from date links */
+.post-date,
+.created-at a {
+    text-decoration: none;
+}
+
+.post-date:hover,
+.created-at a:hover {
+    text-decoration: none;
+}
+
+/* Add hand cursor to clickable dates */
+.post-date,
+.created-at a {
+    cursor: pointer;
+}
+
+/* Make blog post date glow like button on hover */
+.post-meta .created-at a:hover {
+    color: var(--bg-color);
+    background-color: var(--accent-color);
+    opacity: 1;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 /* Responsive design */
 /* Large screens - expand blog width */
 @media (min-width: 1200px) {

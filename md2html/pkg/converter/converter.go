@@ -10,41 +10,51 @@ var templateFS embed.FS
 
 // Config holds configuration for the HTML generation
 type Config struct {
-	TemplateFile  string
-	OutputDir     string
-	CSSPath       string
-	JSPath        string
-	SiteTitle     string
-	DefaultAuthor string
-	GenerateList  bool
-	Recursive     bool
-	GenerateRSS   bool
-	SiteURL       string
+	TemplateFile   string
+	OutputDir      string
+	CSSPath        string
+	JSPath         string
+	SiteTitle      string
+	DefaultAuthor  string
+	GenerateList   bool
+	Recursive      bool
+	GenerateRSS    bool
+	SiteURL        string
+	GitWebURL      string // Base URL for git web interface (e.g., https://github.com/user/repo/commit/)
+	ShowCommitInfo bool   // Whether to display commit information in templates
 }
 
 // PageData represents the data to be passed to the HTML template
 type PageData struct {
-	Title       string
-	Content     template.HTML
-	CSSPath     string
-	JSPath      string
-	Author      string
-	Description string
-	Date        string
-	URL         string
-	Image       string
+	Title        string
+	Content      template.HTML
+	CSSPath      string
+	JSPath       string
+	Author       string
+	Description  string
+	Date         string
+	URL          string
+	Image        string
+	CommitHash   string // Latest commit hash
+	CommitDate   string // Commit date in readable format
+	CommitAuthor string // Commit author
+	CommitURL    string // URL to commit in git web interface
 }
 
 // BlogPost represents a blog post entry for the index page
 type BlogPost struct {
-	Title       string
-	Link        string
-	Description string
-	Date        string
-	FullURL     string // Full URL for RSS feed
-	Author      string // Author for RSS feed
-	Content     string // Plain text content for search indexing
-	FilePath    string // Original file path for Git history lookup
+	Title        string
+	Link         string
+	Description  string
+	Date         string
+	FullURL      string // Full URL for RSS feed
+	Author       string // Author for RSS feed
+	Content      string // Plain text content for search indexing
+	FilePath     string // Original file path for Git history lookup
+	CommitHash   string // Latest commit hash
+	CommitDate   string // Commit date in readable format
+	CommitAuthor string // Commit author
+	CommitURL    string // URL to commit in git web interface
 }
 
 // Directory represents a subdirectory for the index page

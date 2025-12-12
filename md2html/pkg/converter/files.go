@@ -178,17 +178,35 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 	date := metadata["Date"]
 	image := metadata["Image"]
 
-	// If no date or author in metadata, try to get from Git history
-	if date == "" || author == "" {
+	// Get Git information for commit tracking
+	var commitHash, commitDate, commitAuthor, commitURL string
+	if config.ShowCommitInfo {
 		gitInfo, err := GetFileGitInfo(mdFile)
 		if err == nil {
+			commitHash = gitInfo.CommitHash
+			commitDate = gitInfo.LastModified.Format("2006-01-02 15:04:05")
+			commitAuthor = gitInfo.Author
+			commitURL = GetCommitURL(config.GitWebURL, commitHash)
+			logger.Debug().
+				Str("commit_hash", commitHash[:8]).
+				Str("commit_date", commitDate).
+				Str("commit_author", commitAuthor).
+				Msg("Collected Git commit information")
+		} else {
+			logger.Debug().Err(err).Msg("Could not get Git information for file")
+		}
+	}
+
+	// If no date or author in metadata, try to get from Git history
+	if date == "" || author == "" {
+		if commitHash != "" {
 			if date == "" {
-				date = gitInfo.LastModified.Format("2006-01-02")
+				date = commitDate[:10]  // Use just the date part
 				metadata["Date"] = date // Store in metadata for later use
 				logger.Debug().Str("git_date", date).Msg("Using Git commit date for post")
 			}
 			if author == "" {
-				author = gitInfo.Author
+				author = commitAuthor
 				metadata["Author"] = author // Store in metadata for later use
 				logger.Debug().Str("git_author", author).Msg("Using Git commit author for post")
 			}
@@ -217,15 +235,19 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 	}
 
 	data := PageData{
-		Title:       title,
-		Content:     sanitizedHTML,
-		CSSPath:     config.CSSPath,
-		JSPath:      config.JSPath,
-		Author:      author,
-		Description: description,
-		Date:        date,
-		URL:         url,
-		Image:       image,
+		Title:        title,
+		Content:      sanitizedHTML,
+		CSSPath:      config.CSSPath,
+		JSPath:       config.JSPath,
+		Author:       author,
+		Description:  description,
+		Date:         date,
+		URL:          url,
+		Image:        image,
+		CommitHash:   commitHash,
+		CommitDate:   commitDate,
+		CommitAuthor: commitAuthor,
+		CommitURL:    commitURL,
 	}
 
 	// Execute template
@@ -605,15 +627,31 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 			_, contentWithoutMeta := extractMetadata(mdContent)
 			plainContent := extractPlainText(contentWithoutMeta)
 
+			// Get commit information if enabled
+			var commitHash, commitDate, commitAuthor, commitURL string
+			if config.ShowCommitInfo {
+				gitInfo, err := GetFileGitInfo(filePath)
+				if err == nil {
+					commitHash = gitInfo.CommitHash
+					commitDate = gitInfo.LastModified.Format("2006-01-02 15:04:05")
+					commitAuthor = gitInfo.Author
+					commitURL = GetCommitURL(config.GitWebURL, commitHash)
+				}
+			}
+
 			blogPosts = append(blogPosts, BlogPost{
-				Title:       title,
-				Link:        fileNameWithoutExt + ".html",
-				Description: metadata["Description"],
-				Date:        metadata["Date"],
-				FullURL:     relPath,
-				Author:      author,
-				Content:     plainContent,
-				FilePath:    filePath,
+				Title:        title,
+				Link:         fileNameWithoutExt + ".html",
+				Description:  metadata["Description"],
+				Date:         metadata["Date"],
+				FullURL:      relPath,
+				Author:       author,
+				Content:      plainContent,
+				FilePath:     filePath,
+				CommitHash:   commitHash,
+				CommitDate:   commitDate,
+				CommitAuthor: commitAuthor,
+				CommitURL:    commitURL,
 			})
 		}
 	}
@@ -777,12 +815,27 @@ func fetchRecentPosts(rootDir string, config Config, limit int) []BlogPost {
 			title = strings.TrimSuffix(filepath.Base(filePath), filepath.Ext(filePath))
 		}
 
+		// Get commit information if enabled
+		var commitHash, commitDate, commitAuthor, commitURL string
+		if config.ShowCommitInfo {
+			if gitInfo != nil {
+				commitHash = gitInfo.CommitHash
+				commitDate = gitInfo.LastModified.Format("2006-01-02 15:04:05")
+				commitAuthor = gitInfo.Author
+				commitURL = GetCommitURL(config.GitWebURL, commitHash)
+			}
+		}
+
 		post := BlogPost{
-			Title:       title,
-			Link:        link,
-			Description: metadata["Description"],
-			Date:        gitDate.Format("2006-01-02"),
-			FilePath:    filePath,
+			Title:        title,
+			Link:         link,
+			Description:  metadata["Description"],
+			Date:         gitDate.Format("2006-01-02"),
+			FilePath:     filePath,
+			CommitHash:   commitHash,
+			CommitDate:   commitDate,
+			CommitAuthor: commitAuthor,
+			CommitURL:    commitURL,
 		}
 
 		postsWithDates = append(postsWithDates, postWithDate{post: post, gitDate: gitDate})

@@ -4,11 +4,19 @@
 DEBUG ?= 0
 DEBUG_FLAG = $(if $(filter 1,$(DEBUG)),--debug,)
 
+# Site options
+TITLE = "Kreato's Blog"
+SITE_URL = "https://krea.to"
+GITHUB_COMMIT_PREFIX = "https://github.com/bouquet2/krea.to/commit/"
+SHOW_COMMIT_INFO ?= 1
+
 # Build configuration
+SHOW_COMMIT_INFO_FLAG = $(if $(filter 1,$(SHOW_COMMIT_INFO)),--show-commit-info --git-web-url $(GITHUB_COMMIT_PREFIX),)
 MD2HTML_BIN = md2html/md2html
 DIST_DIR = dist
+
 ASSETS = fonts assets
-CONVERT_FLAGS = --input md --title "Kreato's Blog" --output $(DIST_DIR) --css "css/style.css" --js "js/script.js" --addlist --recursive --rss --site-url 'https://krea.to' $(DEBUG_FLAG)
+CONVERT_FLAGS = --input md --title $(TITLE) --output $(DIST_DIR) --css "css/style.css" --js "js/script.js" --addlist --recursive --rss --site-url $(SITE_URL) $(DEBUG_FLAG) $(SHOW_COMMIT_INFO_FLAG)
 
 # Default target
 all: build

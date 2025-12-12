@@ -142,3 +142,17 @@ func GetFileGitInfo(filePath string) (*GitInfo, error) {
 
 	return repo.GetFileLastModified(filePath)
 }
+
+// GetCommitURL creates a URL to the commit in a git web interface
+func GetCommitURL(gitWebURL, commitHash string) string {
+	if gitWebURL == "" || commitHash == "" {
+		return ""
+	}
+
+	// Ensure the base URL ends with a slash
+	if !strings.HasSuffix(gitWebURL, "/") {
+		gitWebURL += "/"
+	}
+
+	return gitWebURL + commitHash
+}
