@@ -1,3 +1,31 @@
+// Apply theme immediately to prevent flash
+(function() {
+    const body = document.body;
+    const schemes = ['mocha', 'frappe', 'latte', 'macchiato', 'gruvbox', 'nord', 'tokyonight', 'monokai', 'onedark', 'solarized', 'kanagawa'];
+    
+    // Store the original server-set theme
+    const originalServerTheme = body.getAttribute('data-theme') || 'nord';
+    
+    // Check for saved theme preference first
+    let savedScheme = localStorage.getItem('colorScheme');
+    if (!savedScheme) {
+        savedScheme = originalServerTheme;
+    }
+    if (!savedScheme || !schemes.includes(savedScheme)) {
+        savedScheme = 'nord';
+    }
+    
+    // Apply the theme immediately
+    if (schemes.includes(savedScheme)) {
+        body.setAttribute('data-theme', savedScheme);
+    }
+    
+    // Apply light-theme class if using latte
+    if (savedScheme === 'latte') {
+        body.classList.add('light-theme');
+    }
+})();
+
 document.addEventListener('DOMContentLoaded', function() {
 
     // Accessibility mode functionality
@@ -170,6 +198,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Theme toggle functionality
     const themeButton = document.getElementById('theme-button');
 
+    // Get the original server-set theme (already stored in IIFE)
+    const originalServerTheme = body.getAttribute('data-theme') || 'nord';
+
     const updateThemeButtonState = () => {
         if (!themeButton) return;
         const isLight = body.classList.contains('light-theme');
@@ -193,18 +224,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
     
-    // Check for saved color scheme or default to nord
-    const savedScheme = localStorage.getItem('colorScheme') || 'nord';
+    // Get the current scheme (already applied by inline script)
+    const savedScheme = localStorage.getItem('colorScheme') || body.getAttribute('data-theme') || 'nord';
     if (themeSelect) {
         themeSelect.value = savedScheme;
-    }
-    
-    // Apply saved scheme (which also sets the background image)
-    applyScheme(savedScheme);
-    
-    // Update light-theme class if using latte
-    if (savedScheme === 'latte') {
-        body.classList.add('light-theme');
     }
 
     updateThemeButtonState();
@@ -232,11 +255,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (themeButton) {
         themeButton.addEventListener('click', function() {
             if (body.classList.contains('light-theme')) {
-                // Switch to dark mode (nord)
+                // Switch to dark mode (use original server theme
                 body.classList.remove('light-theme');
-                applyScheme('nord');
+                applyScheme(originalServerTheme);
                 localStorage.setItem('theme', 'dark');
-                if (themeSelect) themeSelect.value = 'nord';
+                if (themeSelect) themeSelect.value = originalServerTheme;
             } else {
                 // Switch to light mode (latte)
                 body.classList.add('light-theme');
@@ -413,7 +436,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (luckyButton) {
             luckyButton.addEventListener('click', function() {
             // Get current scheme from data attribute
-            const currentScheme = body.getAttribute('data-theme') || 'nord';
+            let currentScheme = body.getAttribute('data-theme');
+            if (!currentScheme || !schemes.includes(currentScheme)) {
+                currentScheme = 'nord';
+            }
 
             // Get available schemes excluding current one
             const availableSchemes = schemes.filter(scheme => scheme !== currentScheme);

@@ -34,7 +34,7 @@ func loadTemplate(templatePath string) (*template.Template, error) {
 }
 
 // generateIndex creates an index.html file in the output directory
-func generateIndex(outputDir string, blogPosts []BlogPost, subdirectories []Directory, folderName string, cssPath string, jsPath string, backURL string) error {
+func generateIndex(outputDir string, blogPosts []BlogPost, subdirectories []Directory, folderName string, cssPath string, jsPath string, backURL string, config Config) error {
 	// Sort directories alphabetically
 	sort.Slice(subdirectories, func(i, j int) bool {
 		return subdirectories[i].Name < subdirectories[j].Name
@@ -119,6 +119,12 @@ func generateIndex(outputDir string, blogPosts []BlogPost, subdirectories []Dire
 			HasDirectories: len(subdirectories) > 0,
 			URL:            backURL,
 			Image:          "", // Default to empty string for index pages
+			DefaultTheme: func() string {
+				if config.DefaultTheme != "" {
+					return config.DefaultTheme
+				}
+				return "nord" // Fallback to nord if no theme specified
+			}(),
 		}
 
 		if err := indexTmpl.Execute(file, data); err != nil {

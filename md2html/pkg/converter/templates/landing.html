@@ -15,7 +15,7 @@
     
     <link rel="stylesheet" href="{{.CSSPath}}">
 </head>
-<body{{if index .Settings "fullscreen"}} class="fullscreen-mode"{{end}}>
+<body{{if .DefaultTheme}} data-theme="{{.DefaultTheme}}"{{end}}{{if index .Settings "fullscreen"}} class="fullscreen-mode"{{end}}>
     <main>
     <div class="terminal{{if index .Settings "fullscreen"}} terminal-fullscreen{{end}}">
         {{if not (index .Settings "hide-topbar")}}
@@ -101,7 +101,7 @@
             <div class="menu-section">
                 <label for="theme-select" class="menu-label">Color Scheme</label>
                 <select id="theme-select" class="menu-select">
-                    <option value="nord">Nord (Default)</option>
+                    <option value="nord">Nord</option>
                     <option value="mocha">Mocha</option>
                     <option value="frappe">Frappe</option>
                     <option value="latte">Latte</option>

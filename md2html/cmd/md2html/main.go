@@ -33,6 +33,7 @@ var (
 	port                string
 	gitWebURL           string
 	showCommitInfo      bool
+	defaultTheme        string
 
 	// Create-template command flags
 	createTemplateFile string
@@ -122,6 +123,7 @@ func init() {
 	convertCmd.Flags().StringVar(&siteURL, "site-url", "", "Site URL for RSS feed")
 	convertCmd.Flags().StringVar(&gitWebURL, "git-web-url", "", "Base URL for git web interface (e.g., https://github.com/user/repo/commit/)")
 	convertCmd.Flags().BoolVar(&showCommitInfo, "show-commit-info", false, "Display commit information in templates")
+	convertCmd.Flags().StringVar(&defaultTheme, "default-theme", "", "Default theme (nord, latte, frappe, mocha, macchiato, gruvbox, tokyonight, monokai, onedark, solarized, kanagawa)")
 	convertCmd.Flags().BoolVar(&serve, "serve", false, "Start development server after building")
 	convertCmd.Flags().StringVar(&port, "port", "8080", "Port to serve on")
 
@@ -184,6 +186,7 @@ func runConvert(cmd *cobra.Command, args []string) error {
 		SiteURL:        siteURL,
 		GitWebURL:      gitWebURL,
 		ShowCommitInfo: showCommitInfo,
+		DefaultTheme:   defaultTheme,
 	}
 
 	// Convert files

@@ -1,14 +1,10 @@
 .PHONY: all clean help build tidy fmt serve build-bin copy-assets convert-markdown minify-css minify-js
 
-# Environment variables
-DEBUG ?= 0
-DEBUG_FLAG = $(if $(filter 1,$(DEBUG)),--debug,)
+# Include configuration
+include config.mk
 
-# Site options
-TITLE = "Kreato's Blog"
-SITE_URL = "https://krea.to"
-GITHUB_COMMIT_PREFIX = "https://github.com/bouquet2/krea.to/commit/"
-SHOW_COMMIT_INFO ?= 1
+# Environment variables
+DEBUG_FLAG = $(if $(filter 1,$(DEBUG)),--debug,)
 
 # Build configuration
 SHOW_COMMIT_INFO_FLAG = $(if $(filter 1,$(SHOW_COMMIT_INFO)),--show-commit-info --git-web-url $(GITHUB_COMMIT_PREFIX),)
@@ -16,7 +12,7 @@ MD2HTML_BIN = md2html/md2html
 DIST_DIR = dist
 
 ASSETS = fonts assets
-CONVERT_FLAGS = --input md --title $(TITLE) --output $(DIST_DIR) --css "css/style.css" --js "js/script.js" --addlist --recursive --rss --site-url $(SITE_URL) $(DEBUG_FLAG) $(SHOW_COMMIT_INFO_FLAG)
+CONVERT_FLAGS = --input md --default-theme $(DEFAULT_THEME) --title $(TITLE) --output $(DIST_DIR) --css "css/style.css" --js "js/script.js" --addlist --recursive --rss --site-url $(SITE_URL) $(DEBUG_FLAG) $(SHOW_COMMIT_INFO_FLAG)
 
 # Default target
 all: build
@@ -85,8 +81,10 @@ help:
 	@echo "  serve         - Build site and start development server on localhost:8080"
 	@echo "  help          - Show this message"
 	@echo ""
-	@echo "Environment variables:"
-	@echo "  DEBUG=1       - Enable debug mode for md2html (default: 0)"
+	@echo "Configuration:"
+	@echo "  Site options are configured in config.mk file"
+	@echo "  Environment variables:"
+	@echo "    DEBUG=1     - Enable debug mode for md2html (default: 0)"
 	@echo ""
 	@echo "Examples:"
 	@echo "  make build           # Build without debug"
@@ -95,4 +93,6 @@ help:
 	@echo ""
 	@echo "To add blog posts, create markdown files in md/blog/"
 	@echo "The landing page is defined in md/index.md"
+	@echo ""
+	@echo "Edit config.mk to customize site title, theme, and other options"
 

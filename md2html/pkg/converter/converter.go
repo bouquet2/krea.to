@@ -22,6 +22,7 @@ type Config struct {
 	SiteURL        string
 	GitWebURL      string // Base URL for git web interface (e.g., https://github.com/user/repo/commit/)
 	ShowCommitInfo bool   // Whether to display commit information in templates
+	DefaultTheme   string // Default theme for the website
 }
 
 // PageData represents the data to be passed to the HTML template
@@ -39,6 +40,7 @@ type PageData struct {
 	CommitDate   string // Commit date in readable format
 	CommitAuthor string // Commit author
 	CommitURL    string // URL to commit in git web interface
+	DefaultTheme string // Default theme for the website
 }
 
 // BlogPost represents a blog post entry for the index page
@@ -74,6 +76,7 @@ type IndexData struct {
 	HasDirectories bool
 	URL            string
 	Image          string
+	DefaultTheme   string
 }
 
 // LandingSection represents a terminal section in the landing page
@@ -91,14 +94,15 @@ type LandingLink struct {
 
 // LandingData represents data for the landing page template
 type LandingData struct {
-	Title       string
-	Description string
-	CSSPath     string
-	JSPath      string
-	Sections    []LandingSection
-	Links       []LandingLink
-	Settings    map[string]bool // Template settings from metadata
-	Posts       []BlogPost      // Most recent blog posts from Git history
+	Title        string
+	Description  string
+	CSSPath      string
+	JSPath       string
+	Sections     []LandingSection
+	Links        []LandingLink
+	Settings     map[string]bool // Template settings from metadata
+	Posts        []BlogPost      // Most recent blog posts from Git history
+	DefaultTheme string          // Default theme for the website
 }
 
 // ==========================================================================

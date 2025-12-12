@@ -17,7 +17,7 @@
     
     <link rel="stylesheet" href="{{.CSSPath}}">
 </head>
-<body>
+<body{{if .DefaultTheme}} data-theme="{{.DefaultTheme}}"{{end}}>
     <header>
         <nav>
             <a href="index.html" class="back-button">← Back to Posts</a>

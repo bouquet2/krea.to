@@ -92,6 +92,12 @@ func ConvertLandingPage(mdFile string, config Config) error {
 		Links:       links,
 		Settings:    settings,
 		Posts:       recentPosts,
+		DefaultTheme: func() string {
+			if config.DefaultTheme != "" {
+				return config.DefaultTheme
+			}
+			return "nord" // Fallback to nord if no theme specified
+		}(),
 	}
 
 	// Execute template
@@ -248,6 +254,12 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 		CommitDate:   commitDate,
 		CommitAuthor: commitAuthor,
 		CommitURL:    commitURL,
+		DefaultTheme: func() string {
+			if config.DefaultTheme != "" {
+				return config.DefaultTheme
+			}
+			return "nord" // Fallback to nord if no theme specified
+		}(),
 	}
 
 	// Execute template
@@ -713,6 +725,7 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 			config.CSSPath,
 			config.JSPath,
 			backURL,
+			config,
 		); err != nil {
 			return nil, err
 		}
