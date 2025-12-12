@@ -55,7 +55,7 @@
             <h2>Most Recent Posts</h2>
             {{range .Posts}}
             <article class="blog-post" data-title="{{.Title}}" data-description="{{.Description}}">
-                <h3><a href="{{.Link}}" class="post-link">{{.Title}}</a></h3>
+                <h3><a href="{{.Link}}" class="post-link">{{.Title}}</a>{{if .Date}}<span class="post-date">{{.Date}}</span>{{end}}</h3>
                 {{if .Description}}<p class="post-description">{{.Description}}</p>{{end}}
                 <p class="search-match" style="display: none;"></p>
             </article>

@@ -193,8 +193,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
     
-    // Check for saved color scheme or default to mocha
-    const savedScheme = localStorage.getItem('colorScheme') || 'mocha';
+    // Check for saved color scheme or default to nord
+    const savedScheme = localStorage.getItem('colorScheme') || 'nord';
     if (themeSelect) {
         themeSelect.value = savedScheme;
     }
@@ -232,11 +232,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (themeButton) {
         themeButton.addEventListener('click', function() {
             if (body.classList.contains('light-theme')) {
-                // Switch to dark mode (mocha)
+                // Switch to dark mode (nord)
                 body.classList.remove('light-theme');
-                applyScheme('mocha');
+                applyScheme('nord');
                 localStorage.setItem('theme', 'dark');
-                if (themeSelect) themeSelect.value = 'mocha';
+                if (themeSelect) themeSelect.value = 'nord';
             } else {
                 // Switch to light mode (latte)
                 body.classList.add('light-theme');
@@ -413,7 +413,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (luckyButton) {
             luckyButton.addEventListener('click', function() {
             // Get current scheme from data attribute
-            const currentScheme = body.getAttribute('data-theme') || 'mocha';
+            const currentScheme = body.getAttribute('data-theme') || 'nord';
 
             // Get available schemes excluding current one
             const availableSchemes = schemes.filter(scheme => scheme !== currentScheme);
