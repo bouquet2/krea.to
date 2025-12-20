@@ -12,7 +12,7 @@ First iterations of Kreato Linux used completely static packages - that is, the 
 
 v1 was very primitive, I just threw around something that I felt was convenient enough to implement and use.
 
-```shellscript
+```sh
 NAME="test"
 VERSION="0.0.1"
 SOURCES="https://test.file/source/testfile.tar.gz"
@@ -37,7 +37,7 @@ After a while, I've realized that I've pushed POSIX sh enough and I should switc
 
 As seen in https://linux.krea.to/blog/new-workflow/ I've centralized the entire source code of Kreato Linux is what is essentially 3 repositories. While doing this major refacotr, I had the time to look at the runFile specification and fix a lot of gripes.
 
-```shellscript
+```sh
 NAME="test"
 VERSION="0.0.1"
 RELEASE="1"
@@ -150,7 +150,7 @@ An example is `${version.split('.')[0:2].join('.')}`. As you can see, it is *ver
 
 Okay, we got out of the variables part by just yanking YAML, what about functions? Obviously I didn't want a mess like YAML, so I've got inspired by Go to make the current format.
 
-```shellscript
+```sh
 func custom_func {
     print "This is a test custom function"
 }
@@ -188,7 +188,7 @@ The story is similar here actually, mostly inspired from Go and some from Python
 
 Since this is not a shell, and it is similar to a shell script where we run "commands" (you can also call them functions, it doesn't really matter) we needed a lot of commands such as macro, cd, exec, print, etc. These commands have their own arguments to make them feel more natural.
 
-```shellscript
+```sh
 macro package --meson
 exec tar -xvf example.tar.gz
 #...
