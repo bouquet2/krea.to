@@ -769,6 +769,20 @@ body:not(:has(.terminal)) img {
     height: auto;
 }
 
+/* Blog-specific code font styling */
+body:not(:has(.terminal)) code {
+    font-family: 'Scientifica', monospace;
+}
+
+body:not(:has(.terminal)) pre code {
+    font-family: 'Scientifica', monospace;
+}
+
+body:not(:has(.terminal)) .chroma,
+body:not(:has(.terminal)) .chroma code {
+    font-family: 'Scientifica', monospace;
+}
+
 /* Line numbers styling */
 .chroma .lnt {
     margin-right: 0.8em;
