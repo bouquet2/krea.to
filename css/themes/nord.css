@@ -1,0 +1,32 @@
+/* Nord theme */
+body[data-theme="nord"] {
+    --bg-color: #2e3440;
+    --text-color: #eceff4;
+    --accent-color: #88c0d0;
+    --secondary-color: #81a1c1;
+    --terminal-header: #3b4252;
+    --link-color: #5e81ac;
+}
+
+body[data-theme="nord"]::before {
+    --background-image: url('../../assets/nord.png');
+}
+
+/* Nord theme terminal styles */
+body[data-theme="nord"] .terminal {
+    background-color: rgba(46, 52, 64, 0.8);
+    border: 1px solid rgba(136, 192, 208, 0.3);
+}
+
+body[data-theme="nord"] .terminal-header {
+    background-color: rgba(59, 66, 82, 0.9);
+    border-bottom: 1px solid rgba(136, 192, 208, 0.3);
+}
+
+body[data-theme="nord"] .terminal.no-transparency {
+    background-color: #2e3440 !important;
+}
+
+body[data-theme="nord"] .terminal.no-transparency .terminal-header {
+    background-color: #3b4252 !important;
+}

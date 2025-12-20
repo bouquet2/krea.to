@@ -1,0 +1,32 @@
+/* Catppuccin Frappe theme */
+body[data-theme="frappe"] {
+    --bg-color: #303446;
+    --text-color: #c6d0f5;
+    --accent-color: #f4b8e4;
+    --secondary-color: #ca9ee6;
+    --terminal-header: #292c3c;
+    --link-color: #8caaee;
+}
+
+body[data-theme="frappe"]::before {
+    --background-image: url('../../assets/catppuccin-dark.avif');
+}
+
+/* Frappe theme terminal styles */
+body[data-theme="frappe"] .terminal {
+    background-color: rgba(48, 52, 70, 0.8);
+    border: 1px solid rgba(244, 184, 228, 0.3);
+}
+
+body[data-theme="frappe"] .terminal-header {
+    background-color: rgba(41, 44, 60, 0.9);
+    border-bottom: 1px solid rgba(244, 184, 228, 0.3);
+}
+
+body[data-theme="frappe"] .terminal.no-transparency {
+    background-color: #303446 !important;
+}
+
+body[data-theme="frappe"] .terminal.no-transparency .terminal-header {
+    background-color: #292c3c !important;
+}

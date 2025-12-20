@@ -1,0 +1,32 @@
+/* Kanagawa theme */
+body[data-theme="kanagawa"] {
+    --bg-color: #1F1F28;
+    --text-color: #DCD7BA;
+    --accent-color: #957FB8;
+    --secondary-color: #7FB4CA;
+    --terminal-header: #16161D;
+    --link-color: #98BB6C;
+}
+
+body[data-theme="kanagawa"]::before {
+    --background-image: url('../../assets/kanagawa.avif');
+}
+
+/* Kanagawa theme terminal styles */
+body[data-theme="kanagawa"] .terminal {
+    background-color: rgba(31, 31, 40, 0.8);
+    border: 1px solid rgba(149, 127, 184, 0.3);
+}
+
+body[data-theme="kanagawa"] .terminal-header {
+    background-color: rgba(22, 22, 29, 0.9);
+    border-bottom: 1px solid rgba(149, 127, 184, 0.3);
+}
+
+body[data-theme="kanagawa"] .terminal.no-transparency {
+    background-color: #1F1F28 !important;
+}
+
+body[data-theme="kanagawa"] .terminal.no-transparency .terminal-header {
+    background-color: #16161D !important;
+}

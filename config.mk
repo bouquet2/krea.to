@@ -8,8 +8,8 @@ TITLE = "Kreato's Blog"
 SITE_URL = "https://krea.to"
 
 # Default theme for the website
-# Available themes: nord, latte, frappe, mocha, macchiato, gruvbox, tokyonight, monokai, onedark, solarized, kanagawa
-DEFAULT_THEME = "gruvbox"
+# Available themes: nord, latte, frappe, mocha, macchiato, gruvbox, tokyonight, monokai, onedark, solarized, kanagawa, pinkie
+DEFAULT_THEME = "pinkie"
 
 # Show commit info to the user on the blog side of the website
 # Set to 1 to enable, 0 to disable

@@ -1,0 +1,32 @@
+/* Monokai theme */
+body[data-theme="monokai"] {
+    --bg-color: #1B1E1C;
+    --text-color: #F5F5F5;
+    --accent-color: #FF1493;
+    --secondary-color: #AF87FF;
+    --terminal-header: #333333;
+    --link-color: #5FD7FF;
+}
+
+body[data-theme="monokai"]::before {
+    --background-image: url('../../assets/monokai.avif');
+}
+
+/* Monokai theme terminal styles */
+body[data-theme="monokai"] .terminal {
+    background-color: rgba(27, 30, 28, 0.8);
+    border: 1px solid rgba(255, 20, 147, 0.3);
+}
+
+body[data-theme="monokai"] .terminal-header {
+    background-color: rgba(51, 51, 51, 0.9);
+    border-bottom: 1px solid rgba(255, 20, 147, 0.3);
+}
+
+body[data-theme="monokai"] .terminal.no-transparency {
+    background-color: #1B1E1C !important;
+}
+
+body[data-theme="monokai"] .terminal.no-transparency .terminal-header {
+    background-color: #333333 !important;
+}

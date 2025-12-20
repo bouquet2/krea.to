@@ -1,7 +1,7 @@
 // Apply theme immediately to prevent flash
 (function() {
     const body = document.body;
-    const schemes = ['mocha', 'frappe', 'latte', 'macchiato', 'gruvbox', 'nord', 'tokyonight', 'monokai', 'onedark', 'solarized', 'kanagawa'];
+    const schemes = ['mocha', 'frappe', 'latte', 'macchiato', 'gruvbox', 'nord', 'tokyonight', 'monokai', 'onedark', 'solarized', 'kanagawa', 'pinkie'];
     
     // Store the original server-set theme
     const originalServerTheme = body.getAttribute('data-theme') || 'nord';
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const terminal = document.querySelector('.terminal');
     
     // Color schemes available
-    const schemes = ['mocha', 'frappe', 'latte', 'macchiato', 'gruvbox', 'nord', 'tokyonight', 'monokai', 'onedark', 'solarized', 'kanagawa'];
+    const schemes = ['mocha', 'frappe', 'latte', 'macchiato', 'gruvbox', 'nord', 'tokyonight', 'monokai', 'onedark', 'solarized', 'kanagawa', 'pinkie'];
 
     const updateAccessibilityButtonState = () => {
         if (!accessibilityButton) return;

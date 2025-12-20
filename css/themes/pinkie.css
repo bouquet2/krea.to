@@ -1,0 +1,32 @@
+/* Pinkie theme */
+body[data-theme="pinkie"] {
+    --bg-color: #1a0d1a;
+    --text-color: #FED7EB;
+    --accent-color: #ff00c3;
+    --secondary-color: #ff91d0;
+    --terminal-header: #2a1a2e;
+    --link-color: #ff69b4;
+}
+
+body[data-theme="pinkie"]::before {
+    --background-image: url('../../assets/wp11236349-clear-aesthetic-wallpapers.jpg');
+}
+
+/* Pinkie theme terminal styles */
+body[data-theme="pinkie"] .terminal {
+    background-color: rgba(26, 13, 26, 0.8);
+    border: 1px solid rgba(255, 0, 195, 0.3);
+}
+
+body[data-theme="pinkie"] .terminal-header {
+    background-color: rgba(42, 26, 46, 0.9);
+    border-bottom: 1px solid rgba(255, 0, 195, 0.3);
+}
+
+body[data-theme="pinkie"] .terminal.no-transparency {
+    background-color: #1a0d1a !important;
+}
+
+body[data-theme="pinkie"] .terminal.no-transparency .terminal-header {
+    background-color: #2a1a2e !important;
+}

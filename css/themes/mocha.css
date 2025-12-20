@@ -1,0 +1,32 @@
+/* Catppuccin Mocha theme */
+body[data-theme="mocha"] {
+    --bg-color: #1e1e2e;
+    --text-color: #cdd6f4;
+    --accent-color: #f5c2e7;
+    --secondary-color: #cba6f7;
+    --terminal-header: #181825;
+    --link-color: #89b4fa;
+}
+
+body[data-theme="mocha"]::before {
+    --background-image: url('../../assets/catppuccin-dark.avif');
+}
+
+/* Mocha theme terminal styles */
+body[data-theme="mocha"] .terminal {
+    background-color: rgba(30, 30, 46, 0.8);
+    border: 1px solid rgba(245, 194, 231, 0.3);
+}
+
+body[data-theme="mocha"] .terminal-header {
+    background-color: rgba(24, 24, 37, 0.9);
+    border-bottom: 1px solid rgba(245, 194, 231, 0.3);
+}
+
+body[data-theme="mocha"] .terminal.no-transparency {
+    background-color: #1e1e2e !important;
+}
+
+body[data-theme="mocha"] .terminal.no-transparency .terminal-header {
+    background-color: #181825 !important;
+}

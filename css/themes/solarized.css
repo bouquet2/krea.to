@@ -1,0 +1,32 @@
+/* Solarized theme */
+body[data-theme="solarized"] {
+    --bg-color: #002b36;
+    --text-color: #93a1a1;
+    --accent-color: #d33682;
+    --secondary-color: #268bd2;
+    --terminal-header: #073642;
+    --link-color: #2aa198;
+}
+
+body[data-theme="solarized"]::before {
+    --background-image: url('../../assets/solarized.png');
+}
+
+/* Solarized theme terminal styles */
+body[data-theme="solarized"] .terminal {
+    background-color: rgba(0, 43, 54, 0.8);
+    border: 1px solid rgba(211, 54, 130, 0.3);
+}
+
+body[data-theme="solarized"] .terminal-header {
+    background-color: rgba(7, 54, 66, 0.9);
+    border-bottom: 1px solid rgba(211, 54, 130, 0.3);
+}
+
+body[data-theme="solarized"] .terminal.no-transparency {
+    background-color: #002b36 !important;
+}
+
+body[data-theme="solarized"] .terminal.no-transparency .terminal-header {
+    background-color: #073642 !important;
+}

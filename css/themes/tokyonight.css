@@ -1,0 +1,32 @@
+/* Tokyo Night theme */
+body[data-theme="tokyonight"] {
+    --bg-color: #1a1b26;
+    --text-color: #a9b1d6;
+    --accent-color: #bb9af7;
+    --secondary-color: #7aa2f7;
+    --terminal-header: #24283b;
+    --link-color: #7dcfff;
+}
+
+body[data-theme="tokyonight"]::before {
+    --background-image: url('../../assets/tokyonight.png');
+}
+
+/* Tokyo Night theme terminal styles */
+body[data-theme="tokyonight"] .terminal {
+    background-color: rgba(26, 27, 38, 0.8);
+    border: 1px solid rgba(187, 154, 247, 0.3);
+}
+
+body[data-theme="tokyonight"] .terminal-header {
+    background-color: rgba(36, 40, 59, 0.9);
+    border-bottom: 1px solid rgba(187, 154, 247, 0.3);
+}
+
+body[data-theme="tokyonight"] .terminal.no-transparency {
+    background-color: #1a1b26 !important;
+}
+
+body[data-theme="tokyonight"] .terminal.no-transparency .terminal-header {
+    background-color: #24283b !important;
+}

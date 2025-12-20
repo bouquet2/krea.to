@@ -1,0 +1,32 @@
+/* OneDark theme */
+body[data-theme="onedark"] {
+    --bg-color: #282c34;
+    --text-color: #abb2bf;
+    --accent-color: #c678dd;
+    --secondary-color: #61afef;
+    --terminal-header: #21252b;
+    --link-color: #e06c75;
+}
+
+body[data-theme="onedark"]::before {
+    --background-image: url('../../assets/onedark.avif');
+}
+
+/* OneDark theme terminal styles */
+body[data-theme="onedark"] .terminal {
+    background-color: rgba(40, 44, 52, 0.8);
+    border: 1px solid rgba(198, 120, 221, 0.3);
+}
+
+body[data-theme="onedark"] .terminal-header {
+    background-color: rgba(33, 37, 43, 0.9);
+    border-bottom: 1px solid rgba(198, 120, 221, 0.3);
+}
+
+body[data-theme="onedark"] .terminal.no-transparency {
+    background-color: #282c34 !important;
+}
+
+body[data-theme="onedark"] .terminal.no-transparency .terminal-header {
+    background-color: #21252b !important;
+}
