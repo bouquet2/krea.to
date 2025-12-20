@@ -305,7 +305,7 @@ As writing of this post the packages are still not fully migrated yet. Expect th
 
 And that is it (for now!)
 
-## Thank you
+## Thank you
 
 With runFile v3, Kreato Linux source tree also surpassed 2000 commits which is a huge milestone for me! Expect more things to come and thank you to all of my supporters, especially those that I took opinions from to make runFile v3 as readable and easy to use as possible!
 
