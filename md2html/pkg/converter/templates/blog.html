@@ -31,6 +31,7 @@
                     {{if .Author}}<span class="author">by {{.Author}}</span>{{end}}
                     {{if and .Author .Date}}<span class="meta-separator">•</span>{{end}}
                     {{if .Date}}{{if .CommitURL}}<span class="created-at">Created at <a href="{{.CommitURL}}" title="View commit {{.CommitHash}} in git"><time datetime="{{.Date}}">{{.Date}}</time></a></span>{{else}}<span class="created-at">Created at <time datetime="{{.Date}}">{{.Date}}</time></span>{{end}}{{end}}
+                    {{if .ReadTime}}<span class="meta-separator">•</span><span class="read-time">{{.ReadTime}}</span>{{end}}
                 </p>
             </header>
             <div class="content">

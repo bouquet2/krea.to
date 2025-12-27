@@ -2,6 +2,7 @@ package converter
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"io"
 	"regexp"
@@ -17,6 +18,28 @@ import (
 	"github.com/gomarkdown/markdown/parser"
 	"github.com/microcosm-cc/bluemonday"
 )
+
+// Average reading speed in words per minute
+const wordsPerMinute = 200
+
+// calculateReadTime estimates reading time based on word count
+// Returns a string like "~4 min read"
+func calculateReadTime(content []byte) string {
+	// Extract plain text from markdown
+	plainText := extractPlainText(content)
+
+	// Count words by splitting on whitespace
+	words := strings.Fields(plainText)
+	wordCount := len(words)
+
+	// Calculate minutes, minimum 1 minute
+	minutes := wordCount / wordsPerMinute
+	if minutes < 1 {
+		minutes = 1
+	}
+
+	return fmt.Sprintf("~%d min read", minutes)
+}
 
 // renderCodeWithSyntaxHighlighting renders a code block with syntax highlighting
 func renderCodeWithSyntaxHighlighting(w *bytes.Buffer, lang string, code []byte) {

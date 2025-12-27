@@ -41,6 +41,7 @@ type PageData struct {
 	CommitAuthor string // Commit author
 	CommitURL    string // URL to commit in git web interface
 	DefaultTheme string // Default theme for the website
+	ReadTime     string // Estimated reading time (e.g., "~4 min read")
 }
 
 // BlogPost represents a blog post entry for the index page
@@ -57,6 +58,7 @@ type BlogPost struct {
 	CommitDate   string // Commit date in readable format
 	CommitAuthor string // Commit author
 	CommitURL    string // URL to commit in git web interface
+	ReadTime     string // Estimated reading time (e.g., "~4 min read")
 }
 
 // Directory represents a subdirectory for the index page

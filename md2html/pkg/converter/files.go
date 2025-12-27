@@ -240,6 +240,9 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 		url = fileNameWithoutExt + ".html"
 	}
 
+	// Calculate reading time from the content
+	readTime := calculateReadTime(contentWithoutMeta)
+
 	data := PageData{
 		Title:        title,
 		Content:      sanitizedHTML,
@@ -260,6 +263,7 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 			}
 			return "nord" // Fallback to nord if no theme specified
 		}(),
+		ReadTime: readTime,
 	}
 
 	// Execute template
@@ -651,6 +655,9 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 				}
 			}
 
+			// Calculate reading time
+			readTime := calculateReadTime(contentWithoutMeta)
+
 			blogPosts = append(blogPosts, BlogPost{
 				Title:        title,
 				Link:         fileNameWithoutExt + ".html",
@@ -664,6 +671,7 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 				CommitDate:   commitDate,
 				CommitAuthor: commitAuthor,
 				CommitURL:    commitURL,
+				ReadTime:     readTime,
 			})
 		}
 	}
@@ -839,6 +847,10 @@ func fetchRecentPosts(rootDir string, config Config, limit int) []BlogPost {
 			}
 		}
 
+		// Calculate reading time
+		_, contentWithoutMeta := extractMetadata(mdContent)
+		readTime := calculateReadTime(contentWithoutMeta)
+
 		post := BlogPost{
 			Title:        title,
 			Link:         link,
@@ -849,6 +861,7 @@ func fetchRecentPosts(rootDir string, config Config, limit int) []BlogPost {
 			CommitDate:   commitDate,
 			CommitAuthor: commitAuthor,
 			CommitURL:    commitURL,
+			ReadTime:     readTime,
 		}
 
 		postsWithDates = append(postsWithDates, postWithDate{post: post, gitDate: gitDate})
