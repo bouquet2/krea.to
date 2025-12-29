@@ -414,8 +414,9 @@ body {
 /* Blog-specific body styles (pages without .terminal) */
 body:not(:has(.terminal)) {
     font-family: Arial, sans-serif;
-    max-width: 900px;
+    width: min(90vw, 1600px);
     margin: 0 auto;
+    padding: 20px 0;
     font-size: 1.2em;
 }
 
@@ -1149,14 +1150,6 @@ body:not(:has(.terminal)) .chroma code {
 }
 
 /* Responsive design */
-/* Large screens - expand blog width */
-@media (min-width: 1200px) {
-    body:not(:has(.terminal)) {
-        max-width: 1000px;
-        font-size: 1.1em;
-    }
-}
-
 /* Mobile */
 @media (max-width: 600px) {
     body:has(.terminal) .quick-actions {
