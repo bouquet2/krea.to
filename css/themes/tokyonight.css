@@ -9,7 +9,7 @@ body[data-theme="tokyonight"] {
 }
 
 body[data-theme="tokyonight"]::before {
-    --background-image: url('../../assets/tokyonight.png');
+    --background-image: url('../../assets/tokyonight.avif');
 }
 
 /* Tokyo Night theme terminal styles */

@@ -15,7 +15,25 @@
     {{if .Image}}<meta property="og:image" content="{{.Image}}">{{end}}
     <meta name="theme-color" content="#5865F2">
     
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="preload" href="{{.CSSPath}}" as="style">
     <link rel="stylesheet" href="{{.CSSPath}}">
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "{{.Title}}",
+        {{if .Description}}"description": "{{.Description}}",{{end}}
+        {{if .Author}}"author": {
+            "@type": "Person",
+            "name": "{{.Author}}"
+        },{{end}}
+        {{if .Date}}"datePublished": "{{.Date}}",{{end}}
+        "url": "{{.URL}}"
+    }
+    </script>
 </head>
 <body{{if .DefaultTheme}} data-theme="{{.DefaultTheme}}"{{end}}>
     <header>
@@ -30,7 +48,7 @@
                 <p class="post-meta">
                     {{if .Author}}<span class="author">by {{.Author}}</span>{{end}}
                     {{if and .Author .Date}}<span class="meta-separator">•</span>{{end}}
-                    {{if .Date}}{{if .CommitURL}}<span class="created-at">Created at <a href="{{.CommitURL}}" title="View commit {{.CommitHash}} in git"><time datetime="{{.Date}}">{{.Date}}</time></a></span>{{else}}<span class="created-at">Created at <time datetime="{{.Date}}">{{.Date}}</time></span>{{end}}{{end}}
+                    {{if .Date}}{{if .CommitURL}}<span class="created-at">Created at <a href="{{.CommitURL}}" target="_blank" rel="noopener noreferrer" title="View commit {{.CommitHash}} in git"><time datetime="{{.Date}}">{{.Date}}</time></a></span>{{else}}<span class="created-at">Created at <time datetime="{{.Date}}">{{.Date}}</time></span>{{end}}{{end}}
                     {{if .ReadTime}}<span class="meta-separator">•</span><span class="read-time">{{.ReadTime}}</span>{{end}}
                 </p>
             </header>

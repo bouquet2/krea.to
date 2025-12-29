@@ -105,6 +105,7 @@ type LandingData struct {
 	Settings     map[string]bool // Template settings from metadata
 	Posts        []BlogPost      // Most recent blog posts from Git history
 	DefaultTheme string          // Default theme for the website
+	URL          string          // Full URL for og:url and canonical link
 }
 
 // ==========================================================================

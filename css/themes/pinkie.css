@@ -9,7 +9,7 @@ body[data-theme="pinkie"] {
 }
 
 body[data-theme="pinkie"]::before {
-    --background-image: url('../../assets/wp11236349-clear-aesthetic-wallpapers.jpg');
+    --background-image: url('../../assets/wp11236349-clear-aesthetic-wallpapers.avif');
 }
 
 /* Pinkie theme terminal styles */

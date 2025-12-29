@@ -108,6 +108,31 @@ func generateIndex(outputDir string, blogPosts []BlogPost, subdirectories []Dire
 		}
 		defer file.Close()
 
+		// Calculate the full URL for og:url and JSON-LD
+		var pageURL string
+		// Find the dist root
+		distRoot := outputDir
+		for {
+			base := filepath.Base(distRoot)
+			parent := filepath.Dir(distRoot)
+			if base == "dist" || parent == distRoot || parent == "." || parent == "/" {
+				break
+			}
+			distRoot = parent
+		}
+		// Calculate relative path from dist root
+		relPath, err := filepath.Rel(distRoot, indexFile)
+		if err != nil {
+			relPath = "index.html"
+		}
+		relPath = strings.ReplaceAll(relPath, string(filepath.Separator), "/")
+		// Build full URL with site URL
+		if config.SiteURL != "" {
+			pageURL = strings.TrimSuffix(config.SiteURL, "/") + "/" + relPath
+		} else {
+			pageURL = relPath
+		}
+
 		// Execute template
 		data := IndexData{
 			Title:          folderName,
@@ -117,7 +142,7 @@ func generateIndex(outputDir string, blogPosts []BlogPost, subdirectories []Dire
 			Directories:    subdirectories,
 			BackURL:        backURL,
 			HasDirectories: len(subdirectories) > 0,
-			URL:            backURL,
+			URL:            pageURL,
 			Image:          "", // Default to empty string for index pages
 			DefaultTheme: func() string {
 				if config.DefaultTheme != "" {

@@ -9,7 +9,7 @@ body[data-theme="gruvbox"] {
 }
 
 body[data-theme="gruvbox"]::before {
-    --background-image: url('../../assets/gruvbox.png');
+    --background-image: url('../../assets/gruvbox.avif');
 }
 
 /* Gruvbox theme terminal styles */

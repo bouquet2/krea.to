@@ -12,6 +12,27 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// CopyRobotsTxt copies and processes robots.txt template
+func CopyRobotsTxt(outputDir string, siteURL string) error {
+	robotsTemplatePath := "md2html/pkg/converter/templates/robots.txt"
+	robotsContent, err := os.ReadFile(robotsTemplatePath)
+	if err != nil {
+		return fmt.Errorf("error reading robots.txt template: %v", err)
+	}
+
+	// Replace {{.URL}} with actual site URL
+	robotsProcessed := strings.ReplaceAll(string(robotsContent), "{{.URL}}", siteURL)
+
+	robotsOutputPath := filepath.Join(outputDir, "robots.txt")
+	if err := os.WriteFile(robotsOutputPath, []byte(robotsProcessed), 0644); err != nil {
+		return fmt.Errorf("error writing robots.txt: %v", err)
+	}
+
+	log.Debug().Str("robots_file", robotsOutputPath).Str("site_url", siteURL).Msg("robots.txt generated successfully")
+	fmt.Printf("Generated robots.txt: %s\n", robotsOutputPath)
+	return nil
+}
+
 // parseSettings parses a comma-separated list of settings into a map
 // Example: "hide-topbar, fullscreen" -> map[string]bool{"hide-topbar": true, "fullscreen": true}
 func parseSettings(settingsStr string) map[string]bool {
@@ -98,6 +119,7 @@ func ConvertLandingPage(mdFile string, config Config) error {
 			}
 			return "nord" // Fallback to nord if no theme specified
 		}(),
+		URL: config.SiteURL,
 	}
 
 	// Execute template
@@ -224,20 +246,29 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 		author = config.DefaultAuthor
 	}
 
-	// Calculate the URL for the page
+	// Calculate the URL for the page (full URL for og:url and JSON-LD)
 	var url string
-	if config.OutputDir != "" {
-		// If we have an output directory, use that as the base for the URL
-		relPath, err := filepath.Rel(config.OutputDir, outputFile)
-		if err != nil {
-			// If we can't get a relative path, use the filename
-			url = fileNameWithoutExt + ".html"
-		} else {
-			url = strings.ReplaceAll(relPath, string(filepath.Separator), "/")
+	// Find the dist root (parent of blog, etc.)
+	distRoot := config.OutputDir
+	for {
+		base := filepath.Base(distRoot)
+		parent := filepath.Dir(distRoot)
+		if base == "dist" || parent == distRoot || parent == "." || parent == "/" {
+			break
 		}
+		distRoot = parent
+	}
+	// Calculate relative path from dist root
+	relPath, err := filepath.Rel(distRoot, outputFile)
+	if err != nil {
+		relPath = fileNameWithoutExt + ".html"
+	}
+	relPath = strings.ReplaceAll(relPath, string(filepath.Separator), "/")
+	// Build full URL with site URL
+	if config.SiteURL != "" {
+		url = strings.TrimSuffix(config.SiteURL, "/") + "/" + relPath
 	} else {
-		// If no output directory specified, just use the filename
-		url = fileNameWithoutExt + ".html"
+		url = relPath
 	}
 
 	// Calculate reading time from the content

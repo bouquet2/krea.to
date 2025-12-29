@@ -9,7 +9,7 @@ body[data-theme="nord"] {
 }
 
 body[data-theme="nord"]::before {
-    --background-image: url('../../assets/nord.png');
+    --background-image: url('../../assets/nord.avif');
 }
 
 /* Nord theme terminal styles */

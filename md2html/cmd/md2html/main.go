@@ -195,6 +195,25 @@ func runConvert(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	// Generate robots.txt
+	if siteURL != "" {
+		if err := converter.CopyRobotsTxt(outputDir, siteURL); err != nil {
+			logger.Error().Err(err).Msg("Failed to generate robots.txt")
+		}
+	}
+
+	// Generate sitemap.xml
+	if siteURL != "" {
+		// Calculate input root for sitemap
+		inputRoot := filepath.Dir(inputDir)
+		if inputRoot == "." || inputRoot == "" {
+			inputRoot = inputDir
+		}
+		if err := converter.GenerateSitemap(outputDir, siteURL, inputRoot); err != nil {
+			logger.Error().Err(err).Msg("Failed to generate sitemap.xml")
+		}
+	}
+
 	logger.Info().Str("output", outputDir).Msg("Conversion complete")
 
 	// Start server if requested

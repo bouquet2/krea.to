@@ -9,7 +9,7 @@ body[data-theme="solarized"] {
 }
 
 body[data-theme="solarized"]::before {
-    --background-image: url('../../assets/solarized.png');
+    --background-image: url('../../assets/solarized.avif');
 }
 
 /* Solarized theme terminal styles */
