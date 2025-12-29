@@ -482,4 +482,192 @@ document.addEventListener('DOMContentLoaded', function() {
             createTypingEffect(element, 500 * index);
         });
     }
-}); 
+});
+
+// Monaco Editor Integration
+(function() {
+    function initMonacoEditor() {
+        // Check if there are any code blocks to upgrade
+        const codeBlocks = document.querySelectorAll('.chroma');
+        if (codeBlocks.length === 0) return;
+
+        // Load Monaco Editor loader
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js';
+        script.onload = () => {
+            require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' }});
+            
+            require(['vs/editor/editor.main'], function() {
+                
+                // Helper to update theme based on CSS variables
+                const updateMonacoTheme = () => {
+                    const style = getComputedStyle(document.body);
+                    const bgColor = style.getPropertyValue('--bg-color').trim();
+                    const textColor = style.getPropertyValue('--text-color').trim();
+                    const headerColor = style.getPropertyValue('--terminal-header').trim();
+                    const accentColor = style.getPropertyValue('--accent-color').trim();
+                    const secondaryColor = style.getPropertyValue('--secondary-color').trim();
+                    
+                    monaco.editor.defineTheme('site-theme', {
+                        base: 'vs-dark', // Always base on dark for this site structure
+                        inherit: true,
+                        rules: [
+                            { token: '', foreground: textColor.replace('#', '') },
+                            { token: 'keyword', foreground: accentColor.replace('#', '') },
+                            { token: 'string', foreground: 'a3be8c' }, // Greenish
+                            { token: 'number', foreground: 'b48ead' }, // Purple-ish
+                            { token: 'comment', foreground: '616e87', fontStyle: 'italic' },
+                            { token: 'delimiter', foreground: textColor.replace('#', '') },
+                            { token: 'type', foreground: '8fbcbb' }, // Teal
+                            { token: 'class', foreground: '8fbcbb' },
+                            { token: 'function', foreground: '88c0d0' }, // Blue
+                            { token: 'variable', foreground: textColor.replace('#', '') },
+                            { token: 'operator', foreground: '81a1c1' }
+                        ],
+                        colors: {
+                            'editor.background': headerColor, // Use terminal header color for code blocks
+                            'editor.foreground': textColor,
+                            'editor.lineHighlightBackground': '#00000000', // Transparent highlight
+                            'editorLineNumber.foreground': secondaryColor,
+                            'editorLineNumber.activeForeground': accentColor,
+                            'scrollbarSlider.background': secondaryColor + '40',
+                            'editor.selectionBackground': accentColor + '40'
+                        }
+                    });
+                    monaco.editor.setTheme('site-theme');
+                };
+
+                // Apply initial theme
+                updateMonacoTheme();
+
+                // Observer for Theme Changes
+                const themeObserver = new MutationObserver(() => {
+                    updateMonacoTheme();
+                });
+                themeObserver.observe(document.body, { attributes: true, attributeFilter: ['class', 'data-theme'] });
+
+                codeBlocks.forEach(block => {
+                    // Robust Text Extraction: clone and clean
+                    const clone = block.cloneNode(true);
+                    
+                    // Remove line numbers (.lnt, .ln, or first cell of table)
+                    const lineNumbers = clone.querySelectorAll('.lnt, .ln, .lntable tr td:first-child');
+                    lineNumbers.forEach(el => el.remove());
+
+                    let code = clone.textContent;
+                    // Clean up leading/trailing whitespace
+                    code = code.replace(/^\s*\n/, '').replace(/\s*$/, '');
+
+                    if (!code.trim()) return;
+                    
+                    // Detect language
+                    let language = 'plaintext';
+                    
+                    // Check the wrapper first (most reliable)
+                    const wrapper = block.closest('.code-wrapper');
+                    if (wrapper && wrapper.dataset.lang) {
+                        language = wrapper.dataset.lang;
+                    }
+
+                    // Fallback to internal classes if wrapper fails
+                    if (language === 'plaintext') {
+                        const checkClasses = (el) => {
+                            if (!el || !el.classList) return;
+                            el.classList.forEach(cls => {
+                                if (cls.startsWith('language-')) {
+                                    language = cls.replace('language-', '');
+                                }
+                            });
+                            if (language === 'plaintext' && el.dataset.lang) {
+                                language = el.dataset.lang;
+                            }
+                        };
+                        checkClasses(block.querySelector('code'));
+                        checkClasses(block.querySelector('.lntd:last-child code'));
+                        checkClasses(block);
+                    }
+
+                    // Map aliases
+                    const langMap = {
+                        'bash': 'shell', 'sh': 'shell', 'zsh': 'shell', 'console': 'shell',
+                        'golang': 'go', 'go': 'go',
+                        'js': 'javascript', 'javascript': 'javascript',
+                        'ts': 'typescript', 'typescript': 'typescript',
+                        'py': 'python', 'python': 'python',
+                        'c': 'c', 'cpp': 'cpp', 'c++': 'cpp',
+                        'java': 'java',
+                        'html': 'html',
+                        'css': 'css',
+                        'json': 'json',
+                        'yaml': 'yaml', 'yml': 'yaml',
+                        'rust': 'rust', 'rs': 'rust'
+                    };
+                    if (langMap[language]) language = langMap[language];
+
+                    console.log(`[Monaco] Initializing block. Detected lang: '${language}'`);
+
+                    // Create container
+                    const container = document.createElement('div');
+                    container.className = 'monaco-editor-container';
+                    
+                    // Height calculation
+                    // Use a slightly larger line height for pixel fonts to breathe
+                    const lineCount = code.split('\n').length;
+                    const lineHeight = 22; 
+                    const height = Math.max(lineCount * lineHeight + 24, 100);
+                    
+                    container.style.height = height + 'px';
+                    container.style.marginBottom = '20px';
+                    container.style.borderRadius = '8px';
+                    container.style.overflow = 'hidden';
+                    container.style.border = '1px solid var(--terminal-header)';
+
+                    block.parentNode.insertBefore(container, block);
+                    
+                    // Initialize Editor
+                    try {
+                        const editor = monaco.editor.create(container, {
+                            value: code,
+                            language: language,
+                            theme: 'site-theme',
+                            readOnly: true,
+                            automaticLayout: true,
+                            minimap: { enabled: false },
+                            scrollBeyondLastLine: false,
+                            renderLineHighlight: 'none',
+                            contextmenu: false,
+                            // Pixel fonts often look best at specific sizes
+                            fontFamily: "'Scientifica', 'Pokemon DP Pro', monospace",
+                            fontSize: 15,
+                            lineHeight: 22,
+                            padding: { top: 12, bottom: 12 },
+                            lineNumbers: 'on',
+                            renderLineNumbers: (lineNumber) => lineNumber.toString(),
+                            scrollbar: {
+                                vertical: 'hidden',
+                                horizontal: 'auto',
+                                useShadows: false,
+                                alwaysConsumeMouseWheel: false
+                            },
+                            overviewRulerLanes: 0,
+                            hideCursorInOverviewRuler: true
+                        });
+                        
+                        block.style.display = 'none';
+                    } catch (e) {
+                        console.error('Monaco Editor init failed:', e);
+                        container.remove();
+                        block.style.display = '';
+                    }
+                });
+            });
+        };
+        document.body.appendChild(script);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMonacoEditor);
+    } else {
+        initMonacoEditor();
+    }
+})();

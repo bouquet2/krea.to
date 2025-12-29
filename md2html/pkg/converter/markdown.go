@@ -96,8 +96,14 @@ func parseMarkdown(content []byte) template.HTML {
 		if cb, ok := node.(*ast.CodeBlock); ok && entering {
 			var buf bytes.Buffer
 			lang := string(cb.Info)
+			if lang == "" {
+				lang = "plaintext"
+			}
+			// Wrap in a div with data-lang attribute for reliable JS detection
+			w.Write([]byte(fmt.Sprintf(`<div class="code-wrapper" data-lang="%s">`, lang)))
 			renderCodeWithSyntaxHighlighting(&buf, lang, cb.Literal)
 			w.Write(buf.Bytes())
+			w.Write([]byte(`</div>`))
 			return ast.GoToNext, true
 		}
 		return ast.GoToNext, false
@@ -115,6 +121,7 @@ func parseMarkdown(content []byte) template.HTML {
 	policy := bluemonday.UGCPolicy()
 	policy.AllowAttrs("class").OnElements("pre", "code", "span", "div")
 	policy.AllowAttrs("style").OnElements("pre", "code", "span", "div")
+	policy.AllowAttrs("data-lang").OnElements("div")
 	sanitizedHTML := policy.SanitizeBytes(htmlContent)
 
 	return template.HTML(sanitizedHTML)
