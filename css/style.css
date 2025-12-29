@@ -1,18 +1,7 @@
 /* Unified styles for main site, blog, and common functionality */
 
-/* Import theme CSS files - must be at the top */
-@import url('themes/frappe.css');
-@import url('themes/gruvbox.css');
-@import url('themes/kanagawa.css');
-@import url('themes/latte.css');
-@import url('themes/macchiato.css');
-@import url('themes/mocha.css');
-@import url('themes/monokai.css');
-@import url('themes/nord.css');
-@import url('themes/onedark.css');
-@import url('themes/pinkie.css');
-@import url('themes/solarized.css');
-@import url('themes/tokyonight.css');
+/* Theme CSS files are loaded dynamically via JS to improve performance */
+
 
 /* Screen reader only class for accessibility */
 .sr-only {
@@ -44,15 +33,6 @@
 }
 
 :root {
-    /* Default theme variables - will be overridden by theme CSS files */
-    --bg-color: #2e3440;
-    --text-color: #eceff4;
-    --accent-color: #88c0d0;
-    --secondary-color: #81a1c1;
-    --terminal-header: #3b4252;
-    --link-color: #5e81ac;
-    --terminal-blur: 20px;
-    
     /* Dynamic font properties (controlled by JS) */
     --font-family: 'Scientifica', sans-serif;
     --font-size: 1.1em;
@@ -462,10 +442,10 @@ body > * {
 .terminal {
     max-width: 1400px;
     margin: 20px auto;
-    background-color: rgba(30, 30, 46, 0.8);
+    background-color: rgba(46, 52, 64, 0.8);
     backdrop-filter: blur(var(--terminal-blur));
     -webkit-backdrop-filter: blur(var(--terminal-blur));
-    border: 1px solid rgba(245, 194, 231, 0.3);
+    border: 1px solid rgba(136, 192, 208, 0.3);
     border-radius: 16px;
     box-shadow: 0 4px 15px rgba(91, 96, 120, 0.4);
     overflow: hidden;
@@ -525,13 +505,13 @@ body.fullscreen-mode main {
 }
 
 .terminal-header {
-    background-color: rgba(24, 24, 37, 0.9);
+    background-color: rgba(59, 66, 82, 0.9);
     backdrop-filter: blur(calc(var(--terminal-blur) / 2));
     -webkit-backdrop-filter: blur(calc(var(--terminal-blur) / 2));
     padding: 13px 15px;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid rgba(245, 194, 231, 0.3);
+    border-bottom: 1px solid rgba(136, 192, 208, 0.3);
     position: relative;
     transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
 }

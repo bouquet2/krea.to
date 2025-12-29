@@ -41,7 +41,7 @@ type PageData struct {
 	CommitAuthor string // Commit author
 	CommitURL    string // URL to commit in git web interface
 	DefaultTheme string // Default theme for the website
-	ReadTime     string // Estimated reading time (e.g., "~4 min read")
+	ThemeCSSPath string // Path to the theme CSS file (if DefaultTheme is not nord)
 }
 
 // BlogPost represents a blog post entry for the index page

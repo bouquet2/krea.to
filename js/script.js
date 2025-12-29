@@ -1,10 +1,24 @@
+// Function to dynamically load theme CSS
+const loadThemeCSS = (theme) => {
+    if (!theme) return;
+    
+    const themeId = `theme-css-${theme}`;
+    if (!document.getElementById(themeId)) {
+        const link = document.createElement('link');
+        link.id = themeId;
+        link.rel = 'stylesheet';
+        link.href = `/css/themes/${theme}.css`;
+        document.head.appendChild(link);
+    }
+};
+
 // Apply theme immediately to prevent flash
 (function() {
     const body = document.body;
     const schemes = ['mocha', 'frappe', 'latte', 'macchiato', 'gruvbox', 'nord', 'tokyonight', 'monokai', 'onedark', 'solarized', 'kanagawa', 'pinkie'];
     
     // Store the original server-set theme
-    const originalServerTheme = body.getAttribute('data-theme') || 'nord';
+    const originalServerTheme = body.getAttribute('data-theme') || 'pinkie';
     
     // Check for saved theme preference first
     let savedScheme = localStorage.getItem('colorScheme');
@@ -12,12 +26,13 @@
         savedScheme = originalServerTheme;
     }
     if (!savedScheme || !schemes.includes(savedScheme)) {
-        savedScheme = 'nord';
+        savedScheme = 'pinkie';
     }
     
     // Apply the theme immediately
     if (schemes.includes(savedScheme)) {
         body.setAttribute('data-theme', savedScheme);
+        loadThemeCSS(savedScheme);
     }
     
     // Apply light-theme class if using latte
@@ -199,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const themeButton = document.getElementById('theme-button');
 
     // Get the original server-set theme (already stored in IIFE)
-    const originalServerTheme = body.getAttribute('data-theme') || 'nord';
+    const originalServerTheme = body.getAttribute('data-theme') || 'pinkie';
 
     const updateThemeButtonState = () => {
         if (!themeButton) return;
@@ -221,11 +236,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (schemes.includes(schemeName)) {
             body.setAttribute('data-theme', schemeName);
             localStorage.setItem('colorScheme', schemeName);
+            loadThemeCSS(schemeName);
         }
     };
     
     // Get the current scheme (already applied by inline script)
-    const savedScheme = localStorage.getItem('colorScheme') || body.getAttribute('data-theme') || 'nord';
+    const savedScheme = localStorage.getItem('colorScheme') || body.getAttribute('data-theme') || 'pinkie';
     if (themeSelect) {
         themeSelect.value = savedScheme;
     }
@@ -438,7 +454,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Get current scheme from data attribute
             let currentScheme = body.getAttribute('data-theme');
             if (!currentScheme || !schemes.includes(currentScheme)) {
-                currentScheme = 'nord';
+                currentScheme = 'pinkie';
             }
 
             // Get available schemes excluding current one

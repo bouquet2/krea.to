@@ -16,6 +16,7 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="preload" href="{{.CSSPath}}" as="style">
     <link rel="stylesheet" href="{{.CSSPath}}">
+    {{if .DefaultTheme}}<link rel="stylesheet" href="/css/themes/{{.DefaultTheme}}.css" id="theme-css-{{.DefaultTheme}}">{{end}}
     
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
