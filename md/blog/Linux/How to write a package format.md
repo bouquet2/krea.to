@@ -1,3 +1,7 @@
+<!--
+Tags: linux, packaging, package-management, development, kpkg
+-->
+
 # How to write a package format
 
 In this blog post, I will write about the design decisions and the process that went behind kpkg runFile v3. This blog post will also be available on https://linux.krea.to.

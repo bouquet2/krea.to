@@ -1,3 +1,7 @@
+<!--
+Tags: kubernetes, k8s, containers, distributions, devops
+-->
+
 In this blog post, I am going to look at the different Kubernetes distributions available today, and how they differ from each other. 
 
 ## What is a Kubernetes distribution?

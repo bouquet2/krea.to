@@ -36,12 +36,15 @@ type PageData struct {
 	Date         string
 	URL          string
 	Image        string
-	CommitHash   string // Latest commit hash
-	CommitDate   string // Commit date in readable format
-	CommitAuthor string // Commit author
-	CommitURL    string // URL to commit in git web interface
-	DefaultTheme string // Default theme for the website
-	ThemeCSSPath string // Path to the theme CSS file (if DefaultTheme is not nord)
+	CommitHash   string     // Latest commit hash
+	CommitDate   string     // Commit date in readable format
+	CommitAuthor string     // Commit author
+	CommitURL    string     // URL to commit in git web interface
+	DefaultTheme string     // Default theme for the website
+	ThemeCSSPath string     // Path to the theme CSS file (if DefaultTheme is not nord)
+	Tags         []string   // Tags for the post
+	RelatedPosts []BlogPost // Related posts based on shared tags
+	ReadTime     string     // Estimated reading time (e.g., "~4 min read")
 }
 
 // BlogPost represents a blog post entry for the index page
@@ -50,21 +53,29 @@ type BlogPost struct {
 	Link         string
 	Description  string
 	Date         string
-	FullURL      string // Full URL for RSS feed
-	Author       string // Author for RSS feed
-	Content      string // Plain text content for search indexing
-	FilePath     string // Original file path for Git history lookup
-	CommitHash   string // Latest commit hash
-	CommitDate   string // Commit date in readable format
-	CommitAuthor string // Commit author
-	CommitURL    string // URL to commit in git web interface
-	ReadTime     string // Estimated reading time (e.g., "~4 min read")
+	FullURL      string   // Full URL for RSS feed
+	Author       string   // Author for RSS feed
+	Content      string   // Plain text content for search indexing
+	FilePath     string   // Original file path for Git history lookup
+	CommitHash   string   // Latest commit hash
+	CommitDate   string   // Commit date in readable format
+	CommitAuthor string   // Commit author
+	CommitURL    string   // URL to commit in git web interface
+	ReadTime     string   // Estimated reading time (e.g., "~4 min read")
+	Tags         []string // Tags for the post
 }
 
 // Directory represents a subdirectory for the index page
 type Directory struct {
 	Name string
 	Link string
+}
+
+// TagInfo represents information about a tag
+type TagInfo struct {
+	Name  string     // Tag name
+	Count int        // Number of posts with this tag
+	Posts []BlogPost // Posts with this tag
 }
 
 // IndexData represents data for the directory index template
@@ -79,6 +90,7 @@ type IndexData struct {
 	URL            string
 	Image          string
 	DefaultTheme   string
+	PopularTags    []TagInfo // Popular tags to display on index page
 }
 
 // LandingSection represents a terminal section in the landing page
@@ -106,6 +118,29 @@ type LandingData struct {
 	Posts        []BlogPost      // Most recent blog posts from Git history
 	DefaultTheme string          // Default theme for the website
 	URL          string          // Full URL for og:url and canonical link
+}
+
+// TagPageData represents data for a single tag page
+type TagPageData struct {
+	Title        string
+	TagName      string
+	CSSPath      string
+	JSPath       string
+	Posts        []BlogPost
+	BackURL      string
+	URL          string
+	DefaultTheme string
+}
+
+// TagsIndexData represents data for the tags overview page
+type TagsIndexData struct {
+	Title        string
+	CSSPath      string
+	JSPath       string
+	Tags         []TagInfo
+	BackURL      string
+	URL          string
+	DefaultTheme string
 }
 
 // ==========================================================================

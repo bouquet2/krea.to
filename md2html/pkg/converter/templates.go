@@ -15,11 +15,12 @@ import (
 
 // SearchIndexEntry represents a blog post entry for the search index
 type SearchIndexEntry struct {
-	Title       string `json:"title"`
-	Link        string `json:"link"`
-	Description string `json:"description"`
-	Content     string `json:"content"`
-	Date        string `json:"date"`
+	Title       string   `json:"title"`
+	Link        string   `json:"link"`
+	Description string   `json:"description"`
+	Content     string   `json:"content"`
+	Date        string   `json:"date"`
+	Tags        []string `json:"tags"`
 }
 
 // loadTemplate loads either a custom template from the file system or the embedded default template
@@ -134,6 +135,15 @@ func generateIndex(outputDir string, blogPosts []BlogPost, subdirectories []Dire
 		}
 
 		// Execute template
+		// Calculate popular tags for the blog root
+		var popularTags []TagInfo
+		// Check if this is the blog root directory
+		if strings.Contains(outputDir, "blog") && !strings.Contains(outputDir, "blog/") {
+			// This is the blog root, calculate popular tags
+			tagMap := collectTags(blogPosts)
+			popularTags = getPopularTags(tagMap, 10) // Get top 10 tags
+		}
+
 		data := IndexData{
 			Title:          folderName,
 			CSSPath:        cssPath,
@@ -150,6 +160,7 @@ func generateIndex(outputDir string, blogPosts []BlogPost, subdirectories []Dire
 				}
 				return "nord" // Fallback to nord if no theme specified
 			}(),
+			PopularTags: popularTags,
 		}
 
 		if err := indexTmpl.Execute(file, data); err != nil {
@@ -176,6 +187,7 @@ func generateSearchIndex(outputDir string, blogPosts []BlogPost) error {
 			Description: post.Description,
 			Content:     post.Content,
 			Date:        post.Date,
+			Tags:        post.Tags,
 		})
 	}
 

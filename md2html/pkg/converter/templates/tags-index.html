@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Blog Posts and Articles by Kreato covering {{.Title}} and other technology topics.">
+    <meta name="description" content="Browse all blog tags">
     <title>{{.Title}}</title>
     
     <!-- Discord Embed Meta Tags -->
     <meta property="og:title" content="{{.Title}}">
-    <meta property="og:description" content="Blog Posts and Articles">
+    <meta property="og:description" content="Browse all blog tags">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{.URL}}">
-    {{if .Image}}<meta property="og:image" content="{{.Image}}">{{end}}
     <meta name="theme-color" content="#5865F2">
     
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -25,7 +24,7 @@
         "@context": "https://schema.org",
         "@type": "CollectionPage",
         "name": "{{.Title}}",
-        "description": "Blog Posts and Articles by Kreato covering {{.Title}} and other technology topics",
+        "description": "Browse all blog tags",
         "url": "{{.URL}}"
     }
     </script>
@@ -33,68 +32,31 @@
 <body{{if .DefaultTheme}} data-theme="{{.DefaultTheme}}"{{end}}>
     <header>
         <nav class="nav-bar">
-            <a href="{{.BackURL}}" class="back-button">← Back</a>
-            <div class="search-container">
-                <input type="text" id="search-input" class="search-input" placeholder="Search..." aria-label="Search">
-                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-                <kbd class="search-shortcut" id="search-shortcut">⌘K</kbd>
-            </div>
+            <a href="{{.BackURL}}" class="back-button">← Back to Blog</a>
         </nav>
     </header>
     <main>
         <h1>{{.Title}}</h1>
         
-        <div id="no-results" class="no-results" style="display: none;">
-            No posts found matching your search.
-        </div>
-        
-        {{if .HasDirectories}}
-        <section class="directory-list">
-            <h2>Subdirectories</h2>
-            <ul>
-                {{range .Directories}}
-                <li class="directory">
-                    <a href="{{.Link}}">{{.Name}}/</a>
-                </li>
-                {{end}}
-            </ul>
-        </section>
-        {{end}}
-        
-        {{if .PopularTags}}
-        <section class="popular-tags">
-            <h2>Popular Tags</h2>
-            <div class="tags-list">
-                {{range .PopularTags}}
-                <a href="/blog/tags/{{.Name}}.html" class="tag">
-                    {{.Name}} <span class="tag-count-small">({{.Count}})</span>
-                </a>
+        {{if .Tags}}
+        <section class="tags-overview">
+            <div class="tags-grid">
+                {{range .Tags}}
+                <div class="tag-card">
+                    <a href="{{.Name}}.html">
+                        <span class="tag-name">{{.Name}}</span>
+                        <span class="tag-count">{{.Count}} {{if eq .Count 1}}post{{else}}posts{{end}}</span>
+                    </a>
+                </div>
                 {{end}}
             </div>
         </section>
-        {{end}}
-        
-        {{if .Posts}}
-        <section class="blog-list">
-            <h2>Most Recent Posts</h2>
-            {{range .Posts}}
-            <article class="blog-post" data-title="{{.Title}}" data-description="{{.Description}}" data-tags="{{range $i, $tag := .Tags}}{{if $i}},{{end}}{{$tag}}{{end}}">
-                <h3>
-                    <a href="{{.Link}}" class="post-link">{{.Title}}</a>
-                    {{if .Date}}{{if .CommitURL}}<a href="{{.CommitURL}}" target="_blank" rel="noopener noreferrer" class="post-date" title="View commit {{.CommitHash}} in git">{{.Date}}</a>{{else}}<span class="post-date">{{.Date}}</span>{{end}}{{end}}{{if .ReadTime}}<span class="post-read-time">{{.ReadTime}}</span>{{end}}
-                </h3>
-                {{if .Description}}<p class="post-description">{{.Description}}</p>{{end}}
-                <p class="search-match" style="display: none;"></p>
-            </article>
-            {{end}}
-        </section>
+        {{else}}
+        <p>No tags found.</p>
         {{end}}
     </main>
     <div class="quick-actions" aria-label="Quick settings">
-        <a href="feed.xml" class="icon-button rss-button" aria-label="RSS Feed" title="Subscribe to RSS feed">
+        <a href="../feed.xml" class="icon-button rss-button" aria-label="RSS Feed" title="Subscribe to RSS feed">
             <svg class="icon icon-rss" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M4 11a9 9 0 0 1 9 9"></path>
                 <path d="M4 4a16 16 0 0 1 16 16"></path>

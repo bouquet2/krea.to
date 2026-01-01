@@ -1,3 +1,7 @@
+<!--
+Tags: kubernetes, k8s, containers, devops, cloud
+-->
+
 In this blog post, I will talk about my first hands-on experience with Kubernetes. This may or may not be factual information, and is purely based on my experience.
 ## What is Kubernetes?
 Kubernetes (sometimes referred to as k8s) is a open source system that allows you to automate and scale software developments. I'd like to think of it as Docker in steroids.

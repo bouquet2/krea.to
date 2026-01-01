@@ -206,6 +206,9 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 	date := metadata["Date"]
 	image := metadata["Image"]
 
+	// Extract and normalize tags
+	tags := normalizeTags(metadata["Tags"])
+
 	// Get Git information for commit tracking
 	var commitHash, commitDate, commitAuthor, commitURL string
 	if config.ShowCommitInfo {
@@ -294,7 +297,9 @@ func ConvertFile(mdFile string, config Config, inputRoot string) (map[string]str
 			}
 			return "nord" // Fallback to nord if no theme specified
 		}(),
-		ReadTime: readTime,
+		ReadTime:     readTime,
+		Tags:         tags,
+		RelatedPosts: nil, // Related posts will be calculated and added in a second pass
 	}
 
 	// Execute template
@@ -414,15 +419,30 @@ func ConvertDirectory(inputDir string, config Config) error {
 			currentConfig := config
 			currentConfig.CSSPath = prependPathPrefix(config.CSSPath, 1)
 			currentConfig.JSPath = prependPathPrefix(config.JSPath, 1)
-			// Enable recursive processing for RSS to collect all posts from subdirectories
-			if config.GenerateRSS {
-				currentConfig.Recursive = true
-			}
+			// Enable recursive processing to collect all posts from subdirectories for RSS and tags
+			currentConfig.Recursive = true
 
 			// Process files with blog-specific config
 			blogPosts, err := processFiles(inputDir, inputRoot, currentConfig, 0)
 			if err != nil {
 				return err
+			}
+
+			// Generate tag pages at blog root
+			if len(blogPosts) > 0 {
+				tagMap := collectTags(blogPosts)
+
+				// Generate individual tag pages
+				for tagName, tagInfo := range tagMap {
+					if err := generateTagPage(tagName, tagInfo, config, config.OutputDir); err != nil {
+						fmt.Fprintf(os.Stderr, "Warning: error generating tag page for '%s': %v\n", tagName, err)
+					}
+				}
+
+				// Generate tags index page
+				if err := generateTagsIndex(tagMap, config, config.OutputDir); err != nil {
+					fmt.Fprintf(os.Stderr, "Warning: error generating tags index: %v\n", err)
+				}
 			}
 
 			// Generate RSS feed at blog root if enabled
@@ -689,6 +709,9 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 			// Calculate reading time
 			readTime := calculateReadTime(contentWithoutMeta)
 
+			// Extract tags
+			postTags := normalizeTags(metadata["Tags"])
+
 			blogPosts = append(blogPosts, BlogPost{
 				Title:        title,
 				Link:         fileNameWithoutExt + ".html",
@@ -703,6 +726,7 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 				CommitAuthor: commitAuthor,
 				CommitURL:    commitURL,
 				ReadTime:     readTime,
+				Tags:         postTags,
 			})
 		}
 	}
@@ -767,6 +791,42 @@ func processFiles(inputDir string, inputRoot string, config Config, depth int) (
 			config,
 		); err != nil {
 			return nil, err
+		}
+	}
+
+	// Generate tag pages if this is the blog root directory
+	outComponents := strings.Split(config.OutputDir, string(filepath.Separator))
+	blogIdx := -1
+	for i, comp := range outComponents {
+		if comp == "blog" {
+			blogIdx = i
+			break
+		}
+	}
+	if blogIdx >= 0 {
+		blogComponents := outComponents[blogIdx:]
+		isBlogRoot := len(blogComponents) == 1
+
+		if isBlogRoot && len(blogPosts) > 0 {
+			tagMap := collectTags(blogPosts)
+
+			// Get root output directory (dist/) by going up from blog directory
+			rootOutputDir := filepath.Join(outComponents[:blogIdx]...)
+			if rootOutputDir == "" {
+				rootOutputDir = "."
+			}
+
+			// Generate individual tag pages
+			for tagName, tagInfo := range tagMap {
+				if err := generateTagPage(tagName, tagInfo, config, rootOutputDir); err != nil {
+					fmt.Fprintf(os.Stderr, "Warning: error generating tag page for '%s': %v\n", tagName, err)
+				}
+			}
+
+			// Generate tags index page
+			if err := generateTagsIndex(tagMap, config, rootOutputDir); err != nil {
+				fmt.Fprintf(os.Stderr, "Warning: error generating tags index: %v\n", err)
+			}
 		}
 	}
 
@@ -882,6 +942,9 @@ func fetchRecentPosts(rootDir string, config Config, limit int) []BlogPost {
 		_, contentWithoutMeta := extractMetadata(mdContent)
 		readTime := calculateReadTime(contentWithoutMeta)
 
+		// Extract tags
+		postTags := normalizeTags(metadata["Tags"])
+
 		post := BlogPost{
 			Title:        title,
 			Link:         link,
@@ -893,6 +956,7 @@ func fetchRecentPosts(rootDir string, config Config, limit int) []BlogPost {
 			CommitAuthor: commitAuthor,
 			CommitURL:    commitURL,
 			ReadTime:     readTime,
+			Tags:         postTags,
 		}
 
 		postsWithDates = append(postsWithDates, postWithDate{post: post, gitDate: gitDate})

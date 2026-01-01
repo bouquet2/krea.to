@@ -1129,6 +1129,230 @@ body:not(:has(.terminal)) .chroma code {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Tag styles */
+/* Inline tags (on post listings) */
+.post-tags-inline {
+    display: inline-block;
+    margin-left: 6px;
+    margin-right: 4px;
+}
+
+.tag-inline {
+    display: inline-block;
+    color: var(--link-color);
+    font-weight: normal;
+    font-size: 0.75em;
+    padding: 2px 6px;
+    margin: 0 2px;
+    border-radius: 3px;
+    background-color: var(--terminal-header);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    opacity: 0.8;
+}
+
+.tag-inline:hover {
+    color: var(--bg-color);
+    background-color: var(--accent-color);
+    opacity: 1;
+    transform: translateY(-1px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Post tags section (in blog post) */
+.post-tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-right: 8px;
+}
+
+.tag {
+    display: inline-block;
+    color: var(--link-color);
+    font-weight: 500;
+    font-size: 0.9em;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background-color: var(--terminal-header);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid var(--secondary-color);
+}
+
+.tag:hover {
+    color: var(--bg-color);
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Small tags (for related posts) */
+.tag-small {
+    font-size: 0.75em;
+    padding: 2px 6px;
+    margin: 0 3px;
+    opacity: 0.8;
+}
+
+.tag-small:hover {
+    opacity: 1;
+}
+
+/* Popular tags section (on blog index) */
+.popular-tags {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background-color: var(--terminal-header);
+    border-radius: 6px;
+    border: 1px solid var(--secondary-color);
+}
+
+.popular-tags h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.3em;
+}
+
+.tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag-count-small {
+    opacity: 0.6;
+    font-size: 0.9em;
+}
+
+/* Related posts section */
+.related-posts {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--secondary-color);
+}
+
+.related-posts h2 {
+    font-size: 1.5em;
+    margin-bottom: 1rem;
+}
+
+.related-posts-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.related-posts-list li {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: var(--terminal-header);
+    border-radius: 6px;
+    border: 1px solid var(--secondary-color);
+    transition: all 0.2s ease;
+}
+
+.related-posts-list li:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.related-post-link {
+    color: var(--link-color);
+    font-weight: 600;
+    font-size: 1.1em;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.related-post-link:hover {
+    color: var(--accent-color);
+}
+
+.related-tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 0.5rem;
+}
+
+/* Tags index page */
+.tags-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.tag-card {
+    padding: 0.75rem;
+    background-color: var(--terminal-header);
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: block;
+}
+
+.tag-card a {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.tag-card:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.tag-name {
+    color: var(--link-color);
+    font-weight: 600;
+    font-size: 0.95em;
+    transition: color 0.2s ease;
+}
+
+.tag-card:hover .tag-name {
+    color: var(--accent-color);
+}
+
+.tag-count {
+    color: var(--text-color);
+    opacity: 0.65;
+    font-size: 0.8em;
+}
+
+/* Tag page header */
+.tag-highlight {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+/* Responsive adjustments for tags */
+@media (max-width: 768px) {
+    .post-tags-inline {
+        display: block;
+        margin-left: 0;
+        margin-top: 0.5rem;
+    }
+    
+    .tags-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.75rem;
+    }
+    
+    .tag-card {
+        padding: 1rem;
+    }
+    
+    .popular-tags {
+        padding: 1rem;
+    }
+}
+
 /* Responsive design */
 /* Mobile */
 @media (max-width: 600px) {

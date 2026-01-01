@@ -4,6 +4,28 @@ import (
 	"strings"
 )
 
+// normalizeTags parses a comma-separated list of tags and normalizes them
+func normalizeTags(tagsStr string) []string {
+	if tagsStr == "" {
+		return nil
+	}
+
+	parts := strings.Split(tagsStr, ",")
+	var tags []string
+	seen := make(map[string]bool)
+
+	for _, part := range parts {
+		tag := strings.TrimSpace(part)
+		tag = strings.ToLower(tag) // Normalize to lowercase
+		if tag != "" && !seen[tag] {
+			tags = append(tags, tag)
+			seen[tag] = true
+		}
+	}
+
+	return tags
+}
+
 // extractMetadata parses the top of the markdown file for metadata in HTML comments
 func extractMetadata(mdContent []byte) (map[string]string, []byte) {
 	content := string(mdContent)

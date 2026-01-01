@@ -47,6 +47,14 @@
             <header>
                 <h1>{{.Title}}</h1>
                 <p class="post-meta">
+                    {{if .Tags}}
+                    <span class="post-tags">
+                        {{range .Tags}}
+                        <a href="/blog/tags/{{.}}.html" class="tag">{{.}}</a>
+                        {{end}}
+                    </span>
+                    {{if .Author}}<span class="meta-separator">•</span>{{end}}
+                    {{end}}
                     {{if .Author}}<span class="author">by {{.Author}}</span>{{end}}
                     {{if and .Author .Date}}<span class="meta-separator">•</span>{{end}}
                     {{if .Date}}{{if .CommitURL}}<span class="created-at">Created at <a href="{{.CommitURL}}" target="_blank" rel="noopener noreferrer" title="View commit {{.CommitHash}} in git"><time datetime="{{.Date}}">{{.Date}}</time></a></span>{{else}}<span class="created-at">Created at <time datetime="{{.Date}}">{{.Date}}</time></span>{{end}}{{end}}
@@ -57,6 +65,26 @@
                 {{.Content}}
             </div>
         </article>
+        
+        {{if .RelatedPosts}}
+        <aside class="related-posts">
+            <h2>Related Posts</h2>
+            <ul class="related-posts-list">
+                {{range .RelatedPosts}}
+                <li>
+                    <a href="{{.Link}}" class="related-post-link">{{.Title}}</a>
+                    {{if .Tags}}
+                    <span class="related-tags">
+                        {{range .Tags}}
+                        <span class="tag-small">{{.}}</span>
+                        {{end}}
+                    </span>
+                    {{end}}
+                </li>
+                {{end}}
+            </ul>
+        </aside>
+        {{end}}
     </main>
     <div class="quick-actions" aria-label="Quick settings">
         <a href="feed.xml" class="icon-button rss-button" aria-label="RSS Feed" title="Subscribe to RSS feed">

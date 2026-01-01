@@ -1,3 +1,7 @@
+<!--
+Tags: nim, programming, interop, c, ffi
+-->
+
 In this post, I will talk about a Nim library that I am really fond of called Futhark, how it works, and some examples.
 
 ## What is Futhark?

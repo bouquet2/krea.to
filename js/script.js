@@ -371,6 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
             blogPosts.forEach(post => {
                 const title = post.dataset.title || '';
                 const description = post.dataset.description || '';
+                const tags = post.dataset.tags || '';
                 const postLink = post.querySelector('a')?.getAttribute('href') || '';
                 
                 // Get content from search index if available
@@ -380,7 +381,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const titleMatch = title.toLowerCase().includes(query);
                 const descMatch = description.toLowerCase().includes(query);
                 const contentMatch = content.toLowerCase().includes(query);
-                const matches = titleMatch || descMatch || contentMatch;
+                const tagMatch = tags.toLowerCase().includes(query);
+                const matches = titleMatch || descMatch || contentMatch || tagMatch;
                 
                 const searchMatchEl = post.querySelector('.search-match');
                 const descriptionEl = post.querySelector('.post-description');
@@ -393,6 +395,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (searchMatchEl) {
                         if (titleMatch) {
                             searchMatchEl.innerHTML = '<strong>Title:</strong> ' + highlightMatch(title, query);
+                        } else if (tagMatch) {
+                            const matchedTags = tags.split(',').filter(tag => tag.toLowerCase().includes(query));
+                            searchMatchEl.innerHTML = '<strong>Tags:</strong> ' + matchedTags.map(tag => highlightMatch(tag, query)).join(', ');
                         } else if (descMatch) {
                             const context = getMatchContext(description, query);
                             searchMatchEl.innerHTML = '<strong>Description:</strong> ' + context;
@@ -431,12 +436,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show/hide section headers based on visible items
             const blogList = document.querySelector('.blog-list');
             const directoryList = document.querySelector('.directory-list');
+            const popularTags = document.querySelector('.popular-tags');
             
             if (blogList) {
                 blogList.style.display = visiblePosts > 0 ? '' : 'none';
             }
             if (directoryList) {
                 directoryList.style.display = visibleDirs > 0 ? '' : 'none';
+            }
+            
+            // Hide popular tags when searching
+            if (popularTags) {
+                popularTags.style.display = query ? 'none' : '';
             }
             
             // Show "no results" message if nothing matches

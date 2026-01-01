@@ -1,3 +1,7 @@
+<!--
+Tags: nix, macos, nix-darwin, package-management, functional
+-->
+
 In this small blog post, I will talk about my experience with Nix and How to start using Nix-darwin and home-manager. This is an opinion piece and may/may not have factual information, keep that in mind.
 
 ## What is Nix?

@@ -1,3 +1,7 @@
+<!--
+Tags: nim, programming, systems-programming, languages
+-->
+
 In this small blog post, I will talk about Nim, a systems programming language that I fell in love with a few years ago, why I still use it, and its disadvantages.
 
 ## What is Nim?
