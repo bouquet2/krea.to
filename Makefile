@@ -28,6 +28,7 @@ copy-assets:
 	mkdir -p $(DIST_DIR)/blog
 	$(foreach asset,$(ASSETS),cp -r $(asset) $(DIST_DIR)/;)
 	cp CNAME $(DIST_DIR)/
+	cp -r .well-known $(DIST_DIR)/
 
 # Minify CSS files
 minify-css: build-bin
