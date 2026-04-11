@@ -47,6 +47,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const accessibilityButton = document.getElementById('accessibility-button');
     const backgroundButton = document.getElementById('background-button');
     const transparencyButton = document.getElementById('transparency-button');
+    const fullscreenMenuButton = document.getElementById('fullscreen-menu-button');
+    const fullscreenButton = document.getElementById('fullscreen-button');
     const luckyButton = document.getElementById('lucky-button');
     const themeSelect = document.getElementById('theme-select');
     const fontSelect = document.getElementById('font-select');
@@ -95,6 +97,80 @@ document.addEventListener('DOMContentLoaded', function() {
             transparencyButton.textContent = 'Enable Transparency';
         } else {
             transparencyButton.textContent = 'Disable Transparency';
+        }
+    }
+    
+    // Windowed mode toggle functionality
+    const updateWindowedButtonState = () => {
+        const isWindowed = terminal && terminal.classList.contains('windowed');
+        const label = isWindowed ? 'Enter Fullscreen' : 'Exit Fullscreen';
+        if (fullscreenMenuButton) {
+            fullscreenMenuButton.textContent = label;
+        }
+    };
+    
+    const toggleWindowed = () => {
+        if (!terminal) return;
+        
+        terminal.classList.toggle('windowed');
+        
+        if (terminal.classList.contains('windowed')) {
+            localStorage.setItem('windowed', 'true');
+        } else {
+            localStorage.setItem('windowed', 'false');
+        }
+        
+        updateWindowedButtonState();
+    };
+    
+    // Check for saved windowed preference
+    const savedWindowed = localStorage.getItem('windowed');
+    if (savedWindowed === 'true' && terminal) {
+        terminal.classList.add('windowed');
+    }
+    
+    updateWindowedButtonState();
+    
+    if (fullscreenMenuButton) {
+        fullscreenMenuButton.addEventListener('click', toggleWindowed);
+    }
+    
+    if (fullscreenButton) {
+        fullscreenButton.addEventListener('click', toggleWindowed);
+    }
+
+    // Fullscreen header show/hide via top-edge hover zone
+    if (terminal) {
+        const header = terminal.querySelector('.terminal-header');
+        const HOVER_ZONE = 60;
+        let overHeader = false;
+        let inZone = false;
+
+        const update = () => {
+            if (terminal.classList.contains('windowed')) return;
+            if (inZone || overHeader) {
+                terminal.classList.add('header-visible');
+            } else {
+                terminal.classList.remove('header-visible');
+            }
+        };
+
+        terminal.addEventListener('mousemove', (e) => {
+            if (terminal.classList.contains('windowed')) return;
+            const y = e.clientY - terminal.getBoundingClientRect().top;
+            inZone = y < HOVER_ZONE;
+            update();
+        });
+
+        terminal.addEventListener('mouseleave', () => {
+            inZone = false;
+            overHeader = false;
+            update();
+        });
+
+        if (header) {
+            header.addEventListener('mouseenter', () => { overHeader = true; update(); });
+            header.addEventListener('mouseleave', () => { overHeader = false; update(); });
         }
     }
     
@@ -153,11 +229,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Font size control
-    const savedFontSize = localStorage.getItem('fontSize') || '1.1';
+    const savedFontForSize = localStorage.getItem('fontFamily') || 'ibmplex';
+    const savedFontSize = localStorage.getItem('fontSize');
+    const defaultFontSize = savedFontForSize === 'ibmplex' ? '0.8' : '1.1';
+    const fontSize = savedFontSize || defaultFontSize;
+    
     if (fontSizeRange) {
-        fontSizeRange.value = savedFontSize;
-        if (fontSizeValue) fontSizeValue.textContent = `${savedFontSize}em`;
-        document.documentElement.style.setProperty('--font-size', `${savedFontSize}em`);
+        fontSizeRange.value = fontSize;
+        if (fontSizeValue) fontSizeValue.textContent = `${fontSize}em`;
+        document.documentElement.style.setProperty('--font-size', `${fontSize}em`);
         
         fontSizeRange.addEventListener('input', function() {
             const size = this.value;
@@ -186,15 +266,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Font selection control
-    const savedFont = localStorage.getItem('fontFamily') || 'scientifica';
+    const savedFont = localStorage.getItem('fontFamily') || 'ibmplex';
     if (fontSelect) {
         fontSelect.value = savedFont;
         
         // Apply saved font
         if (savedFont === 'pokemon') {
             document.documentElement.style.setProperty('--font-family', "'Pokemon DP Pro', sans-serif");
-        } else {
+        } else if (savedFont === 'scientifica') {
             document.documentElement.style.setProperty('--font-family', "'Scientifica', sans-serif");
+        } else {
+            document.documentElement.style.setProperty('--font-family', "'IBM Plex Mono', monospace");
         }
         
         fontSelect.addEventListener('change', function() {
@@ -202,8 +284,19 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (selectedFont === 'pokemon') {
                 document.documentElement.style.setProperty('--font-family', "'Pokemon DP Pro', sans-serif");
-            } else {
+            } else if (selectedFont === 'scientifica') {
                 document.documentElement.style.setProperty('--font-family', "'Scientifica', sans-serif");
+            } else {
+                document.documentElement.style.setProperty('--font-family', "'IBM Plex Mono', monospace");
+            }
+            
+            // Adjust default font size if user hasn't manually set one
+            const savedFontSize = localStorage.getItem('fontSize');
+            if (!savedFontSize) {
+                const newSize = selectedFont === 'ibmplex' ? '0.8' : '1.1';
+                document.documentElement.style.setProperty('--font-size', `${newSize}em`);
+                if (fontSizeRange) fontSizeRange.value = newSize;
+                if (fontSizeValue) fontSizeValue.textContent = `${newSize}em`;
             }
             
             localStorage.setItem('fontFamily', selectedFont);

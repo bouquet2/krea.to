@@ -14,22 +14,47 @@ body[data-theme="latte"]::before {
 }
 
 /* Light theme terminal styles */
-body.light-theme .terminal {
+body.light-theme .terminal,
+body[data-theme="latte"] .terminal {
     background-color: rgba(239, 241, 245, 0.8);
     border: 1px solid rgba(234, 118, 203, 0.3);
 }
 
-body.light-theme .terminal-header {
+/* Fullscreen: less flat white — surface0-tinted panel (still Latte, easier on the eyes) */
+body.light-theme .terminal:not(.windowed),
+body[data-theme="latte"] .terminal:not(.windowed) {
+    background-color: rgba(204, 208, 218, 0.88);
+}
+
+body.light-theme .terminal:not(.windowed) .terminal-header,
+body[data-theme="latte"] .terminal:not(.windowed) .terminal-header {
+    background-color: rgba(220, 224, 237, 0.95);
+}
+
+body.light-theme .terminal-header,
+body[data-theme="latte"] .terminal-header {
     background-color: rgba(230, 233, 239, 0.9);
     border-bottom: 1px solid rgba(234, 118, 203, 0.3);
 }
 
-body.light-theme .terminal.no-transparency {
+body.light-theme .terminal.no-transparency,
+body[data-theme="latte"] .terminal.no-transparency {
     background-color: #eff1f5 !important;
 }
 
-body.light-theme .terminal.no-transparency .terminal-header {
+body.light-theme .terminal:not(.windowed).no-transparency,
+body[data-theme="latte"] .terminal:not(.windowed).no-transparency {
+    background-color: #dce0e8 !important;
+}
+
+body.light-theme .terminal.no-transparency .terminal-header,
+body[data-theme="latte"] .terminal.no-transparency .terminal-header {
     background-color: #e6e9ef !important;
+}
+
+body.light-theme .terminal:not(.windowed).no-transparency .terminal-header,
+body[data-theme="latte"] .terminal:not(.windowed).no-transparency .terminal-header {
+    background-color: #ccd0da !important;
 }
 
 /* Light theme icon buttons */

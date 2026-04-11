@@ -34,16 +34,21 @@ const structuredData = {
   structuredData={structuredData}
 >
     <main>
+        <div class="terminal-header-trigger"></div>
         <div class:list={["terminal", { "terminal-fullscreen": settings.fullscreen }]}>
             {!settings["hide-topbar"] && <TerminalHeader />}
             
             <div class:list={["terminal-content", { "terminal-content-no-header": settings["hide-topbar"] }]}>
                 
+                {!settings["hide-shell"] && (
+                    <div class="last-login">Last login: {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })} on ttys000</div>
+                )}
+                
                 <!-- Render each section -->
                 {sections.map(section => (
                     <div class="terminal-section">
                         {!settings["hide-shell"] && (
-                            <div class="prompt">kreato@akiri:~$ <span class="typing-effect">{section.command}</span></div>
+                            <div class="prompt"><span class="prompt-user">kreato@akiri:~$</span> <span class="typing-effect">{section.command}</span></div>
                         )}
                         <div class="output" set:html={section.html} />
                     </div>
@@ -53,7 +58,7 @@ const structuredData = {
                 {links.length > 0 && (
                     <div class="terminal-section">
                         {!settings["hide-shell"] && (
-                            <div class="prompt">kreato@akiri:~$ <span class="typing-effect">ls</span></div>
+                            <div class="prompt"><span class="prompt-user">kreato@akiri:~$</span> <span class="typing-effect">ls</span></div>
                         )}
                         <div class="output">
                             <div class="links">
@@ -69,7 +74,7 @@ const structuredData = {
                 {recentPosts.length > 0 && (
                     <div class="terminal-section">
                         {!settings["hide-shell"] && (
-                            <div class="prompt">kreato@akiri:~$ <span class="typing-effect">git log --oneline blog/</span></div>
+                            <div class="prompt"><span class="prompt-user">kreato@akiri:~$</span> <span class="typing-effect">git log --oneline blog/</span></div>
                         )}
                         <div class="output">
                             <div class="recent-posts">
