@@ -46,7 +46,7 @@ Software I use changes overtime and this list may not be up-to-date.
 <!-- Section: cat contact.txt -->
 ## Contact
 
-Contact me on Discord (@kreatoo), or or on email (hi -at- krea.to).
+Contact me on Discord (@kreatoo), Matrix (@kreato:krea.to) or on email (hi -at- krea.to).
 
 <!-- Links -->
 - [blog.md](blog/index.html)
