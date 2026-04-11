@@ -107,6 +107,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (fullscreenMenuButton) {
             fullscreenMenuButton.textContent = label;
         }
+        if (transparencyButton) {
+            transparencyButton.style.display = isWindowed ? '' : 'none';
+        }
     };
     
     const toggleWindowed = () => {
