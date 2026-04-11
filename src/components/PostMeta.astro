@@ -1,0 +1,34 @@
+---
+export interface Props {
+  date: Date;
+  commitURL?: string;
+  commitHash?: string;
+  readTime?: string;
+  prefix?: string;
+  createdAt?: boolean;
+}
+
+const { date, commitURL, commitHash, readTime, prefix = '', createdAt = false } = Astro.props;
+---
+
+<span class="post-meta">
+  {createdAt && commitURL ? (
+    <span class="created-at">
+      {prefix}<a href={commitURL} target="_blank" rel="noopener noreferrer" title={`View commit ${commitHash} in git`}>
+        <time datetime={date.toISOString()}>{date.toLocaleDateString()}</time>
+      </a>
+    </span>
+  ) : (
+    <>
+      {prefix && <span class="meta-prefix">{prefix}</span>}
+      {commitURL ? (
+        <a href={commitURL} target="_blank" rel="noopener noreferrer" class="post-date" title={`View commit ${commitHash} in git`}>
+          <time datetime={date.toISOString()}>{date.toLocaleDateString()}</time>
+        </a>
+      ) : (
+        <span class="post-date" title={commitHash ? `Commit ${commitHash}` : undefined}><time datetime={date.toISOString()}>{date.toLocaleDateString()}</time></span>
+      )}
+      {readTime && <span class="post-read-time">{readTime}</span>}
+    </>
+  )}
+</span>

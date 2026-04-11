@@ -1,0 +1,101 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import Search from '../../components/Search.astro';
+import QuickActions from '../../components/QuickActions.astro';
+import siteConfig from '../../../site.config.mjs';
+
+const posts = await getCollection('blog');
+posts.sort((a, b) => (b.data.date?.valueOf() || 0) - (a.data.date?.valueOf() || 0));
+
+// Get all tags and count posts per tag
+const tagCounts = new Map<string, number>();
+posts.forEach(post => {
+  post.data.tags.forEach(tag => {
+    tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+  });
+});
+
+// Get directories from post slugs and map to proper case
+const directories = new Map<string, string>(); // slug -> proper name
+posts.forEach(post => {
+  const parts = post.id.split('/');
+  if (parts.length > 1) {
+    const slugDir = parts[0];
+    const properDir = post.data.originalDirectory || parts[0];
+    directories.set(slugDir, properDir);
+  }
+});
+
+const title = siteConfig.TITLE;
+const description = "Blog Posts and Articles";
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": title,
+  "description": "Blog Posts and Articles by Kreato",
+  "url": Astro.url.href
+};
+---
+
+<BaseLayout 
+  title={title}
+  description={description}
+  type="CollectionPage"
+  structuredData={structuredData}
+>
+    <header>
+        <nav class="nav-bar">
+            <a href="/" class="back-button">← Back</a>
+            <Search />
+        </nav>
+    </header>
+    <main>
+        <h1>{title}</h1>
+        
+        <div id="no-results" class="no-results" style="display: none;">
+            No posts found matching your search.
+        </div>
+        
+        {directories.size > 0 && (
+            <section class="directory-list">
+                <h2>Categories</h2>
+                <ul>
+                    {Array.from(directories).map(([slug, name]) => (
+                        <li class="directory">
+                            <a href={`/blog/${slug}/`}>{name}/</a>
+                        </li>
+                    ))}
+                </ul>
+            </section>
+        )}
+        
+        {tagCounts.size > 0 && (
+            <section class="popular-tags">
+                <h2>Popular Tags</h2>
+                <div class="tags-list">
+                    {Array.from(tagCounts.entries())
+                      .sort((a, b) => b[1] - a[1])
+                      .slice(0, 10)
+                      .map(([tag, count]) => (
+                        <a href={`/blog/tags/${tag}/`} class="tag">
+                            {tag} <span class="tag-count-small">({count})</span>
+                        </a>
+                    ))}
+                </div>
+            </section>
+        )}
+        
+        {posts.length > 0 && (
+            <section class="blog-list">
+                <h2>Most Recent Posts</h2>
+                {posts.map(post => (
+                    <BlogCard post={post} />
+                ))}
+            </section>
+        )}
+    </main>
+    <QuickActions showRSS rssURL="/blog/feed.xml" />
+</BaseLayout>

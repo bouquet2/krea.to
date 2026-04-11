@@ -1,0 +1,62 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import QuickActions from '../../../components/QuickActions.astro';
+
+const posts = await getCollection('blog');
+
+// Get all tags and count posts per tag
+const tagCounts = new Map<string, number>();
+posts.forEach(post => {
+  post.data.tags.forEach(tag => {
+    tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+  });
+});
+
+const tags = Array.from(tagCounts.entries())
+  .map(([name, count]) => ({ name, count }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+const title = "All Tags";
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": title,
+  "description": "Browse all blog tags",
+  "url": Astro.url.href
+};
+---
+
+<BaseLayout 
+  title={title}
+  type="CollectionPage"
+  structuredData={structuredData}
+>
+    <header>
+        <nav class="nav-bar">
+            <a href="/blog/" class="back-button">← Back to Blog</a>
+        </nav>
+    </header>
+    <main>
+        <h1>{title}</h1>
+        
+        {tags.length > 0 ? (
+            <section class="tags-overview">
+                <div class="tags-grid">
+                    {tags.map(({ name, count }) => (
+                        <div class="tag-card">
+                            <a href={`/blog/tags/${name}/`}>
+                                <span class="tag-name">{name}</span>
+                                <span class="tag-count">{count} {count === 1 ? 'post' : 'posts'}</span>
+                            </a>
+                        </div>
+                    ))}
+                </div>
+            </section>
+        ) : (
+            <p>No tags found.</p>
+        )}
+    </main>
+    <QuickActions showRSS rssURL="/blog/feed.xml" />
+</BaseLayout>

@@ -1,4 +1,28 @@
-**/.DS_Store
-/blog/
+# Dependencies
+node_modules/
+
+# Build output
 dist/
-md2html/md2html
+
+# Astro
+.astro/
+.rollup.cache/
+
+# Editors
+.DS_Store
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Opencode
+.opencode

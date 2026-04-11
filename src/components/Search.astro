@@ -1,0 +1,16 @@
+---
+export interface Props {
+  placeholder?: string;
+}
+
+const { placeholder = 'Search...' } = Astro.props;
+---
+
+<div class="search-container">
+    <input type="text" id="search-input" class="search-input" placeholder={placeholder} aria-label="Search">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+    </svg>
+    <kbd class="search-shortcut" id="search-shortcut">⌘K</kbd>
+</div>

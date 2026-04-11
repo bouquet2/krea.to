@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import BlogCard from '../../../components/BlogCard.astro';
+import QuickActions from '../../../components/QuickActions.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  const categories = new Map<string, string>(); // slug -> proper name
+  
+  posts.forEach(post => {
+    const parts = post.id.split('/');
+    if (parts.length > 1) {
+      const slugDir = parts[0];
+      const properDir = post.data.originalDirectory || parts[0];
+      categories.set(slugDir, properDir);
+    }
+  });
+  
+  return Array.from(categories).map(([slug, properDir]) => ({
+    params: { category: slug },
+    props: { properDir },
+  }));
+}
+
+const { category } = Astro.params;
+const { properDir } = Astro.props;
+const posts = await getCollection('blog');
+const categoryPosts = posts.filter(p => p.id.startsWith(`${category}/`));
+categoryPosts.sort((a, b) => (b.data.date?.valueOf() || 0) - (a.data.date?.valueOf() || 0));
+
+const title = `${properDir}/`;
+---
+
+<BaseLayout title={title}>
+    <header>
+        <nav class="nav-bar">
+            <a href="/blog/" class="back-button">← Back to Blog</a>
+        </nav>
+    </header>
+    <main>
+        <h1>{title}</h1>
+        <section class="blog-list">
+            <h2>{categoryPosts.length} Posts</h2>
+            {categoryPosts.map(post => <BlogCard post={post} />)}
+        </section>
+    </main>
+    <QuickActions showRSS rssURL="/blog/feed.xml" />
+</BaseLayout>

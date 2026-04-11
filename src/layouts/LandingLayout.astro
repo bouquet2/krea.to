@@ -1,0 +1,90 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TerminalHeader from '../components/TerminalHeader.astro';
+import QuickActions from '../components/QuickActions.astro';
+import HamburgerMenu from '../components/HamburgerMenu.astro';
+import type { CollectionEntry } from 'astro:content';
+import { parseLandingContent } from '../utils/content';
+
+export interface Props {
+  entry: CollectionEntry<'landing'>;
+  recentPosts?: Array<{ title: string; link: string }>;
+}
+
+const { entry, recentPosts = [] } = Astro.props;
+const { title, description, settings = {} } = entry.data;
+
+// Parse the landing content to get sections and links
+const rawContent = entry.body;
+const { sections, links } = parseLandingContent(rawContent);
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": title,
+  "url": Astro.site,
+  "description": description
+};
+---
+
+<BaseLayout 
+  title={title}
+  description={description}
+  type="website"
+  structuredData={structuredData}
+>
+    <main>
+        <div class:list={["terminal", { "terminal-fullscreen": settings.fullscreen }]}>
+            {!settings["hide-topbar"] && <TerminalHeader />}
+            
+            <div class:list={["terminal-content", { "terminal-content-no-header": settings["hide-topbar"] }]}>
+                
+                <!-- Render each section -->
+                {sections.map(section => (
+                    <div class="terminal-section">
+                        {!settings["hide-shell"] && (
+                            <div class="prompt">kreato@akiri:~$ <span class="typing-effect">{section.command}</span></div>
+                        )}
+                        <div class="output" set:html={section.html} />
+                    </div>
+                ))}
+                
+                <!-- Links section (ls) -->
+                {links.length > 0 && (
+                    <div class="terminal-section">
+                        {!settings["hide-shell"] && (
+                            <div class="prompt">kreato@akiri:~$ <span class="typing-effect">ls</span></div>
+                        )}
+                        <div class="output">
+                            <div class="links">
+                                {links.map(link => (
+                                    <a href={link.url} class:list={["file", { "external": link.external }]} target={link.external ? "_blank" : undefined} rel={link.external ? "noopener noreferrer" : undefined}>{link.name}</a>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+                
+                <!-- Recent posts section -->
+                {recentPosts.length > 0 && (
+                    <div class="terminal-section">
+                        {!settings["hide-shell"] && (
+                            <div class="prompt">kreato@akiri:~$ <span class="typing-effect">git log --oneline blog/</span></div>
+                        )}
+                        <div class="output">
+                            <div class="recent-posts">
+                                {recentPosts.map(post => (
+                                    <div class="recent-post">
+                                        <a href={post.link} class="post-link">{post.title}</a>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    </main>
+    <QuickActions />
+    <HamburgerMenu />
+</BaseLayout>

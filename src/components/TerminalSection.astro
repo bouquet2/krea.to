@@ -1,0 +1,17 @@
+---
+export interface Props {
+  command: string;
+  hideShell?: boolean;
+}
+
+const { command, hideShell = false } = Astro.props;
+---
+
+<div class="terminal-section">
+    {!hideShell && (
+        <div class="prompt">kreato@akiri:~$ <span class="typing-effect">{command}</span></div>
+    )}
+    <div class="output">
+        <slot />
+    </div>
+</div>

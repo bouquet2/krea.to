@@ -1,0 +1,63 @@
+---
+import siteConfig from '../../site.config.mjs';
+
+export interface Props {
+  title: string;
+  description?: string;
+  author?: string;
+  date?: string;
+  url?: string;
+  image?: string;
+  type?: 'website' | 'article' | 'CollectionPage';
+  defaultTheme?: string;
+  structuredData?: object;
+}
+
+const { 
+  title, 
+  description, 
+  author, 
+  date, 
+  url = Astro.url.href,
+  image,
+  type = 'website',
+  defaultTheme = siteConfig.DEFAULT_THEME,
+  structuredData
+} = Astro.props;
+
+const themeCSSPath = `/css/themes/${defaultTheme}.css`;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {description && <meta name="description" content={description}>}
+    {author && <meta name="author" content={author}>}
+    <title>{title}</title>
+    
+    <!-- Discord Embed Meta Tags -->
+    <meta property="og:title" content={title}>
+    {description && <meta property="og:description" content={description}>}
+    <meta property="og:type" content={type}>
+    <meta property="og:url" content={url}>
+    {image && <meta property="og:image" content={image}>}
+    <meta name="theme-color" content="#5865F2">
+    
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="preload" href="/css/style.css" as="style">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href={themeCSSPath} id={`theme-css-${defaultTheme}`}>
+    
+    <!-- JSON-LD Structured Data -->
+    {structuredData && (
+        <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    )}
+</head>
+<body data-theme={defaultTheme}>
+    <slot />
+    <script is:inline src="/js/script.js"></script>
+    <script defer src="https://umami.krea.to/script.js" data-website-id="6354e7d6-d305-4c2b-a103-83639f9f7180"></script>
+</body>
+</html>

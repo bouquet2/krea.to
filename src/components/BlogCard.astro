@@ -1,0 +1,30 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import PostMeta from './PostMeta.astro';
+import { getPostTitle } from '../utils/content';
+import { getPostComputedMetadataById } from '../utils/postMetadata';
+import siteConfig from '../../site.config.mjs';
+
+export interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { description, date, tags, readTime, commitHash } = post.data;
+const title = getPostTitle(post);
+const postUrl = `/blog/${post.id.replace(/\.md$/, '')}/`;
+
+const computed = getPostComputedMetadataById(post.id);
+const effectiveCommitHash = commitHash || computed?.commitHash;
+const effectiveDate = date ?? (computed?.commitDate ? new Date(computed.commitDate) : undefined);
+const effectiveCommitURL = siteConfig.SHOW_COMMIT_INFO ? computed?.commitURL : undefined;
+---
+
+<article class="blog-post" data-title={title} data-description={description} data-tags={tags.join(',')}>
+    <h3>
+        <a href={postUrl} class="post-link">{title}</a>
+        {effectiveDate && <PostMeta date={effectiveDate} commitURL={effectiveCommitURL} commitHash={effectiveCommitHash} readTime={readTime} />}
+    </h3>
+    {description && <p class="post-description">{description}</p>}
+    <p class="search-match" style="display: none;"></p>
+</article>

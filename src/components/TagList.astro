@@ -1,0 +1,22 @@
+---
+export interface Props {
+  tags: string[];
+  inline?: boolean;
+}
+
+const { tags, inline = false } = Astro.props;
+---
+
+{inline ? (
+    <span class="post-tags-inline">
+        {tags.map(tag => (
+            <a href={`/blog/tags/${tag}/`} class="tag-inline">{tag}</a>
+        ))}
+    </span>
+) : (
+    <span class="post-tags">
+        {tags.map(tag => (
+            <a href={`/blog/tags/${tag}/`} class="tag">{tag}</a>
+        ))}
+    </span>
+)}

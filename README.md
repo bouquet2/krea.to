@@ -1,6 +1,6 @@
 # krea.to
 
-My personal website and blog, featuring a terminal-style interface and a custom markdown-to-HTML static site generator.
+My personal website and blog, featuring a terminal-style interface and an Astro-powered static site.
 
 🌐 **Live Site**: [krea.to](https://krea.to)
 
@@ -12,7 +12,7 @@ My personal website and blog, featuring a terminal-style interface and a custom 
 - **Theme Toggle** - Quick switch between light and dark modes
 - **Accessibility Mode** - Enhanced readability with Comic Sans font and increased spacing
 - **Customizable Settings** - Adjust font size, background, and transparency (including the intensity) with ease and slick animations
-- **Automatic Generation** - All pages are generated from Markdown files using Go templates
+- **Automatic Generation** - Pages are generated from Markdown content collections using Astro
 
 ### Blog
 - **Clean Reading Experience** - Distraction-free blog post layout that uses the most of the current device
@@ -21,38 +21,35 @@ My personal website and blog, featuring a terminal-style interface and a custom 
 
 ## Building
 
-The website uses a custom Go-based markdown converter. To generate blog posts:
+Install dependencies and build with Bun:
 
 ```bash
-# Build the converter and generate all pages
-make
+bun install
+bun run build
+```
 
-# Clean generated files
-make clean
+For local development:
 
-# View all available commands
-make help
+```bash
+bun run dev
 ```
 
 ## Adding New Blog Posts
 
-1. Create a new markdown file in the `md/` directory (organized by category)
-2. Add metadata at the top of the file:
+1. Create a new markdown file in `src/content/blog/<Category>/`.
+2. Add frontmatter metadata at the top of the file:
    ```markdown
-   <!--
-   Title: Your Post Title
-   Author: Kreato
-   Description: A brief description
-   -->
-   
-   # Your Post Title
-   
-   Your content here...
+   ---
+   title: "Your Post Title"
+   author: "Kreato"
+   description: "A brief description"
+   tags: ["tag1", "tag2"]
+   date: 2026-01-01
+   ---
    ```
-3. Run `make` to generate the HTML
-4. Commit and push the changes
+3. Run `bun run build` to generate the site.
+4. Commit and push the changes.
 
-=======
 ## Landing Page Settings
 
 The landing page template supports additional settings to customize its appearance. Add a `Settings` field to the metadata with comma-separated options:

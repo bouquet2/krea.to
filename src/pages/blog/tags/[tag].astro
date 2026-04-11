@@ -1,0 +1,84 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TagList from '../../../components/TagList.astro';
+import PostMeta from '../../../components/PostMeta.astro';
+import QuickActions from '../../../components/QuickActions.astro';
+import { getPostTitle } from '../../../utils/content';
+import { getPostComputedMetadataById } from '../../../utils/postMetadata';
+import siteConfig from '../../../../site.config.mjs';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  
+  // Get unique tags
+  const tags = new Set<string>();
+  posts.forEach(post => post.data.tags.forEach(tag => tags.add(tag)));
+  
+  return Array.from(tags).map(tag => ({
+    params: { tag },
+    props: { 
+      tag,
+      posts: posts.filter(post => post.data.tags.includes(tag))
+    },
+  }));
+}
+
+const { tag, posts } = Astro.props;
+posts.sort((a, b) => (b.data.date?.valueOf() || 0) - (a.data.date?.valueOf() || 0));
+
+const title = `Posts tagged with: ${tag}`;
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": title,
+  "description": `Blog posts tagged with ${tag}`,
+  "url": Astro.url.href
+};
+---
+
+<BaseLayout 
+  title={title}
+  type="CollectionPage"
+  structuredData={structuredData}
+>
+    <header>
+        <nav class="nav-bar">
+            <a href="/blog/tags/" class="back-button">← Back to All Tags</a>
+        </nav>
+    </header>
+    <main>
+        <h1>Posts tagged with: <span class="tag-highlight">{tag}</span></h1>
+        
+        {posts.length > 0 ? (
+            <section class="blog-list">
+                <h2>{posts.length} {posts.length === 1 ? 'Post' : 'Posts'}</h2>
+                {posts.map(post => (
+                    (() => {
+                        const computed = getPostComputedMetadataById(post.id);
+                        const effectiveDate = post.data.date ?? (computed?.commitDate ? new Date(computed.commitDate) : undefined);
+                        const effectiveCommitHash = post.data.commitHash ?? computed?.commitHash;
+                        const effectiveCommitURL = siteConfig.SHOW_COMMIT_INFO ? computed?.commitURL : undefined;
+
+                        return (
+                    <article class="blog-post">
+                        <h3>
+                            <a href={`/blog/${post.id.replace(/\.md$/, '')}/`} class="post-link">{getPostTitle(post)}</a>
+                            {post.data.tags.length > 0 && (
+                                <TagList tags={post.data.tags} inline />
+                            )}
+                            {effectiveDate && <PostMeta date={effectiveDate} commitURL={effectiveCommitURL} commitHash={effectiveCommitHash} readTime={post.data.readTime} />}
+                        </h3>
+                        {post.data.description && <p class="post-description">{post.data.description}</p>}
+                    </article>
+                        );
+                    })()
+                ))}
+            </section>
+        ) : (
+            <p>No posts found with this tag.</p>
+        )}
+    </main>
+    <QuickActions showRSS rssURL="/blog/feed.xml" />
+</BaseLayout>

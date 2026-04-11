@@ -1,0 +1,11 @@
+---
+import { getLandingPage, getRecentPosts } from '../utils/content';
+import LandingLayout from '../layouts/LandingLayout.astro';
+
+const landing = await getLandingPage();
+const recentPosts = await getRecentPosts(5);
+
+export const prerender = true;
+---
+
+<LandingLayout entry={landing} recentPosts={recentPosts} />
