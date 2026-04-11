@@ -8,7 +8,7 @@ import { parseLandingContent } from '../utils/content';
 
 export interface Props {
   entry: CollectionEntry<'landing'>;
-  recentPosts?: Array<{ title: string; link: string }>;
+  recentPosts?: Array<{ title: string; link: string; commitHash?: string; commitURL?: string }>;
 }
 
 const { entry, recentPosts = [] } = Astro.props;
@@ -80,7 +80,7 @@ const structuredData = {
                             <div class="recent-posts">
                                 {recentPosts.map(post => (
                                     <div class="recent-post">
-                                        <a href={post.link} class="post-link">{post.title}</a>
+                                        {post.commitHash && (post.commitURL ? <a href={post.commitURL} class="commit-hash" target="_blank" rel="noopener noreferrer">{post.commitHash}</a> : <span class="commit-hash">{post.commitHash}</span>)} <a href={post.link} class="post-link">{post.title}</a>
                                     </div>
                                 ))}
                             </div>

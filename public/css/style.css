@@ -741,6 +741,17 @@ body:has(.terminal) ul {
     color: var(--secondary-color);
 }
 
+.recent-post .commit-hash {
+    color: var(--accent-color);
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    text-decoration: none;
+}
+
+.recent-post .commit-hash:hover {
+    text-decoration: underline;
+}
+
 .file::before {
     content: "📄 ";
 }

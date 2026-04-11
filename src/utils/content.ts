@@ -11,14 +11,19 @@ export async function getLandingPage(): Promise<CollectionEntry<'landing'>> {
   return landing[0];
 }
 
-export async function getRecentPosts(limit: number = 5): Promise<Array<{ title: string; link: string }>> {
+export async function getRecentPosts(limit: number = 5): Promise<Array<{ title: string; link: string; commitHash?: string; commitURL?: string }>> {
   const posts = await getCollection('blog');
   posts.sort((a, b) => (b.data.date?.valueOf() || 0) - (a.data.date?.valueOf() || 0));
   
-  return posts.slice(0, limit).map(post => ({
-    title: getPostTitle(post),
-    link: `/blog/${post.id.replace(/\.md$/, '')}/`
-  }));
+  return posts.slice(0, limit).map(post => {
+    const metadata = getPostComputedMetadataById(post.id);
+    return {
+      title: getPostTitle(post),
+      link: `/blog/${post.id.replace(/\.md$/, '')}/`,
+      commitHash: metadata?.commitHash,
+      commitURL: metadata?.commitURL
+    };
+  });
 }
 
 // Get title from slug (which is the filename without extension)
