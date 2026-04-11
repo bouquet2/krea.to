@@ -12,7 +12,7 @@ export async function getStaticPaths() {
     const parts = post.id.split('/');
     if (parts.length > 1) {
       const slugDir = parts[0];
-      const properDir = post.data.originalDirectory || parts[0];
+      const properDir = post.data.originalDirectory || `${parts[0].charAt(0).toUpperCase()}${parts[0].slice(1)}`;
       categories.set(slugDir, properDir);
     }
   });
@@ -29,7 +29,7 @@ const posts = await getCollection('blog');
 const categoryPosts = posts.filter(p => p.id.startsWith(`${category}/`));
 categoryPosts.sort((a, b) => (b.data.date?.valueOf() || 0) - (a.data.date?.valueOf() || 0));
 
-const title = `${properDir}/`;
+const title = properDir;
 ---
 
 <BaseLayout title={title}>

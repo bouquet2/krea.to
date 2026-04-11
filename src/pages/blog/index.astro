@@ -23,7 +23,7 @@ posts.forEach(post => {
   const parts = post.id.split('/');
   if (parts.length > 1) {
     const slugDir = parts[0];
-    const properDir = post.data.originalDirectory || parts[0];
+    const properDir = post.data.originalDirectory || `${parts[0].charAt(0).toUpperCase()}${parts[0].slice(1)}`;
     directories.set(slugDir, properDir);
   }
 });
@@ -65,7 +65,7 @@ const structuredData = {
                 <ul>
                     {Array.from(directories).map(([slug, name]) => (
                         <li class="directory">
-                            <a href={`/blog/${slug}/`}>{name}/</a>
+                            <a href={`/blog/${slug}/`}>{name}</a>
                         </li>
                     ))}
                 </ul>
