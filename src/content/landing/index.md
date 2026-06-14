@@ -38,8 +38,9 @@ I use macOS on my computer, with these applications:
 - Browser: Vivaldi
 - Note-taking app: Private Discord server
 - Chat: Discord, Telegram, Signal
-- Office: Microsoft Office, Google Docs, Onlyoffice
-- Editor: (Neo)Vim with a couple of plugins, also use Cursor and VSCode from time to time
+- Office: LaTeX
+- Editor: (Neo)Vim with a couple of plugins, also use Zed from time to time
+- AI harness: Pi/OpenCode with open weight LLMs 
 
 Software I use changes overtime and this list may not be up-to-date.
 
