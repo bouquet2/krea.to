@@ -15,8 +15,7 @@
     "@astrojs/sitemap": "^3.7.2",
     "astro": "^7.0.0",
     "isomorphic-git": "^1.37.5",
-    "marked": "^18.0.0",
-    "mdast-util-to-string": "^4.0.0"
+    "marked": "^18.0.0"
   },
   "devDependencies": {
     "typescript": "^6.0.2"

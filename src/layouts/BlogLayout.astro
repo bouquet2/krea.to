@@ -6,6 +6,7 @@ import ThemeSettings from '../components/ThemeSettings.astro';
 import type { CollectionEntry } from 'astro:content';
 import { getPostTitle } from '../utils/content';
 import { getPostComputedMetadataById } from '../utils/postMetadata';
+import { getReadingTime } from '../utils/readingTime';
 import { render } from 'astro:content';
 
 export interface Props {
@@ -15,6 +16,7 @@ export interface Props {
 
 const { entry, relatedPosts = [] } = Astro.props;
 const { title: frontmatterTitle, description, author, date, tags, readTime } = entry.data;
+const effectiveReadTime = readTime ?? getReadingTime(entry.body ?? '');
 const title = frontmatterTitle || getPostTitle(entry);
 const { Content } = await render(entry);
 
@@ -47,12 +49,12 @@ const structuredData = {
         <h1>{title}</h1>
         <p class="post-meta">
           {tags.length > 0 && <TagList tags={tags} />}
-          {tags.length > 0 && (author || effectiveDate || readTime) && <span class="meta-separator">·</span>}
+          {tags.length > 0 && (author || effectiveDate || effectiveReadTime) && <span class="meta-separator">·</span>}
           {author && <span>by {author}</span>}
-          {author && (effectiveDate || readTime) && <span class="meta-separator">·</span>}
+          {author && (effectiveDate || effectiveReadTime) && <span class="meta-separator">·</span>}
           {effectiveDate && <time datetime={effectiveDate.toISOString()}>{effectiveDate.toLocaleDateString()}</time>}
-          {effectiveDate && readTime && <span class="meta-separator">·</span>}
-          {readTime && <span>{readTime}</span>}
+          {effectiveDate && effectiveReadTime && <span class="meta-separator">·</span>}
+          {effectiveReadTime && <span>{effectiveReadTime}</span>}
         </p>
       </header>
       <div class="content">
