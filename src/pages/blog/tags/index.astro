@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import QuickActions from '../../../components/QuickActions.astro';
+import ThemeSettings from '../../../components/ThemeSettings.astro';
 
 const posts = await getCollection('blog');
 
@@ -28,29 +29,21 @@ const structuredData = {
 };
 ---
 
-<BaseLayout 
+<BaseLayout
   title={title}
   type="CollectionPage"
   structuredData={structuredData}
 >
-    <header>
-        <nav class="nav-bar">
-            <a href="/blog/" class="back-button">← Back to Blog</a>
-        </nav>
-    </header>
     <main>
-        <h1>{title}</h1>
-        
+        <div class="landing-header">
+            <h1>tags</h1>
+        </div>
         {tags.length > 0 ? (
-            <section class="tags-overview">
-                <div class="tags-grid">
+            <section class="section">
+                <div class="section-label">~ {tags.length} {tags.length === 1 ? 'tag' : 'tags'}</div>
+                <div class="filters">
                     {tags.map(({ name, count }) => (
-                        <div class="tag-card">
-                            <a href={`/blog/tags/${name}/`}>
-                                <span class="tag-name">{name}</span>
-                                <span class="tag-count">{count} {count === 1 ? 'post' : 'posts'}</span>
-                            </a>
-                        </div>
+                        <a class="chip" href={`/blog/tags/${name}/`}>{name} <span style="opacity:.6">({count})</span></a>
                     ))}
                 </div>
             </section>
@@ -58,5 +51,7 @@ const structuredData = {
             <p>No tags found.</p>
         )}
     </main>
-    <QuickActions showRSS rssURL="/blog/feed.xml" />
+    <QuickActions showRSS rssURL="/blog/feed.xml" backHref="/blog/" backLabel="Back to blog">
+        <ThemeSettings />
+    </QuickActions>
 </BaseLayout>

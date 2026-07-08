@@ -9,8 +9,7 @@ const siteConfig = {
   SITE_URL: 'https://krea.to',
 
   // Default theme for the website.
-  // Available themes: nord, latte, frappe, mocha, macchiato, gruvbox,
-  // tokyonight, monokai, onedark, solarized, kanagawa, pinkie
+  // Available themes: pinkie, tokyonight, mocha, gruvbox, latte
   DEFAULT_THEME: 'pinkie',
 
   // Show commit info links on blog pages.

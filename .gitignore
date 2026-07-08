@@ -26,3 +26,6 @@ npm-debug.log*
 
 # Opencode
 .opencode
+
+# Superpowers (brainstorming mockups)
+.superpowers/

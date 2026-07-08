@@ -1,8 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import TerminalHeader from '../components/TerminalHeader.astro';
 import QuickActions from '../components/QuickActions.astro';
-import HamburgerMenu from '../components/HamburgerMenu.astro';
+import ThemeSettings from '../components/ThemeSettings.astro';
 import type { CollectionEntry } from 'astro:content';
 import { parseLandingContent } from '../utils/content';
 
@@ -12,11 +11,9 @@ export interface Props {
 }
 
 const { entry, recentPosts = [] } = Astro.props;
-const { title, description, settings = {} } = entry.data;
+const { title, description } = entry.data;
 
-// Parse the landing content to get sections and links
-const rawContent = entry.body;
-const { sections, links } = parseLandingContent(rawContent);
+const { headerHtml, sections, links } = parseLandingContent(entry.body);
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -27,69 +24,51 @@ const structuredData = {
 };
 ---
 
-<BaseLayout 
+<BaseLayout
   title={title}
   description={description}
   type="website"
   structuredData={structuredData}
 >
-    <main>
-        <div class="terminal-header-trigger"></div>
-        <div class:list={["terminal", { "terminal-fullscreen": settings.fullscreen }]}>
-            {!settings["hide-topbar"] && <TerminalHeader />}
-            
-            <div class:list={["terminal-content", { "terminal-content-no-header": settings["hide-topbar"] }]}>
-                
-                {!settings["hide-shell"] && (
-                    <div class="last-login">Last login: {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })} on ttys000</div>
-                )}
-                
-                <!-- Render each section -->
-                {sections.map(section => (
-                    <div class="terminal-section">
-                        {!settings["hide-shell"] && (
-                            <div class="prompt"><span class="prompt-user">kreato@akiri:~$</span> <span class="typing-effect">{section.command}</span></div>
-                        )}
-                        <div class="output" set:html={section.html} />
-                    </div>
-                ))}
-                
-                <!-- Links section (ls) -->
-                {links.length > 0 && (
-                    <div class="terminal-section">
-                        {!settings["hide-shell"] && (
-                            <div class="prompt"><span class="prompt-user">kreato@akiri:~$</span> <span class="typing-effect">ls</span></div>
-                        )}
-                        <div class="output">
-                            <div class="links">
-                                {links.map(link => (
-                                    <a href={link.url} class:list={["file", { "external": link.external }]} target={link.external ? "_blank" : undefined} rel={link.external ? "noopener noreferrer" : undefined}>{link.name}</a>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
-                
-                <!-- Recent posts section -->
-                {recentPosts.length > 0 && (
-                    <div class="terminal-section">
-                        {!settings["hide-shell"] && (
-                            <div class="prompt"><span class="prompt-user">kreato@akiri:~$</span> <span class="typing-effect">git log --oneline blog/</span></div>
-                        )}
-                        <div class="output">
-                            <div class="recent-posts">
-                                {recentPosts.map(post => (
-                                    <div class="recent-post">
-                                        {post.commitHash && (post.commitURL ? <a href={post.commitURL} class="commit-hash" target="_blank" rel="noopener noreferrer">{post.commitHash}</a> : <span class="commit-hash">{post.commitHash}</span>)} <a href={post.link} class="post-link">{post.title}</a>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
+  <main>
+    <div class="landing-header" set:html={headerHtml} />
+
+    {sections.map(section => (
+      <section class="section">
+        <div class="section-label">~ {section.label}</div>
+        <div class={`section-content section-${section.label}`} set:html={section.html} />
+      </section>
+    ))}
+
+    {links.length > 0 && (
+      <section class="section">
+        <div class="section-label">~ elsewhere</div>
+        <div class="link-row">
+          {links.map(link => (
+            <a href={link.url} target={link.external ? '_blank' : undefined} rel={link.external ? 'noopener noreferrer' : undefined}>{link.name}</a>
+          ))}
         </div>
-    </main>
-    <QuickActions />
-    <HamburgerMenu />
+      </section>
+    )}
+
+    {recentPosts.length > 0 && (
+      <section class="section">
+        <div class="section-label">~ recent</div>
+        <ul class="recent-posts">
+          {recentPosts.map(post => (
+            <li>
+              {post.commitHash && (post.commitURL
+                ? <a href={post.commitURL} class="commit-hash" target="_blank" rel="noopener noreferrer">{post.commitHash}</a>
+                : <span class="commit-hash">{post.commitHash}</span>)}
+              <a href={post.link}>{post.title}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </main>
+
+  <QuickActions>
+    <ThemeSettings />
+  </QuickActions>
 </BaseLayout>

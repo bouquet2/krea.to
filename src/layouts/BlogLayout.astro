@@ -1,13 +1,12 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import TagList from '../components/TagList.astro';
-import PostMeta from '../components/PostMeta.astro';
 import QuickActions from '../components/QuickActions.astro';
+import ThemeSettings from '../components/ThemeSettings.astro';
 import type { CollectionEntry } from 'astro:content';
-import { getTitleFromSlug, getPostTitle } from '../utils/content';
+import { getPostTitle } from '../utils/content';
 import { getPostComputedMetadataById } from '../utils/postMetadata';
 import { render } from 'astro:content';
-import siteConfig from '../../site.config.mjs';
 
 export interface Props {
   entry: CollectionEntry<'blog'>;
@@ -15,14 +14,13 @@ export interface Props {
 }
 
 const { entry, relatedPosts = [] } = Astro.props;
-const { title: frontmatterTitle, description, author, date, tags, commitHash, readTime } = entry.data;
+const { title: frontmatterTitle, description, author, date, tags, readTime } = entry.data;
 const title = frontmatterTitle || getPostTitle(entry);
 const { Content } = await render(entry);
 
 const computed = getPostComputedMetadataById(entry.id);
-const effectiveCommitHash = commitHash || computed?.commitHash;
-const effectiveDate = date ?? (computed?.commitDate ? new Date(computed.commitDate) : undefined);
-const effectiveCommitURL = siteConfig.SHOW_COMMIT_INFO ? computed?.commitURL : undefined;
+const rawDate = date ?? (computed?.commitDate ? new Date(computed.commitDate) : undefined);
+const effectiveDate = rawDate && !Number.isNaN(rawDate.getTime()) ? rawDate : undefined;
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -35,7 +33,7 @@ const structuredData = {
 };
 ---
 
-<BaseLayout 
+<BaseLayout
   title={title}
   description={description}
   author={author}
@@ -43,52 +41,42 @@ const structuredData = {
   type="article"
   structuredData={structuredData}
 >
-    <header>
-        <nav>
-            <a href="/blog/" class="back-button">← Back to Posts</a>
-        </nav>
-    </header>
-    <main>
-        <article class="blog-post">
-            <header>
-                <h1>{title}</h1>
-                <p class="post-meta">
-                    {tags.length > 0 && (
-                        <>
-                            <TagList tags={tags} />
-                            {author && <span class="meta-separator">•</span>}
-                        </>
-                    )}
-                    {author && <span class="author">by {author}</span>}
-                    {author && effectiveDate && <span class="meta-separator">•</span>}
-                    {effectiveDate && <PostMeta date={effectiveDate} commitURL={effectiveCommitURL} commitHash={effectiveCommitHash} createdAt prefix="Created at " />}
-                    {effectiveDate && readTime && <><span class="meta-separator">•</span><span class="read-time">{readTime}</span></>}
-                </p>
-            </header>
-            <div class="content">
-                <Content />
-            </div>
-        </article>
-        
-        {relatedPosts.length > 0 && (
-            <aside class="related-posts">
-                <h2>Related Posts</h2>
-                <ul class="related-posts-list">
-                    {relatedPosts.map(post => (
-                        <li>
-                            <a href={`/blog/${post.id.replace(/\.md$/, '')}/`} class="related-post-link">{getPostTitle(post)}</a>
-                            {post.data.tags.length > 0 && (
-                                <span class="related-tags">
-                                    {post.data.tags.map(tag => (
-                                        <span class="tag-small">{tag}</span>
-                                    ))}
-                                </span>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            </aside>
-        )}
-    </main>
-    <QuickActions showRSS rssURL="/blog/feed.xml" />
+  <main>
+    <article class="blog-post">
+      <header>
+        <h1>{title}</h1>
+        <p class="post-meta">
+          {tags.length > 0 && <TagList tags={tags} />}
+          {tags.length > 0 && (author || effectiveDate || readTime) && <span class="meta-separator">·</span>}
+          {author && <span>by {author}</span>}
+          {author && (effectiveDate || readTime) && <span class="meta-separator">·</span>}
+          {effectiveDate && <time datetime={effectiveDate.toISOString()}>{effectiveDate.toLocaleDateString()}</time>}
+          {effectiveDate && readTime && <span class="meta-separator">·</span>}
+          {readTime && <span>{readTime}</span>}
+        </p>
+      </header>
+      <div class="content">
+        <Content />
+      </div>
+    </article>
+
+    {relatedPosts.length > 0 && (
+      <aside class="related-posts">
+        <div class="section-label">~ related</div>
+        <ul>
+          {relatedPosts.map(post => (
+            <li>
+              <a href={`/blog/${post.id.replace(/\.md$/, '')}/`}>{getPostTitle(post)}</a>
+              {post.data.tags.length > 0 && (
+                <span class="related-tags">{post.data.tags.join(', ')}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      </aside>
+    )}
+  </main>
+  <QuickActions showRSS rssURL="/blog/feed.xml" backHref="/blog/" backLabel="Back to blog">
+    <ThemeSettings />
+  </QuickActions>
 </BaseLayout>

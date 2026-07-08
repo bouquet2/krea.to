@@ -26,5 +26,4 @@ const effectiveCommitURL = siteConfig.SHOW_COMMIT_INFO ? computed?.commitURL : u
         {effectiveDate && <PostMeta date={effectiveDate} commitURL={effectiveCommitURL} commitHash={effectiveCommitHash} readTime={readTime} />}
     </h3>
     {description && <p class="post-description">{description}</p>}
-    <p class="search-match" style="display: none;"></p>
 </article>

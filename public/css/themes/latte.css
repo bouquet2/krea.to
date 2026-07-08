@@ -1,80 +1,9 @@
 /* Catppuccin Latte theme (light) */
-body.light-theme,
 body[data-theme="latte"] {
     --bg-color: #eff1f5;
-    --text-color: #4c4f69;
-    --accent-color: #ea76cb;
-    --secondary-color: #8839ef;
-    --terminal-header: #e6e9ef;
-    --link-color: #1e66f5;
-}
-
-body[data-theme="latte"]::before {
-    --background-image: url('../../assets/catppuccin-dark.avif');
-}
-
-/* Light theme terminal styles */
-body.light-theme .terminal,
-body[data-theme="latte"] .terminal {
-    background-color: rgba(239, 241, 245, 0.8);
-    border: 1px solid rgba(234, 118, 203, 0.3);
-}
-
-/* Fullscreen: less flat white — surface0-tinted panel (still Latte, easier on the eyes) */
-body.light-theme .terminal:not(.windowed),
-body[data-theme="latte"] .terminal:not(.windowed) {
-    background-color: rgba(204, 208, 218, 0.88);
-}
-
-body.light-theme .terminal:not(.windowed) .terminal-header,
-body[data-theme="latte"] .terminal:not(.windowed) .terminal-header {
-    background-color: rgba(220, 224, 237, 0.95);
-}
-
-body.light-theme .terminal-header,
-body[data-theme="latte"] .terminal-header {
-    background-color: rgba(230, 233, 239, 0.9);
-    border-bottom: 1px solid rgba(234, 118, 203, 0.3);
-}
-
-body.light-theme .terminal.no-transparency,
-body[data-theme="latte"] .terminal.no-transparency {
-    background-color: #eff1f5 !important;
-}
-
-body.light-theme .terminal:not(.windowed).no-transparency,
-body[data-theme="latte"] .terminal:not(.windowed).no-transparency {
-    background-color: #dce0e8 !important;
-}
-
-body.light-theme .terminal.no-transparency .terminal-header,
-body[data-theme="latte"] .terminal.no-transparency .terminal-header {
-    background-color: #e6e9ef !important;
-}
-
-body.light-theme .terminal:not(.windowed).no-transparency .terminal-header,
-body[data-theme="latte"] .terminal:not(.windowed).no-transparency .terminal-header {
-    background-color: #ccd0da !important;
-}
-
-/* Light theme icon buttons */
-body.light-theme .icon-button {
-    background-color: rgba(230, 233, 239, 0.9);
-    color: var(--secondary-color);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-body.light-theme .icon-button:hover,
-body.light-theme .icon-button:focus-visible {
-    background-color: var(--secondary-color);
-    color: var(--bg-color);
-}
-
-/* Light theme toggle icons */
-body.light-theme .theme-toggle .icon-sun {
-    opacity: 0;
-}
-
-body.light-theme .theme-toggle .icon-moon {
-    opacity: 1;
+    --text-color: #5c5f77;
+    --heading-color: #4c4f69;
+    --muted-color: #8c8fa1;
+    --accent-color: #8839ef;
+    --border-color: #dce0e8;
 }

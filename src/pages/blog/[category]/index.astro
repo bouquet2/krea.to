@@ -3,11 +3,12 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import BlogCard from '../../../components/BlogCard.astro';
 import QuickActions from '../../../components/QuickActions.astro';
+import ThemeSettings from '../../../components/ThemeSettings.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
   const categories = new Map<string, string>(); // slug -> proper name
-  
+
   posts.forEach(post => {
     const parts = post.id.split('/');
     if (parts.length > 1) {
@@ -16,7 +17,7 @@ export async function getStaticPaths() {
       categories.set(slugDir, properDir);
     }
   });
-  
+
   return Array.from(categories).map(([slug, properDir]) => ({
     params: { category: slug },
     props: { properDir },
@@ -33,17 +34,20 @@ const title = properDir;
 ---
 
 <BaseLayout title={title}>
-    <header>
-        <nav class="nav-bar">
-            <a href="/blog/" class="back-button">← Back to Blog</a>
-        </nav>
-    </header>
     <main>
-        <h1>{title}</h1>
-        <section class="blog-list">
-            <h2>{categoryPosts.length} Posts</h2>
-            {categoryPosts.map(post => <BlogCard post={post} />)}
+        <div class="landing-header">
+            <h1>{title}</h1>
+        </div>
+        <section class="section">
+            <div class="section-label">~ {categoryPosts.length} {categoryPosts.length === 1 ? 'post' : 'posts'}</div>
+            <ul class="blog-list">
+                {categoryPosts.map(post => (
+                    <li class="post"><BlogCard post={post} /></li>
+                ))}
+            </ul>
         </section>
     </main>
-    <QuickActions showRSS rssURL="/blog/feed.xml" />
+    <QuickActions showRSS rssURL="/blog/feed.xml" backHref="/blog/" backLabel="Back to blog">
+        <ThemeSettings />
+    </QuickActions>
 </BaseLayout>

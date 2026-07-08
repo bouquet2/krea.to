@@ -4,12 +4,13 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import BlogCard from '../../components/BlogCard.astro';
 import Search from '../../components/Search.astro';
 import QuickActions from '../../components/QuickActions.astro';
+import ThemeSettings from '../../components/ThemeSettings.astro';
 import siteConfig from '../../../site.config.mjs';
+import { getPostTitle } from '../../utils/content';
 
 const posts = await getCollection('blog');
 posts.sort((a, b) => (b.data.date?.valueOf() || 0) - (a.data.date?.valueOf() || 0));
 
-// Get all tags and count posts per tag
 const tagCounts = new Map<string, number>();
 posts.forEach(post => {
   post.data.tags.forEach(tag => {
@@ -17,8 +18,7 @@ posts.forEach(post => {
   });
 });
 
-// Get directories from post slugs and map to proper case
-const directories = new Map<string, string>(); // slug -> proper name
+const directories = new Map<string, string>();
 posts.forEach(post => {
   const parts = post.id.split('/');
   if (parts.length > 1) {
@@ -35,67 +35,66 @@ const structuredData = {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
   "name": title,
-  "description": "Blog Posts and Articles by Kreato",
+  "description": description,
   "url": Astro.url.href
 };
 ---
 
-<BaseLayout 
+<BaseLayout
   title={title}
   description={description}
   type="CollectionPage"
   structuredData={structuredData}
 >
-    <header>
-        <nav class="nav-bar">
-            <a href="/" class="back-button">← Back</a>
-            <Search />
-        </nav>
-    </header>
     <main>
-        <h1>{title}</h1>
-        
+        <div class="landing-header blog-head">
+            <h1>writing</h1>
+            <Search />
+        </div>
+
         <div id="no-results" class="no-results" style="display: none;">
             No posts found matching your search.
         </div>
-        
+
         {directories.size > 0 && (
-            <section class="directory-list">
-                <h2>Categories</h2>
-                <ul>
+            <section class="section">
+                <div class="section-label">~ categories</div>
+                <div class="filters">
                     {Array.from(directories).map(([slug, name]) => (
-                        <li class="directory">
-                            <a href={`/blog/${slug}/`}>{name}</a>
+                        <a class="chip" href={`/blog/${slug}/`}>{name}</a>
+                    ))}
+                </div>
+            </section>
+        )}
+
+        {tagCounts.size > 0 && (
+            <section class="section">
+                <div class="section-label">~ tags</div>
+                <div class="filters">
+                    {Array.from(tagCounts.entries())
+                      .sort((a, b) => b[1] - a[1])
+                      .slice(0, 10)
+                      .map(([tag, count]) => (
+                        <a class="chip" href={`/blog/tags/${tag}/`}>{tag} <span style="opacity:.6">({count})</span></a>
+                    ))}
+                </div>
+            </section>
+        )}
+
+        {posts.length > 0 && (
+            <section class="section">
+                <div class="section-label">~ posts</div>
+                <ul class="blog-list" id="blog-list">
+                    {posts.map(post => (
+                        <li class="post" data-title={getPostTitle(post)}>
+                            <BlogCard post={post} />
                         </li>
                     ))}
                 </ul>
             </section>
         )}
-        
-        {tagCounts.size > 0 && (
-            <section class="popular-tags">
-                <h2>Popular Tags</h2>
-                <div class="tags-list">
-                    {Array.from(tagCounts.entries())
-                      .sort((a, b) => b[1] - a[1])
-                      .slice(0, 10)
-                      .map(([tag, count]) => (
-                        <a href={`/blog/tags/${tag}/`} class="tag">
-                            {tag} <span class="tag-count-small">({count})</span>
-                        </a>
-                    ))}
-                </div>
-            </section>
-        )}
-        
-        {posts.length > 0 && (
-            <section class="blog-list">
-                <h2>Most Recent Posts</h2>
-                {posts.map(post => (
-                    <BlogCard post={post} />
-                ))}
-            </section>
-        )}
     </main>
-    <QuickActions showRSS rssURL="/blog/feed.xml" />
+    <QuickActions showRSS rssURL="/blog/feed.xml" backHref="/" backLabel="Back to home">
+        <ThemeSettings />
+    </QuickActions>
 </BaseLayout>

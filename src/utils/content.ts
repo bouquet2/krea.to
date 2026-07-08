@@ -53,8 +53,8 @@ export function getPostTitle(entry: CollectionEntry<'blog'>): string {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-export interface TerminalSection {
-  command: string;
+export interface LandingSection {
+  label: string;
   html: string;
 }
 
@@ -64,78 +64,64 @@ export interface LandingLink {
   external: boolean;
 }
 
+/**
+ * Parse landing-page markdown into a header, labelled sections, and links.
+ * Sections are delimited by `<!-- Section: <label> -->`; links by `<!-- Links -->`.
+ */
 export function parseLandingContent(content: string): {
-  sections: TerminalSection[];
+  headerHtml: string;
+  sections: LandingSection[];
   links: LandingLink[];
 } {
-  const sections: TerminalSection[] = [];
+  const sections: LandingSection[] = [];
   const links: LandingLink[] = [];
-  
+
   const lines = content.split('\n');
-  let currentSection: { command: string; contentLines: string[] } | null = null;
+  const headerLines: string[] = [];
+  let currentSection: { label: string; contentLines: string[] } | null = null;
   let inLinks = false;
-  
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    
+  let sawSection = false;
+
+  const flushSection = () => {
+    if (!currentSection) return;
+    const raw = currentSection.contentLines.join('\n').trim();
+    if (raw) sections.push({ label: currentSection.label, html: marked(raw) });
+  };
+
+  for (const line of lines) {
     const sectionMatch = line.match(/<!--\s*Section:\s*(.+?)\s*-->/);
     if (sectionMatch) {
-      if (currentSection) {
-        const rawContent = currentSection.contentLines.join('\n').trim();
-        if (rawContent) {
-          sections.push({
-            command: currentSection.command,
-            html: marked(rawContent)
-          });
-        }
-      }
-      currentSection = {
-        command: sectionMatch[1].trim(),
-        contentLines: []
-      };
+      flushSection();
+      currentSection = { label: sectionMatch[1].trim(), contentLines: [] };
+      sawSection = true;
       inLinks = false;
       continue;
     }
-    
-    if (line.includes('<!-- Links -->')) {
-      if (currentSection) {
-        const rawContent = currentSection.contentLines.join('\n').trim();
-        if (rawContent) {
-          sections.push({
-            command: currentSection.command,
-            html: marked(rawContent)
-          });
-        }
-        currentSection = null;
-      }
+
+    if (/<!--\s*Links\s*-->/.test(line)) {
+      flushSection();
+      currentSection = null;
       inLinks = true;
       continue;
     }
-    
-    if (currentSection && !inLinks) {
-      currentSection.contentLines.push(line);
-    }
-    
+
     if (inLinks) {
       const linkMatch = line.match(/-\s*\[([^\]]+)\]\(([^)]+)\)/);
       if (linkMatch) {
-        const name = linkMatch[1];
         const url = linkMatch[2];
-        const external = url.startsWith('http://') || url.startsWith('https://');
-        links.push({ name, url, external });
+        links.push({ name: linkMatch[1], url, external: url.startsWith('http://') || url.startsWith('https://') });
       }
+      continue;
+    }
+
+    if (currentSection) {
+      currentSection.contentLines.push(line);
+    } else if (!sawSection) {
+      headerLines.push(line);
     }
   }
-  
-  if (currentSection) {
-    const rawContent = currentSection.contentLines.join('\n').trim();
-    if (rawContent) {
-      sections.push({
-        command: currentSection.command,
-        html: marked(rawContent)
-      });
-    }
-  }
-  
-  return { sections, links };
+
+  flushSection();
+
+  return { headerHtml: marked(headerLines.join('\n').trim()), sections, links };
 }

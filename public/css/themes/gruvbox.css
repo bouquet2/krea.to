@@ -1,32 +1,9 @@
 /* Gruvbox theme */
 body[data-theme="gruvbox"] {
     --bg-color: #282828;
-    --text-color: #ebdbb2;
-    --accent-color: #b8bb26;
-    --secondary-color: #fabd2f;
-    --terminal-header: #1d2021;
-    --link-color: #83a598;
-}
-
-body[data-theme="gruvbox"]::before {
-    --background-image: url('../../assets/gruvbox.avif');
-}
-
-/* Gruvbox theme terminal styles */
-body[data-theme="gruvbox"] .terminal {
-    background-color: rgba(40, 40, 40, 0.8);
-    border: 1px solid rgba(184, 187, 38, 0.3);
-}
-
-body[data-theme="gruvbox"] .terminal-header {
-    background-color: rgba(29, 32, 33, 0.9);
-    border-bottom: 1px solid rgba(184, 187, 38, 0.3);
-}
-
-body[data-theme="gruvbox"] .terminal.no-transparency {
-    background-color: #282828 !important;
-}
-
-body[data-theme="gruvbox"] .terminal.no-transparency .terminal-header {
-    background-color: #1d2021 !important;
+    --text-color: #d5c4a1;
+    --heading-color: #ebdbb2;
+    --muted-color: #928374;
+    --accent-color: #fe8019;
+    --border-color: #3c3836;
 }

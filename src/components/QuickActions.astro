@@ -2,22 +2,34 @@
 export interface Props {
   showRSS?: boolean;
   rssURL?: string;
+  backHref?: string;
+  backLabel?: string;
 }
 
-const { showRSS = false, rssURL = '/blog/feed.xml' } = Astro.props;
+const { showRSS = false, rssURL = '/blog/feed.xml', backHref, backLabel = 'Back' } = Astro.props;
 ---
 
 <div class="quick-actions" aria-label="Quick settings">
+    {backHref && (
+        <a href={backHref} class="icon-button" aria-label={backLabel} title={backLabel}>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span class="icon-label">{backLabel}</span>
+        </a>
+    )}
     {showRSS && (
-        <a href={rssURL} class="icon-button rss-button" aria-label="RSS Feed" title="Subscribe to RSS feed">
+        <a href={rssURL} class="icon-button" aria-label="RSS Feed" title="RSS feed">
             <svg class="icon icon-rss" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8">
                 <path d="M4 11a9 9 0 0 1 9 9"></path>
                 <path d="M4 4a16 16 0 0 1 16 16"></path>
                 <circle cx="5" cy="19" r="1"></circle>
             </svg>
+            <span class="icon-label">RSS</span>
         </a>
     )}
-    <button id="theme-button" class="icon-button theme-toggle" type="button" aria-label="Switch to light mode" aria-pressed="false">
+    <button id="lightdark-button" class="icon-button" type="button" aria-label="Toggle light/dark">
         <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8">
             <circle cx="12" cy="12" r="4"></circle>
             <line x1="12" y1="2" x2="12" y2="5"></line>
@@ -32,8 +44,9 @@ const { showRSS = false, rssURL = '/blog/feed.xml' } = Astro.props;
         <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M21 12.79A9 9 0 0 1 11.21 3a7 7 0 1 0 8.58 9.79Z"></path>
         </svg>
+        <span class="icon-label">Light / Dark</span>
     </button>
-    <button id="accessibility-button" class="icon-button accessibility-toggle" type="button" aria-label="Enable accessibility mode" aria-pressed="false">
+    <button id="accessibility-button" class="icon-button" type="button" aria-label="Toggle accessibility mode" aria-pressed="false">
         <svg class="icon icon-accessibility" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8">
             <circle cx="12" cy="5" r="2"></circle>
             <path d="M4 9h16"></path>
@@ -41,5 +54,7 @@ const { showRSS = false, rssURL = '/blog/feed.xml' } = Astro.props;
             <path d="M9 21l3-7 3 7"></path>
             <path d="M7 12l5-1 5 1"></path>
         </svg>
+        <span class="icon-label">Accessibility</span>
     </button>
+    <slot />
 </div>
